@@ -95,7 +95,7 @@ namespace IntugentBackend.Services.Core
                 else
                 {
                     //   MessageBox.Show("Welcome " + CDefualts.sEmployee + "\n\n Intugent PI will be connecting to Local Database", cbfile.sAppName);
-                    cbfile.conAZ = new SqlConnection(@"Data Source=XD-1510\SQLEXPRESS01; Initial Catalog=IntugentPI;Integrated Security=SSPI;");
+                    cbfile.conAZ = new SqlConnection(@"Data Source=XD-1510\SQLEXPRESS; Initial Catalog=IntugentPI;Integrated Security=SSPI;");
 
                     MainWindow_Rendered(IDLocation);
 

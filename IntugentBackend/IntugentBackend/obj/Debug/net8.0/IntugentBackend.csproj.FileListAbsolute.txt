@@ -502,3 +502,4 @@ C:\Users\XD GAMING\Downloads\IntugentBackend\IntugentBackend\IntugentBackend\obj
 C:\Users\XD GAMING\Downloads\IntugentBackend\IntugentBackend\IntugentBackend\obj\Debug\net8.0\IntugentBackend.pdb
 C:\Users\XD GAMING\Downloads\IntugentBackend\IntugentBackend\IntugentBackend\obj\Debug\net8.0\IntugentBackend.genruntimeconfig.cache
 C:\Users\XD GAMING\Downloads\IntugentBackend\IntugentBackend\IntugentBackend\obj\Debug\net8.0\ref\IntugentBackend.dll
+C:\Users\XD GAMING\Downloads\IntugentBackend\IntugentBackend\IntugentBackend\obj\Debug\net8.0\IntugentBackend.sourcelink.json

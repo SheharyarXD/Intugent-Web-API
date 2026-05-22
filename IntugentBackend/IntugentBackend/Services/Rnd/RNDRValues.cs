@@ -17,8 +17,11 @@ namespace IntugentBackend.Services.Rnd
         public CRData RData = new CRData();
         public CLists CLists;
         public CUConv CUConv = new CUConv();
-        public RNDRValues(CLists cLists) { 
-            this.CLists = cLists;
+        public RNDRValues(CLists cLists)
+        {
+            this.CLists = cLists ?? throw new ArgumentNullException(nameof(cLists));
+
+
             Startup();
         }
 

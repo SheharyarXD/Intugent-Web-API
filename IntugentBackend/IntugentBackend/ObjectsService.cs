@@ -82,27 +82,27 @@ namespace IntugentBackend
             CRData = new CRData();
             CUConv = new CUConv();
 
-            // Rnd services - RNDHome needed before RNDFormulations
-            RNDProperties = new RNDProperties();
-            RNDRawProps = new RNDRawProps();
-            RNDTDRV = new RNDTDRV();
-            RNDRValues = new RNDRValues(CLists);
-            RNDHome = new RNDHome(CDefualts, CLists, Cbfile);
-            RNDFormulations = new RNDFormulations(CDefualts, Cbfile, RNDHome);
-
-            // Mfg services
-            MfgDimStability = new MfgDimStability (Cbfile);
-            MfgFinishedGoods = new MfgFinishedGoods(Cbfile);
-            MfgInProcess = new MfgInProcess(Cbfile);
-            MfgJetMixing = new MfgJetMixing(CLists);
-            MfgPlantData = new MfgPlantData(Cbfile, CLists, CDefualts);
-            MfgProcessCheck = new MfgProcessCheck(Cbfile, CDefualts);
-            MfgReports = new MfgReports(Cbfile, CDefualts);
-            MfgHome = new MfgHome(CDefualts, CLists, Cbfile);
 
             // Admin services
             AIModel = new AIModel();
             MfgAdmin = new MfgAdmin(Cbfile);
+            // Mfg services
+            MfgHome = new MfgHome(CDefualts, CLists, Cbfile);
+            MfgFinishedGoods = new MfgFinishedGoods(Cbfile);
+            MfgDimStability = new MfgDimStability (Cbfile);
+         //  MfgPlantData = new MfgPlantData(Cbfile, CLists, CDefualts);
+          // MfgInProcess = new MfgInProcess(Cbfile);
+            MfgProcessCheck = new MfgProcessCheck(Cbfile, CDefualts);
+            MfgReports = new MfgReports(Cbfile, CDefualts);
+          // MfgJetMixing = new MfgJetMixing(CLists);
+
+            // Rnd services - RNDHome needed before RNDFormulations
+            RNDHome = new RNDHome(CDefualts, CLists, Cbfile);
+            RNDProperties = new RNDProperties();
+            RNDRawProps = new RNDRawProps();
+            RNDTDRV = new RNDTDRV();
+            RNDRValues = new RNDRValues(CLists);
+            RNDFormulations = new RNDFormulations(CDefualts, Cbfile, RNDHome);
         }
     }
 }
