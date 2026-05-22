@@ -101,8 +101,8 @@ namespace IntugentBackend
             RNDProperties = new RNDProperties();
             RNDRawProps = new RNDRawProps();
             RNDTDRV = new RNDTDRV();
-            RNDRValues = new RNDRValues(CLists);
-            RNDFormulations = new RNDFormulations(CDefualts, Cbfile, RNDHome);
+            // RNDRValues = new RNDRValues(CLists);
+            // RNDFormulations = new RNDFormulations(CDefualts, Cbfile, RNDHome);
         }
     }
 }
