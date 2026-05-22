@@ -1,0 +1,28 @@
+[
+  {
+    "ContainingType": "IntugentBackend.Controllers.SessionController",
+    "Method": "BeginSession",
+    "RelativePath": "api/Session/begin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.SessionController",
+    "Method": "GetGroups",
+    "RelativePath": "api/Session/groups",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]
