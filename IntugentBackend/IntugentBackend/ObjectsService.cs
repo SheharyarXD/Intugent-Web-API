@@ -8,34 +8,33 @@ namespace IntugentBackend
 {
     public class ObjectsService
     {
-        public int UserIndex;
-        // Core services
-        public Cbfile Cbfile { get; set; }
-        public CDefualts CDefualts { get; set; }
-        public CLists CLists { get; set; }
-        public MainWindow MainWindow { get; set; }
+        public int UserIndex { get; set; }
 
-        // Data services
+        // --- Core Services ---
+        public Cbfile Cbfile { get; set; } = new();
+        public CDefualts CDefualts { get; set; } = new();
+        public CLists CLists { get; set; } = new();
+        public MainWindow MainWindow { get; set; } = new();
+
+        // --- Data Services ---
         public CProdTargets CProdTargets { get; set; }
         public CDBase CDBase { get; set; }
         public CNNData CNNData { get; set; }
-        public CNNModel CNNModel { get; set; }
+        public CNNModel CNNModel { get; set; } = new();
         public CAnalysisData CAnalysisData { get; set; }
-        public cMatrix cMatrix { get; set; }
-        public CAppParam CAppParam { get; set; }
-        public CForm CForm { get; set; }
-        public CForms CForms { get; set; }
+        public cMatrix cMatrix { get; set; } = new();
+        public CAppParam CAppParam { get; set; } = new();
+        public CForm CForm { get; set; } = new();
+        public CForms CForms { get; set; } = new();
+        public CJetMix CJetMix { get; set; } = new();
+        public CMaterial CMaterial { get; set; } = new();
+        public Params Params { get; set; } = new();
+        public CRCalc CRCalc { get; set; } = new();
+        public CRData CRData { get; set; } = new();
+        public CUConv CUConv { get; set; } = new CUConv();
         public CIPProdTargets CIPProdTargets { get; set; }
-        public CJetMix CJetMix { get; set; }
-        public CMaterial CMaterial { get; set; }
-        public Params Params { get; set; }
-        public CRCalc CRCalc { get; set; }
-        public CRData CRData { get; set; }
-        public CUConv CUConv { get; set; }
 
-
-
-        // Mfg services
+        // --- Mfg & Rnd Services ---
         public MfgDimStability MfgDimStability { get; set; }
         public MfgFinishedGoods MfgFinishedGoods { get; set; }
         public MfgHome MfgHome { get; set; }
@@ -44,65 +43,47 @@ namespace IntugentBackend
         public MfgPlantData MfgPlantData { get; set; }
         public MfgProcessCheck MfgProcessCheck { get; set; }
         public MfgReports MfgReports { get; set; }
-
-        // Rnd services
-        public RNDFormulations RNDFormulations { get; set; }
-        public RNDProperties RNDProperties { get; set; }
-        public RNDRValues RNDRValues { get; set; }
-        public RNDRawProps RNDRawProps { get; set; }
-        public RNDTDRV RNDTDRV { get; set; }
-        public RNDHome RNDHome { get; set; }
-
-        // Admin services
-        public AIModel AIModel { get; set; }
         public MfgAdmin MfgAdmin { get; set; }
+        public RNDHome RNDHome { get; set; }
+        public RNDFormulations RNDFormulations { get; set; }
+        public RNDProperties RNDProperties { get; set; } = new();
+        public RNDRawProps RNDRawProps { get; set; } = new();
+        public RNDRValues RNDRValues { get; set; }
+        public RNDTDRV RNDTDRV { get; set; } = new();
+        public AIModel AIModel { get; set; } = new();
 
         public ObjectsService()
         {
-            // Core services - initialize first (no dependencies)
-            Cbfile = new Cbfile();
-            CDefualts = new CDefualts();
-            CLists = new CLists();
-            MainWindow = new MainWindow();
+            // 1. Initialize dependencies first
+            // Ensure Cbfile, CDefualts, CLists are available as they are common dependencies
 
-            // Data services - depend on Core
+            // 2. Initialize Mfg Services (Order based on dependency)
+            MfgInProcess = new MfgInProcess(Cbfile);
+            MfgAdmin = new MfgAdmin(Cbfile);
+            MfgHome = new MfgHome(CDefualts, CLists, Cbfile);
+            MfgFinishedGoods = new MfgFinishedGoods(Cbfile);
+            MfgDimStability = new MfgDimStability(Cbfile);
+            MfgPlantData = new MfgPlantData(Cbfile, CLists, CDefualts);
+            MfgProcessCheck = new MfgProcessCheck(Cbfile, CDefualts);
+            MfgReports = new MfgReports(Cbfile, CDefualts);
+            MfgJetMixing = new MfgJetMixing(CLists);
+
+            // 3. Initialize Data Services
             CProdTargets = new CProdTargets(Cbfile, CDefualts);
             CDBase = new CDBase(Cbfile);
             CNNData = new CNNData(Cbfile);
-            CNNModel = new CNNModel();
             CAnalysisData = new CAnalysisData(Cbfile, CDefualts);
-            cMatrix = new cMatrix();
-            CAppParam = new CAppParam();
-            CForm = new CForm();
-            CForms = new CForms();
-            CJetMix = new CJetMix();
-            CMaterial = new CMaterial();
-            Params = new Params();
-            CRCalc = new CRCalc();
-            CRData = new CRData();
-            CUConv = new CUConv();
+            CIPProdTargets = new CIPProdTargets(Cbfile, MfgInProcess);
 
-
-            // Admin services
-            AIModel = new AIModel();
-            MfgAdmin = new MfgAdmin(Cbfile);
-            // Mfg services
-            MfgHome = new MfgHome(CDefualts, CLists, Cbfile);
-            MfgFinishedGoods = new MfgFinishedGoods(Cbfile);
-            MfgDimStability = new MfgDimStability (Cbfile);
-         //  MfgPlantData = new MfgPlantData(Cbfile, CLists, CDefualts);
-          // MfgInProcess = new MfgInProcess(Cbfile);
-            MfgProcessCheck = new MfgProcessCheck(Cbfile, CDefualts);
-            MfgReports = new MfgReports(Cbfile, CDefualts);
-          // MfgJetMixing = new MfgJetMixing(CLists);
-
-            // Rnd services - RNDHome needed before RNDFormulations
+            // 4. Initialize Rnd Services
             RNDHome = new RNDHome(CDefualts, CLists, Cbfile);
-            RNDProperties = new RNDProperties();
-            RNDRawProps = new RNDRawProps();
-            RNDTDRV = new RNDTDRV();
-            // RNDRValues = new RNDRValues(CLists);
-            // RNDFormulations = new RNDFormulations(CDefualts, Cbfile, RNDHome);
+            RNDRValues = new RNDRValues(CLists);
+            RNDFormulations = new RNDFormulations(CDefualts, Cbfile, RNDHome);
+        }
+
+        public void InitializeSession(int userId)
+        {
+            this.UserIndex = userId;
         }
     }
 }

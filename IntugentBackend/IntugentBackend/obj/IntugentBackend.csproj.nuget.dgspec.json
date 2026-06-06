@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\XD GAMING\\Downloads\\IntugentBackend\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj": {}
+    "C:\\Users\\XD GAMING\\Downloads\\IntugentBackend (1)\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\XD GAMING\\Downloads\\IntugentBackend\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj": {
+    "C:\\Users\\XD GAMING\\Downloads\\IntugentBackend (1)\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\XD GAMING\\Downloads\\IntugentBackend\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj",
+        "projectUniqueName": "C:\\Users\\XD GAMING\\Downloads\\IntugentBackend (1)\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj",
         "projectName": "IntugentBackend",
-        "projectPath": "C:\\Users\\XD GAMING\\Downloads\\IntugentBackend\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj",
+        "projectPath": "C:\\Users\\XD GAMING\\Downloads\\IntugentBackend (1)\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj",
         "packagesPath": "C:\\Users\\XD GAMING\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\XD GAMING\\Downloads\\IntugentBackend\\IntugentBackend\\IntugentBackend\\obj\\",
+        "outputPath": "C:\\Users\\XD GAMING\\Downloads\\IntugentBackend (1)\\IntugentBackend\\IntugentBackend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\XD GAMING\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -62,6 +62,10 @@
               "target": "Package",
               "version": "[3.0.46, )"
             },
+            "Microsoft.Data.SqlClient": {
+              "target": "Package",
+              "version": "[7.0.1, )"
+            },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
               "version": "[8.0.24, )"
@@ -75,10 +79,6 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.4.0, )"
-            },
-            "System.Data.SqlClient": {
-              "target": "Package",
-              "version": "[4.9.1, )"
             }
           },
           "imports": [

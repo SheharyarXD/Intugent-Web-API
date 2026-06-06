@@ -2,7 +2,7 @@
 //using IntugentClassLbrary.Classes;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Data;
 using IntugentBackend.Services.Mfg;
 using IntugentBackend.Services.Core;

@@ -1,5 +1,162 @@
 [
   {
+    "ContainingType": "IntugentBackend.Controllers.FormulationsController",
+    "Method": "GetFormulationData",
+    "RelativePath": "api/Formulations/data/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.FormulationsController",
+    "Method": "UpdateNcoIndex",
+    "RelativePath": "api/Formulations/update-nco/{id}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "IntugentBackend.Controllers.NcoUpdateRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.Mfg.MfgAnalysisController",
+    "Method": "Load",
+    "RelativePath": "api/MfgAnalysis/load",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.RndHomeController",
+    "Method": "SearchDataSets",
+    "RelativePath": "api/RndHome/search",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "criteria",
+        "Type": "IntugentBackend.Controllers.SearchCriteria",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "RndPropertiesController",
+    "Method": "UpdateNotes",
+    "RelativePath": "api/RndProperties/update-notes",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "IntugentBackend.Controllers.Rnd.TdrvUpdateModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "RndPropertiesController",
+    "Method": "UpdateReaction",
+    "RelativePath": "api/RndProperties/update-reaction",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "IntugentBackend.Controllers.Rnd.TdrvUpdateModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.Rnd.RndRawPropsController",
+    "Method": "LoadDensity",
+    "RelativePath": "api/RndRawProps/load-density",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.Rnd.RndRawPropsController",
+    "Method": "UpdateDensity",
+    "RelativePath": "api/RndRawProps/update-density",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "IntugentBackend.Controllers.Rnd.TdrvUpdateModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.Rnd.RndTdrvController",
+    "Method": "UpdateProps",
+    "RelativePath": "api/RndTdrv/update",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "IntugentBackend.Controllers.Rnd.TdrvUpdateModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.RndValuesController",
+    "Method": "Collect",
+    "RelativePath": "api/RndValues/collect",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.RndValuesController",
+    "Method": "Update",
+    "RelativePath": "api/RndValues/update",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "IntugentBackend.Controllers.SessionController",
     "Method": "BeginSession",
     "RelativePath": "api/Session/begin",

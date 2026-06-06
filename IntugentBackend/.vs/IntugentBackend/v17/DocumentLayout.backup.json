@@ -1,42 +1,86 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "F:\\Zaeem\\Work\\IntugentBackend\\",
+  "WorkspaceRootPath": "F:\\Eid\\IntugentBackend\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\zaeem\\work\\intugentbackend\\intugentbackend\\services\\rnd\\rndproperties.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\services\\rnd\\rndproperties.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\eid\\intugentbackend\\intugentbackend\\controllers\\sessioncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\controllers\\sessioncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\zaeem\\work\\intugentbackend\\intugentbackend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\eid\\intugentbackend\\intugentbackend\\services\\rnd\\rndrvaluesservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\services\\rnd\\rndrvaluesservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\eid\\intugentbackend\\intugentbackend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\zaeem\\work\\intugentbackend\\intugentbackend\\services\\mfg\\mfgplantdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\services\\mfg\\mfgplantdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\eid\\intugentbackend\\intugentbackend\\controllers\\mfganalysiscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\controllers\\mfganalysiscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\zaeem\\work\\intugentbackend\\intugentbackend\\services\\rnd\\rndrawprops.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\services\\rnd\\rndrawprops.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\eid\\intugentbackend\\intugentbackend\\controllers\\rndpropertiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\controllers\\rndpropertiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\zaeem\\work\\intugentbackend\\intugentbackend\\services\\rnd\\rndtdrv.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\services\\rnd\\rndtdrv.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\eid\\intugentbackend\\intugentbackend\\controllers\\rndrawpropscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\controllers\\rndrawpropscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\zaeem\\work\\intugentbackend\\intugentbackend\\services\\core\\mainwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\services\\core\\mainwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\eid\\intugentbackend\\intugentbackend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\zaeem\\work\\intugentbackend\\intugentbackend\\objectsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\eid\\intugentbackend\\intugentbackend\\controllers\\formulationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\controllers\\formulationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\eid\\intugentbackend\\intugentbackend\\controllers\\rndtdrvcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\controllers\\rndtdrvcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\eid\\intugentbackend\\intugentbackend\\controllers\\rndhomecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\controllers\\rndhomecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\eid\\intugentbackend\\intugentbackend\\objectsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\objectsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\zaeem\\work\\intugentbackend\\intugentbackend\\services\\mfg\\mfghome.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\services\\mfg\\mfghome.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\eid\\intugentbackend\\intugentbackend\\services\\rnd\\rndhome.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\services\\rnd\\rndhome.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\zaeem\\work\\intugentbackend\\intugentbackend\\controllers\\sessioncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\controllers\\sessioncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\eid\\intugentbackend\\intugentbackend\\services\\rnd\\rndpropertiesservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\services\\rnd\\rndpropertiesservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\eid\\intugentbackend\\intugentbackend\\services\\rnd\\rndproperties.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\services\\rnd\\rndproperties.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\eid\\intugentbackend\\intugentbackend\\services\\rnd\\mfganalysisservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\services\\rnd\\mfganalysisservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\eid\\intugentbackend\\intugentbackend\\intugentbackend.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\intugentbackend.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\eid\\intugentbackend\\intugentbackend\\services\\rnd\\rndrawpropsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\services\\rnd\\rndrawpropsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\eid\\intugentbackend\\intugentbackend\\services\\rnd\\rndrawprops.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\services\\rnd\\rndrawprops.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\eid\\intugentbackend\\intugentbackend\\services\\rnd\\rndtdrvservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\services\\rnd\\rndtdrvservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|f:\\eid\\intugentbackend\\intugentbackend\\services\\rnd\\rndtdrv.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\services\\rnd\\rndtdrv.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -46,124 +90,272 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 10,
           "Children": [
             {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "RNDProperties.cs",
-              "DocumentMoniker": "F:\\Zaeem\\Work\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\RNDProperties.cs",
-              "RelativeDocumentMoniker": "IntugentBackend\\Services\\Rnd\\RNDProperties.cs",
-              "ToolTip": "F:\\Zaeem\\Work\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\RNDProperties.cs*",
-              "RelativeToolTip": "IntugentBackend\\Services\\Rnd\\RNDProperties.cs*",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAlAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-22T10:41:12.235Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{269a02dc-6af8-11d3-bdc4-00c04f688e50}"
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "Program.cs",
-              "DocumentMoniker": "F:\\Zaeem\\Work\\IntugentBackend\\IntugentBackend\\Program.cs",
-              "RelativeDocumentMoniker": "IntugentBackend\\Program.cs",
-              "ToolTip": "F:\\Zaeem\\Work\\IntugentBackend\\IntugentBackend\\Program.cs",
-              "RelativeToolTip": "IntugentBackend\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAhAAAAAAAAAA==",
+              "Title": "RNDRValuesService.cs",
+              "DocumentMoniker": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\RNDRValuesService.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Services\\Rnd\\RNDRValuesService.cs",
+              "ToolTip": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\RNDRValuesService.cs",
+              "RelativeToolTip": "IntugentBackend\\Services\\Rnd\\RNDRValuesService.cs",
+              "ViewState": "AgIAAD8AAAAAAAAAAAAmwFcAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-22T10:38:02.997Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "MfgPlantData.cs",
-              "DocumentMoniker": "F:\\Zaeem\\Work\\IntugentBackend\\IntugentBackend\\Services\\Mfg\\MfgPlantData.cs",
-              "RelativeDocumentMoniker": "IntugentBackend\\Services\\Mfg\\MfgPlantData.cs",
-              "ToolTip": "F:\\Zaeem\\Work\\IntugentBackend\\IntugentBackend\\Services\\Mfg\\MfgPlantData.cs",
-              "RelativeToolTip": "IntugentBackend\\Services\\Mfg\\MfgPlantData.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-22T10:39:52.725Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "RNDTDRV.cs",
-              "DocumentMoniker": "F:\\Zaeem\\Work\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\RNDTDRV.cs",
-              "RelativeDocumentMoniker": "IntugentBackend\\Services\\Rnd\\RNDTDRV.cs",
-              "ToolTip": "F:\\Zaeem\\Work\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\RNDTDRV.cs",
-              "RelativeToolTip": "IntugentBackend\\Services\\Rnd\\RNDTDRV.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAjAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-22T10:39:28.281Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "RNDRawProps.cs",
-              "DocumentMoniker": "F:\\Zaeem\\Work\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\RNDRawProps.cs",
-              "RelativeDocumentMoniker": "IntugentBackend\\Services\\Rnd\\RNDRawProps.cs",
-              "ToolTip": "F:\\Zaeem\\Work\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\RNDRawProps.cs",
-              "RelativeToolTip": "IntugentBackend\\Services\\Rnd\\RNDRawProps.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAjAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-22T10:38:34.162Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "MainWindow.cs",
-              "DocumentMoniker": "F:\\Zaeem\\Work\\IntugentBackend\\IntugentBackend\\Services\\Core\\MainWindow.cs",
-              "RelativeDocumentMoniker": "IntugentBackend\\Services\\Core\\MainWindow.cs",
-              "ToolTip": "F:\\Zaeem\\Work\\IntugentBackend\\IntugentBackend\\Services\\Core\\MainWindow.cs",
-              "RelativeToolTip": "IntugentBackend\\Services\\Core\\MainWindow.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAjAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-22T10:38:12.04Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "MfgHome.cs",
-              "DocumentMoniker": "F:\\Zaeem\\Work\\IntugentBackend\\IntugentBackend\\Services\\Mfg\\MfgHome.cs",
-              "RelativeDocumentMoniker": "IntugentBackend\\Services\\Mfg\\MfgHome.cs",
-              "ToolTip": "F:\\Zaeem\\Work\\IntugentBackend\\IntugentBackend\\Services\\Mfg\\MfgHome.cs",
-              "RelativeToolTip": "IntugentBackend\\Services\\Mfg\\MfgHome.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAHUBAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-22T10:35:03.909Z",
+              "WhenOpened": "2026-05-30T21:53:18.112Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 6,
-              "Title": "ObjectsService.cs",
-              "DocumentMoniker": "F:\\Zaeem\\Work\\IntugentBackend\\IntugentBackend\\ObjectsService.cs",
-              "RelativeDocumentMoniker": "IntugentBackend\\ObjectsService.cs",
-              "ToolTip": "F:\\Zaeem\\Work\\IntugentBackend\\IntugentBackend\\ObjectsService.cs",
-              "RelativeToolTip": "IntugentBackend\\ObjectsService.cs",
+              "Title": "appsettings.json",
+              "DocumentMoniker": "F:\\Eid\\IntugentBackend\\IntugentBackend\\appsettings.json",
+              "RelativeDocumentMoniker": "IntugentBackend\\appsettings.json",
+              "ToolTip": "F:\\Eid\\IntugentBackend\\IntugentBackend\\appsettings.json",
+              "RelativeToolTip": "IntugentBackend\\appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-22T07:02:54.478Z",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-05-30T21:27:07.483Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "SessionController.cs",
-              "DocumentMoniker": "F:\\Zaeem\\Work\\IntugentBackend\\IntugentBackend\\Controllers\\SessionController.cs",
-              "RelativeDocumentMoniker": "IntugentBackend\\Controllers\\SessionController.cs",
-              "ToolTip": "F:\\Zaeem\\Work\\IntugentBackend\\IntugentBackend\\Controllers\\SessionController.cs",
-              "RelativeToolTip": "IntugentBackend\\Controllers\\SessionController.cs",
-              "ViewState": "AgIAADYAAAAAAAAAAAAawEUAAABJAAAAAAAAAA==",
+              "DocumentIndex": 7,
+              "Title": "FormulationsController.cs",
+              "DocumentMoniker": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Controllers\\FormulationsController.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Controllers\\FormulationsController.cs",
+              "ToolTip": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Controllers\\FormulationsController.cs",
+              "RelativeToolTip": "IntugentBackend\\Controllers\\FormulationsController.cs",
+              "ViewState": "AgIAACEAAABAZmZmZmYiwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-22T09:56:47.606Z",
+              "WhenOpened": "2026-05-30T21:24:11.687Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "RndHomeController.cs",
+              "DocumentMoniker": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Controllers\\RndHomeController.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Controllers\\RndHomeController.cs",
+              "ToolTip": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Controllers\\RndHomeController.cs",
+              "RelativeToolTip": "IntugentBackend\\Controllers\\RndHomeController.cs",
+              "ViewState": "AgIAABIAAAAAAAAAAAAowAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-30T21:23:26.158Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "RndRawPropsController.cs",
+              "DocumentMoniker": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Controllers\\RndRawPropsController.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Controllers\\RndRawPropsController.cs",
+              "ToolTip": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Controllers\\RndRawPropsController.cs",
+              "RelativeToolTip": "IntugentBackend\\Controllers\\RndRawPropsController.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAMwBgAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-30T19:50:18.541Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Program.cs",
+              "DocumentMoniker": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Program.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Program.cs",
+              "ToolTip": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Program.cs",
+              "RelativeToolTip": "IntugentBackend\\Program.cs",
+              "ViewState": "AgIAABwAAAAAAAAAAAAiwCcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-30T18:59:29.392Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "ObjectsService.cs",
+              "DocumentMoniker": "F:\\Eid\\IntugentBackend\\IntugentBackend\\ObjectsService.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\ObjectsService.cs",
+              "ToolTip": "F:\\Eid\\IntugentBackend\\IntugentBackend\\ObjectsService.cs",
+              "RelativeToolTip": "IntugentBackend\\ObjectsService.cs",
+              "ViewState": "AgIAAEYAAABAmpmZmZkZwFgAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-30T19:03:34.193Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "SessionController.cs",
+              "DocumentMoniker": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Controllers\\SessionController.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Controllers\\SessionController.cs",
+              "ToolTip": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Controllers\\SessionController.cs",
+              "RelativeToolTip": "IntugentBackend\\Controllers\\SessionController.cs",
+              "ViewState": "AgIAAEkAAADAzMzMzMwswFEAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-30T19:06:54.293Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "RndPropertiesController.cs",
+              "DocumentMoniker": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Controllers\\RndPropertiesController.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Controllers\\RndPropertiesController.cs",
+              "ToolTip": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Controllers\\RndPropertiesController.cs",
+              "RelativeToolTip": "IntugentBackend\\Controllers\\RndPropertiesController.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAMwBYAAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-30T20:40:38.902Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "MfgAnalysisController.cs",
+              "DocumentMoniker": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Controllers\\MfgAnalysisController.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Controllers\\MfgAnalysisController.cs",
+              "ToolTip": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Controllers\\MfgAnalysisController.cs",
+              "RelativeToolTip": "IntugentBackend\\Controllers\\MfgAnalysisController.cs",
+              "ViewState": "AgIAABIAAAAAAAAAAAAqwCAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-30T20:32:17.793Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "RndHome.cs",
+              "DocumentMoniker": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\RndHome.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Services\\Rnd\\RndHome.cs",
+              "ToolTip": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\RndHome.cs",
+              "RelativeToolTip": "IntugentBackend\\Services\\Rnd\\RndHome.cs",
+              "ViewState": "AgIAAJ4AAAAAAAAAAAAkwLAAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-30T20:19:25.188Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "RndRawPropsService.cs",
+              "DocumentMoniker": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\RndRawPropsService.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Services\\Rnd\\RndRawPropsService.cs",
+              "ToolTip": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\RndRawPropsService.cs",
+              "RelativeToolTip": "IntugentBackend\\Services\\Rnd\\RndRawPropsService.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAIA2wBQAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-30T19:49:39.522Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "IntugentBackend",
+              "DocumentMoniker": "F:\\Eid\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj",
+              "RelativeDocumentMoniker": "IntugentBackend\\IntugentBackend.csproj",
+              "ToolTip": "F:\\Eid\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj",
+              "RelativeToolTip": "IntugentBackend\\IntugentBackend.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-05-30T20:32:02.292Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "RndTdrvController.cs",
+              "DocumentMoniker": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Controllers\\RndTdrvController.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Controllers\\RndTdrvController.cs",
+              "ToolTip": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Controllers\\RndTdrvController.cs",
+              "RelativeToolTip": "IntugentBackend\\Controllers\\RndTdrvController.cs",
+              "ViewState": "AgIAAAUAAABAMzMzMzMbwB4AAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-30T19:26:16.808Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "RNDProperties.cs",
+              "DocumentMoniker": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\RNDProperties.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Services\\Rnd\\RNDProperties.cs",
+              "ToolTip": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\RNDProperties.cs",
+              "RelativeToolTip": "IntugentBackend\\Services\\Rnd\\RNDProperties.cs",
+              "ViewState": "AgIAAGAAAAAAAAAAAAAkwHkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-30T20:36:55.897Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "RndPropertiesService.cs",
+              "DocumentMoniker": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\RndPropertiesService.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Services\\Rnd\\RndPropertiesService.cs",
+              "ToolTip": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\RndPropertiesService.cs",
+              "RelativeToolTip": "IntugentBackend\\Services\\Rnd\\RndPropertiesService.cs",
+              "ViewState": "AgIAAA0AAADAzMzMzMwuwAcAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-30T20:40:13.456Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "RNDRawProps.cs",
+              "DocumentMoniker": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\RNDRawProps.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Services\\Rnd\\RNDRawProps.cs",
+              "ToolTip": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\RNDRawProps.cs",
+              "RelativeToolTip": "IntugentBackend\\Services\\Rnd\\RNDRawProps.cs",
+              "ViewState": "AgIAABkAAAAAAAAAAAAYwLoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-30T19:47:19.604Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "RNDTDRVService.cs",
+              "DocumentMoniker": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\RNDTDRVService.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Services\\Rnd\\RNDTDRVService.cs",
+              "ToolTip": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\RNDTDRVService.cs",
+              "RelativeToolTip": "IntugentBackend\\Services\\Rnd\\RNDTDRVService.cs",
+              "ViewState": "AgIAAC0AAAAAAAAAAAAmwEIAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-30T19:25:45.846Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "RNDTDRV.cs",
+              "DocumentMoniker": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\RNDTDRV.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Services\\Rnd\\RNDTDRV.cs",
+              "ToolTip": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\RNDTDRV.cs",
+              "RelativeToolTip": "IntugentBackend\\Services\\Rnd\\RNDTDRV.cs",
+              "ViewState": "AgIAADsAAAAAAAAAAAAmwFQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-30T19:21:29.354Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "MfgAnalysisService.cs",
+              "DocumentMoniker": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\MfgAnalysisService.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Services\\Rnd\\MfgAnalysisService.cs",
+              "ToolTip": "F:\\Eid\\IntugentBackend\\IntugentBackend\\Services\\Rnd\\MfgAnalysisService.cs",
+              "RelativeToolTip": "IntugentBackend\\Services\\Rnd\\MfgAnalysisService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-30T20:32:42.275Z"
             }
           ]
         }

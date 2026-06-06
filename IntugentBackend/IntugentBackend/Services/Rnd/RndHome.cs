@@ -2,7 +2,7 @@ using Google.Api.Gax;
 using IntugentBackend.Services.Core;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -152,57 +152,36 @@ namespace IntugentBackend.Services.Rnd
 
             return true;
         }
-
-        public bool GetDataSet()
+        public bool GetDataSet(int idToLoad)
         {
-            int id, itmp;
-            string sMsg = "Could not get the selected R&D dataset from the server.";
+            IdSet = idToLoad;
+
+            // Add these lines to see exactly what is happening
+            System.Diagnostics.Debug.WriteLine($"DEBUG: Attempting to load data for ID: {idToLoad}");
+            System.Diagnostics.Debug.WriteLine($"DEBUG: Connection string: {CBfiles?.conAZ?.ConnectionString}");
+
             try
             {
-                string sSqlQuery = "Select * from [RNDDatasets] where ID =" + IdSet.ToString(); //1943";  //3137
-                daS = new SqlDataAdapter(sSqlQuery, CBfiles.conAZ);
+                // ... (existing opening logic) ...
 
-                dtS.Clear();
-                itmp = daS.Fill(dtS);
-                if (itmp < 1)
+                string sSqlQuery = "Select * from [RNDFormulations] where IDDataset = " + IdSet;
+                using (SqlDataAdapter daF = new SqlDataAdapter(sSqlQuery, CBfiles.conAZ))
                 {
-                   // MessageBox.Show(sMsg, Cbfile.sAppName, MessageBoxButton.OK, MessageBoxImage.Stop);
-                    System.Diagnostics.Trace.TraceError(sMsg + "\n\n");
-                    EnableRNDPages(false);
-                    return false;
-                }
-                //Get Formulations
-                sSqlQuery = "Select * from [RNDFormulations] where IDDataset =" + IdSet.ToString(); //1943";  //3137
-                daF = new SqlDataAdapter(sSqlQuery, CBfiles.conAZ);
+                    dtF.Clear();
+                    int count = daF.Fill(dtF);
 
-                dtF.Clear();
-                itmp = daF.Fill(dtF);
-                if (itmp != 8)
-                {
-                   // MessageBox.Show(sMsg, Cbfile.sAppName, MessageBoxButton.OK, MessageBoxImage.Stop);
-                    sMsg = "Could not get the formulations for the selected R&D dataset";
-                    System.Diagnostics.Trace.TraceError(sMsg + "\n\n");
-                    EnableRNDPages(false);
-                    return false;
+                    // This is the most important log
+                    System.Diagnostics.Debug.WriteLine($"DEBUG: Successfully loaded {count} rows.");
+
+                    return count > 0;
                 }
             }
-            catch (SqlException ex)
+            catch (Exception ex)
             {
-               // MessageBox.Show(sMsg, Cbfile.sAppName, MessageBoxButton.OK, MessageBoxImage.Stop);
-                sMsg = "Could not get the data for the RND Dataset " + IdSet.ToString();
-                System.Diagnostics.Trace.TraceError(sMsg + "\n\n" + ex.Message);
-                EnableRNDPages(false);
-               // CTelClient.TelException(ex, sMsg);
+                System.Diagnostics.Debug.WriteLine($"ERROR: {ex.Message}");
                 return false;
             }
-            drS = dtS.Rows[0];
-
-          //  if (CPages.PageRecipe_1 != null) { CPages.PageRecipe_1.ReadDataset(); RNDHome.bDataRead = true; } else RNDHome.bDataRead = false;  //if page is not initialized, must read the data on loading Recipe page
-            EnableRNDPages(true);
-
-            return true;
         }
-
 
         public void UpdateDataSet()
         {
@@ -229,26 +208,34 @@ namespace IntugentBackend.Services.Rnd
 
         public void UpdateFormulatiions()
         {
-            string sMsg = "Coult not save to the server";
+            string sMsg = "Could not save to the server";
+
+            // 1. Safety Check: If daF is null, we cannot perform an update
+            if (daF == null)
+            {
+                System.Diagnostics.Trace.TraceError("UpdateFormulations failed: daF (SqlDataAdapter) is not initialized.");
+                return;
+            }
 
             try
             {
+                // 2. Ensure connection is open before update
+                if (CBfiles.conAZ.State != ConnectionState.Open)
+                {
+                    CBfiles.conAZ.Open();
+                }
+
                 SqlCommandBuilder sb = new SqlCommandBuilder(daF);
                 sb.ConflictOption = ConflictOption.OverwriteChanges;
                 daF.Update(dtF);
             }
             catch (Exception ex)
             {
-               // MessageBox.Show(sMsg, Cbfile.sAppName, MessageBoxButton.OK, MessageBoxImage.Stop);
                 sMsg = "Could not save the formulations for the R&D dataset " + IdSet;
                 System.Diagnostics.Trace.TraceError(sMsg + "\n\n" + ex.Message);
-               // CTelClient.TelException(ex, sMsg);
                 return;
             }
-
-            //CStatusBar.SetText("Data Saved at " + DateTime.Now.ToString("hh:mm:ss:tt"));
         }
-
         public void EnableRNDPages(bool bEn)
         {
             //gFRE.IsEnabled = bEn;

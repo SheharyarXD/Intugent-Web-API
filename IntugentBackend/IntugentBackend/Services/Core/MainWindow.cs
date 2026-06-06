@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Data;
 using IntugentBackend.Services.Admin;
 using IntugentBackend.Services.Core;
@@ -88,7 +88,7 @@ namespace IntugentBackend.Services.Core
                     //                   MessageBox.Show("Welcome " + CDefualts.sEmployee + "\n\n Intugent PI will be connecting to Azure Database", cbfile.sAppName);
                     //   var credential = new Azure.Identity.DefaultAzureCredential(new DefaultAzureCredentialOptions { ManagedIdentityClientId = CAzure.Msi });
                     //   var token = credential.GetToken(new Azure.Core.TokenRequestContext(new[] { CAzure.DB_Url }));
-                    //   cbfile.conAZ = new System.Data.SqlClient.SqlConnection(CAzure.Db_ConStr);
+                    //   cbfile.conAZ = new Microsoft.Data.SqlClient.SqlConnection(CAzure.Db_ConStr);
                     //    cbfile.conAZ.AccessToken = token.Token;
                     //    CTelClient.TelTrace("Azure sql conn. made");  //Azue Insight Trace Message
                 }
@@ -131,35 +131,35 @@ namespace IntugentBackend.Services.Core
                 }
             if (cDefualts.sEmployee == "AShafi" || cDefualts.sEmployee == "Asjad")
             {
-                              cDefualts.sEmployee = "Asjad.Shafi@gaf.com";
+                cDefualts.sEmployee = "Asjad.Shafi@gaf.com";
                 if (IDLocation == 1)
                 {
-                              cDefualts.sGroup = "OKTA_GAF_Intugent_RnD_Users";
+                    cDefualts.sGroup = "OKTA_GAF_Intugent_RnD_Users";
                     //cDefualts.sLocation = "Global R&D"; cDefualts.IDLocation = 3;
                 }
-                else if(IDLocation == 2)
+                else if (IDLocation == 2)
                 {
-                              cDefualts.sGroup = "OKTA_GAF_Intugent_Mfg_Users_Gainesville"; 
+                    cDefualts.sGroup = "OKTA_GAF_Intugent_Mfg_Users_Gainesville";
                     //cDefualts.sLocation = "Gainsville TX"; cDefualts.IDLocation = 1;
                 }
                 else if (IDLocation == 3)
                 {
-                              cDefualts.sGroup = "OKTA_GAF_Intugent_Mfg_Users_Statesboro"; 
+                    cDefualts.sGroup = "OKTA_GAF_Intugent_Mfg_Users_Statesboro";
                     //cDefualts.sLocation = "Statesboro, GA"; cDefualts.IDLocation = 5;
                 }
                 else if (IDLocation == 4)
                 {
-                              cDefualts.sGroup = "OKTA_GAF_Intugent_Mfg_Users_CedarCity"; 
+                    cDefualts.sGroup = "OKTA_GAF_Intugent_Mfg_Users_CedarCity";
                     //cDefualts.sLocation = "Cedar City"; cDefualts.IDLocation = 2;
                 }
                 else if (IDLocation == 5)
                 {
-                            cDefualts.sGroup = "OKTA_GAF_Intugent_Mfg_Users_NewColumbia";
+                    cDefualts.sGroup = "OKTA_GAF_Intugent_Mfg_Users_NewColumbia";
                     //cDefualts.sLocation = "New COlumbia, PA"; cDefualts.IDLocation = 6;
                 }
                 else if (IDLocation == 6)
                 {
-                              cDefualts.sGroup = "OKTA_GAF_Intugent_Admins";
+                    cDefualts.sGroup = "OKTA_GAF_Intugent_Admins";
                     //cDefualts.sLocation = "Admin"; cDefualts.IDLocation = 4;
                 }
                 /*                CPages.PageOktaAuth_1.gGroup.Items.Add("OKTA_GAF_Intugent_RnD_Users");
@@ -540,7 +540,8 @@ namespace IntugentBackend.Services.Core
                 itmp = da.Fill(cLists.dtLoc);
 
                 sql = "Select    [Product Code],  [Product Code]+' - ' +  [Product Description] as Product  from [Product Matrix] Order by [Product Code] Asc";
-                if (cDefualts.IDLocation != 3 && cDefualts.IDLocation != 4) { 
+                if (cDefualts.IDLocation != 3 && cDefualts.IDLocation != 4)
+                {
                     sql = "Select    [Product Code],  [Product Code]+' - ' +  [Product Description] as Product  from [Product Matrix] Where IDLoc = " + cDefualts.IDLocation.ToString() + " Order by [Product Code] Asc";
                 } //Filter products for Mfg group
                 da = new SqlDataAdapter(sql, cbfile.conAZ);
