@@ -1,0 +1,156 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\IntugentBackend\\IntugentFrontend\\MauiApp1\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{70BA9EEA-1C29-A903-CD8A-46F98FAA377C}|MauiApp1\\MauiApp1.Shared\\MauiApp1.Shared.csproj|e:\\intugentbackend\\intugentfrontend\\mauiapp1\\mauiapp1\\mauiapp1.shared\\routes.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{70BA9EEA-1C29-A903-CD8A-46F98FAA377C}|MauiApp1\\MauiApp1.Shared\\MauiApp1.Shared.csproj|solutionrelative:mauiapp1\\mauiapp1.shared\\routes.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{70BA9EEA-1C29-A903-CD8A-46F98FAA377C}|MauiApp1\\MauiApp1.Shared\\MauiApp1.Shared.csproj|e:\\intugentbackend\\intugentfrontend\\mauiapp1\\mauiapp1\\mauiapp1.shared\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{70BA9EEA-1C29-A903-CD8A-46F98FAA377C}|MauiApp1\\MauiApp1.Shared\\MauiApp1.Shared.csproj|solutionrelative:mauiapp1\\mauiapp1.shared\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{70BA9EEA-1C29-A903-CD8A-46F98FAA377C}|MauiApp1\\MauiApp1.Shared\\MauiApp1.Shared.csproj|e:\\intugentbackend\\intugentfrontend\\mauiapp1\\mauiapp1\\mauiapp1.shared\\pages\\mfghome.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{70BA9EEA-1C29-A903-CD8A-46F98FAA377C}|MauiApp1\\MauiApp1.Shared\\MauiApp1.Shared.csproj|solutionrelative:mauiapp1\\mauiapp1.shared\\pages\\mfghome.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E11C2687-4982-EF3A-5808-266C113325D3}|MauiApp1\\MauiApp1.Web\\MauiApp1.Web.csproj|e:\\intugentbackend\\intugentfrontend\\mauiapp1\\mauiapp1\\mauiapp1.web\\components\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E11C2687-4982-EF3A-5808-266C113325D3}|MauiApp1\\MauiApp1.Web\\MauiApp1.Web.csproj|solutionrelative:mauiapp1\\mauiapp1.web\\components\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{70BA9EEA-1C29-A903-CD8A-46F98FAA377C}|MauiApp1\\MauiApp1.Shared\\MauiApp1.Shared.csproj|e:\\intugentbackend\\intugentfrontend\\mauiapp1\\mauiapp1\\mauiapp1.shared\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{70BA9EEA-1C29-A903-CD8A-46F98FAA377C}|MauiApp1\\MauiApp1.Shared\\MauiApp1.Shared.csproj|solutionrelative:mauiapp1\\mauiapp1.shared\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EEB50B9C-79C7-703E-335E-DBFA7FE99041}|MauiApp1\\MauiApp1\\MauiApp1.csproj|e:\\intugentbackend\\intugentfrontend\\mauiapp1\\mauiapp1\\mauiapp1\\mauiprogram.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EEB50B9C-79C7-703E-335E-DBFA7FE99041}|MauiApp1\\MauiApp1\\MauiApp1.csproj|solutionrelative:mauiapp1\\mauiapp1\\mauiprogram.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{70BA9EEA-1C29-A903-CD8A-46F98FAA377C}|MauiApp1\\MauiApp1.Shared\\MauiApp1.Shared.csproj|e:\\intugentbackend\\intugentfrontend\\mauiapp1\\mauiapp1\\mauiapp1.shared\\_imports.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{70BA9EEA-1C29-A903-CD8A-46F98FAA377C}|MauiApp1\\MauiApp1.Shared\\MauiApp1.Shared.csproj|solutionrelative:mauiapp1\\mauiapp1.shared\\_imports.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E11C2687-4982-EF3A-5808-266C113325D3}|MauiApp1\\MauiApp1.Web\\MauiApp1.Web.csproj|e:\\intugentbackend\\intugentfrontend\\mauiapp1\\mauiapp1\\mauiapp1.web\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E11C2687-4982-EF3A-5808-266C113325D3}|MauiApp1\\MauiApp1.Web\\MauiApp1.Web.csproj|solutionrelative:mauiapp1\\mauiapp1.web\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Routes.razor",
+              "DocumentMoniker": "E:\\IntugentBackend\\IntugentFrontend\\MauiApp1\\MauiApp1\\MauiApp1.Shared\\Routes.razor",
+              "RelativeDocumentMoniker": "MauiApp1\\MauiApp1.Shared\\Routes.razor",
+              "ToolTip": "E:\\IntugentBackend\\IntugentFrontend\\MauiApp1\\MauiApp1\\MauiApp1.Shared\\Routes.razor",
+              "RelativeToolTip": "MauiApp1\\MauiApp1.Shared\\Routes.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-18T18:16:10.325Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "NavMenu.razor",
+              "DocumentMoniker": "E:\\IntugentBackend\\IntugentFrontend\\MauiApp1\\MauiApp1\\MauiApp1.Shared\\Layout\\NavMenu.razor",
+              "RelativeDocumentMoniker": "MauiApp1\\MauiApp1.Shared\\Layout\\NavMenu.razor",
+              "ToolTip": "E:\\IntugentBackend\\IntugentFrontend\\MauiApp1\\MauiApp1\\MauiApp1.Shared\\Layout\\NavMenu.razor",
+              "RelativeToolTip": "MauiApp1\\MauiApp1.Shared\\Layout\\NavMenu.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-18T18:10:35.316Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MfgHome.razor",
+              "DocumentMoniker": "E:\\IntugentBackend\\IntugentFrontend\\MauiApp1\\MauiApp1\\MauiApp1.Shared\\Pages\\MfgHome.razor",
+              "RelativeDocumentMoniker": "MauiApp1\\MauiApp1.Shared\\Pages\\MfgHome.razor",
+              "ToolTip": "E:\\IntugentBackend\\IntugentFrontend\\MauiApp1\\MauiApp1\\MauiApp1.Shared\\Pages\\MfgHome.razor",
+              "RelativeToolTip": "MauiApp1\\MauiApp1.Shared\\Pages\\MfgHome.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAMABAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-18T18:10:25.86Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Home.razor",
+              "DocumentMoniker": "E:\\IntugentBackend\\IntugentFrontend\\MauiApp1\\MauiApp1\\MauiApp1.Shared\\Pages\\Home.razor",
+              "RelativeDocumentMoniker": "MauiApp1\\MauiApp1.Shared\\Pages\\Home.razor",
+              "ToolTip": "E:\\IntugentBackend\\IntugentFrontend\\MauiApp1\\MauiApp1\\MauiApp1.Shared\\Pages\\Home.razor",
+              "RelativeToolTip": "MauiApp1\\MauiApp1.Shared\\Pages\\Home.razor",
+              "ViewState": "AgIAAJUAAAAAAAAAAAAswLcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-18T17:47:33.089Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "MauiProgram.cs",
+              "DocumentMoniker": "E:\\IntugentBackend\\IntugentFrontend\\MauiApp1\\MauiApp1\\MauiApp1\\MauiProgram.cs",
+              "RelativeDocumentMoniker": "MauiApp1\\MauiApp1\\MauiProgram.cs",
+              "ToolTip": "E:\\IntugentBackend\\IntugentFrontend\\MauiApp1\\MauiApp1\\MauiApp1\\MauiProgram.cs",
+              "RelativeToolTip": "MauiApp1\\MauiApp1\\MauiProgram.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACAAAAAPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-18T17:46:48.927Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "_Imports.razor",
+              "DocumentMoniker": "E:\\IntugentBackend\\IntugentFrontend\\MauiApp1\\MauiApp1\\MauiApp1.Shared\\_Imports.razor",
+              "RelativeDocumentMoniker": "MauiApp1\\MauiApp1.Shared\\_Imports.razor",
+              "ToolTip": "E:\\IntugentBackend\\IntugentFrontend\\MauiApp1\\MauiApp1\\MauiApp1.Shared\\_Imports.razor",
+              "RelativeToolTip": "MauiApp1\\MauiApp1.Shared\\_Imports.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-18T17:45:42.718Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\IntugentBackend\\IntugentFrontend\\MauiApp1\\MauiApp1\\MauiApp1.Web\\Program.cs",
+              "RelativeDocumentMoniker": "MauiApp1\\MauiApp1.Web\\Program.cs",
+              "ToolTip": "E:\\IntugentBackend\\IntugentFrontend\\MauiApp1\\MauiApp1\\MauiApp1.Web\\Program.cs",
+              "RelativeToolTip": "MauiApp1\\MauiApp1.Web\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAA5AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-18T17:43:09.878Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Home.razor",
+              "DocumentMoniker": "E:\\IntugentBackend\\IntugentFrontend\\MauiApp1\\MauiApp1\\MauiApp1.Web\\Components\\Pages\\Home.razor",
+              "RelativeDocumentMoniker": "MauiApp1\\MauiApp1.Web\\Components\\Pages\\Home.razor",
+              "ToolTip": "E:\\IntugentBackend\\IntugentFrontend\\MauiApp1\\MauiApp1\\MauiApp1.Web\\Components\\Pages\\Home.razor",
+              "RelativeToolTip": "MauiApp1\\MauiApp1.Web\\Components\\Pages\\Home.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-18T17:42:38.394Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

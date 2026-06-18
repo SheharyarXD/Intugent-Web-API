@@ -1,0 +1,11 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\IntugentBackend",
+    "\\IntugentBackend\\IntugentBackend",
+    "\\IntugentBackend\\IntugentBackend\\Services",
+    "\\IntugentBackend\\IntugentBackend\\Services\\Core"
+  ],
+  "SelectedNode": "\\IntugentBackend\\IntugentBackend\\Services\\Core\\CLists.cs",
+  "PreviewInSolutionExplorer": false
+}

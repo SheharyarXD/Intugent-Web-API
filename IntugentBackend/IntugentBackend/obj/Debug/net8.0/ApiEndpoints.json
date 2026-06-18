@@ -47,6 +47,58 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "IntugentBackend.Controllers.MfgHomeController",
+    "Method": "GetFilters",
+    "RelativePath": "api/MfgHome/filters",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.MfgHomeController",
+    "Method": "GetResults",
+    "RelativePath": "api/MfgHome/results",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.MfgHomeController",
+    "Method": "Search",
+    "RelativePath": "api/MfgHome/search",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "IntugentBackend.Models.SearchMfgRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.MfgHomeController",
+    "Method": "SelectDataset",
+    "RelativePath": "api/MfgHome/select-dataset",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "IntugentBackend.Models.SelectDatasetRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "IntugentBackend.Controllers.RndHomeController",
     "Method": "SearchDataSets",
     "RelativePath": "api/RndHome/search",
@@ -165,12 +217,36 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "userId",
-        "Type": "System.Int32",
+        "Name": "request",
+        "Type": "IntugentBackend.Controllers.BeginSessionRequest",
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "IntugentBackend.Controllers.BeginSessionResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ProblemDetails",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 400
+      },
+      {
+        "Type": "System.Void",
+        "MediaTypes": [],
+        "StatusCode": 500
+      }
+    ]
   },
   {
     "ContainingType": "IntugentBackend.Controllers.SessionController",
@@ -180,6 +256,16 @@
     "IsController": true,
     "Order": 0,
     "Parameters": [],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   }
 ]

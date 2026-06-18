@@ -1,0 +1,6 @@
+Components\Layout\ReconnectModal.razor.js
+C:\Users\XD GAMING\.nuget\packages\microsoft.aspnetcore.app.internal.assets\10.0.9\build\..\_framework\blazor.web.js
+C:\Users\XD GAMING\.nuget\packages\microsoft.aspnetcore.app.internal.assets\10.0.9\build\..\_framework\blazor.server.js
+E:\IntugentBackend\IntugentFrontend\MauiApp1\MauiApp1\MauiApp1.Web\Components\Layout\ReconnectModal.razor.js
+C:\Users\XD GAMING\.nuget\packages\microsoft.aspnetcore.app.internal.assets\10.0.9\_framework\blazor.web.js
+C:\Users\XD GAMING\.nuget\packages\microsoft.aspnetcore.app.internal.assets\10.0.9\_framework\blazor.server.js

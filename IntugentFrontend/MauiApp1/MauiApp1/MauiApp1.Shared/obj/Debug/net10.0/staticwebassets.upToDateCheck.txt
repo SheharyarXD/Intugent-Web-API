@@ -1,0 +1,7 @@
+wwwroot\app.css
+wwwroot\favicon.png
+wwwroot\lib\bootstrap\dist\css\bootstrap.min.css
+wwwroot\lib\bootstrap\dist\css\bootstrap.min.css.map
+E:\IntugentBackend\IntugentFrontend\MauiApp1\MauiApp1\MauiApp1.Shared\wwwroot\app.css
+E:\IntugentBackend\IntugentFrontend\MauiApp1\MauiApp1\MauiApp1.Shared\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css
+E:\IntugentBackend\IntugentFrontend\MauiApp1\MauiApp1\MauiApp1.Shared\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css.map

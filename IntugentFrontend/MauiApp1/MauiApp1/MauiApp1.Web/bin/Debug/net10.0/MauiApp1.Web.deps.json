@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "MauiApp1.Web/1.0.0": {
+        "dependencies": {
+          "MauiApp1.Shared": "1.0.0"
+        },
+        "runtime": {
+          "MauiApp1.Web.dll": {}
+        }
+      },
+      "MauiApp1.Shared/1.0.0": {
+        "runtime": {
+          "MauiApp1.Shared.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "MauiApp1.Web/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "MauiApp1.Shared/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

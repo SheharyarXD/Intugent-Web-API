@@ -12,7 +12,7 @@ namespace IntugentBackend.Services.Data
 {
     public class CDBase
     {
-        public static string sDBLocalConStr = @"Data Source=XD-1510\SQLEXPRESS; Initial Catalog= IntugentPI; Integrated Security=SSPI;";
+        public static string sDBLocalConStr = @"Data Source=XD-1510\SQLEXPRESS; Initial Catalog= IntugentPI; Integrated Security=SSPI;TrustServerCertificate=True;";
         //        public static SqlConnection DBCon;
         public SqlDataAdapter da;
         public DataTable dt;

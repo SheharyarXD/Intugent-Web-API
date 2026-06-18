@@ -1,7 +1,7 @@
 using IntugentBackend;
 using IntugentBackend.Services.Core;
 using IntugentBackend.Services.Rnd;
-using IntugentBackend.Services.Mfg; // Ensure your namespaces are included
+using IntugentBackend.Services.Mfg; 
 using IntugentBackend.Services.Admin;
 
 var builder = WebApplication.CreateBuilder(args);

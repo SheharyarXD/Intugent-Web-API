@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "Wx2v62gWP9Y=",
+  "success": true,
+  "projectFilePath": "E:\\IntugentBackend\\IntugentFrontend\\MauiApp1\\MauiApp1\\MauiApp1.Web\\MauiApp1.Web.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\XD GAMING\\.nuget\\packages\\microsoft.aspnetcore.app.internal.assets\\10.0.9\\microsoft.aspnetcore.app.internal.assets.10.0.9.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\XD GAMING\\Downloads\\IntugentBackend (1)\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj": {}
+    "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\XD GAMING\\Downloads\\IntugentBackend (1)\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj": {
+    "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\XD GAMING\\Downloads\\IntugentBackend (1)\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj",
+        "projectUniqueName": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj",
         "projectName": "IntugentBackend",
-        "projectPath": "C:\\Users\\XD GAMING\\Downloads\\IntugentBackend (1)\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj",
+        "projectPath": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj",
         "packagesPath": "C:\\Users\\XD GAMING\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\XD GAMING\\Downloads\\IntugentBackend (1)\\IntugentBackend\\IntugentBackend\\obj\\",
+        "outputPath": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
           "C:\\Users\\XD GAMING\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -27,6 +31,7 @@
         },
         "frameworks": {
           "net8.0": {
+            "framework": "net8.0",
             "targetAlias": "net8.0",
             "projectReferences": {}
           }
@@ -40,10 +45,12 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "10.0.300"
       },
       "frameworks": {
         "net8.0": {
+          "framework": "net8.0",
           "targetAlias": "net8.0",
           "dependencies": {
             "Google.Api.Gax": {
@@ -100,7 +107,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

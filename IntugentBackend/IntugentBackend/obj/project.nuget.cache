@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "6UgMnR7nT7E=",
+  "dgSpecHash": "AcXacn0q7XE=",
   "success": true,
-  "projectFilePath": "C:\\Users\\XD GAMING\\Downloads\\IntugentBackend (1)\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj",
+  "projectFilePath": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\XD GAMING\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\XD GAMING\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

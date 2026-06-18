@@ -82,6 +82,92 @@
         }
       }
     },
+    "/api/MfgHome/filters": {
+      "get": {
+        "tags": [
+          "MfgHome"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/MfgHome/search": {
+      "post": {
+        "tags": [
+          "MfgHome"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchMfgRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchMfgRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchMfgRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/MfgHome/results": {
+      "get": {
+        "tags": [
+          "MfgHome"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/MfgHome/select-dataset": {
+      "post": {
+        "tags": [
+          "MfgHome"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectDatasetRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectDatasetRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectDatasetRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/RndHome/search": {
       "post": {
         "tags": [
@@ -282,27 +368,64 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "integer",
-                "format": "int32"
+                "$ref": "#/components/schemas/BeginSessionRequest"
               }
             },
             "text/json": {
               "schema": {
-                "type": "integer",
-                "format": "int32"
+                "$ref": "#/components/schemas/BeginSessionRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "type": "integer",
-                "format": "int32"
+                "$ref": "#/components/schemas/BeginSessionRequest"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BeginSessionResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BeginSessionResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BeginSessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error"
           }
         }
       }
@@ -314,7 +437,33 @@
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -322,6 +471,30 @@
   },
   "components": {
     "schemas": {
+      "BeginSessionRequest": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BeginSessionResponse": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "NcoUpdateRequest": {
         "type": "object",
         "properties": {
@@ -336,6 +509,33 @@
         },
         "additionalProperties": false
       },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
       "SearchCriteria": {
         "type": "object",
         "properties": {
@@ -347,6 +547,60 @@
           "name": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SearchMfgRequest": {
+        "type": "object",
+        "properties": {
+          "productCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateFrom": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "dateTo": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "testingStatusId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "agedRValueId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "dimStabilityId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "runTypeId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SelectDatasetRequest": {
+        "type": "object",
+        "properties": {
+          "selectedIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "rowCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "datasetId": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
