@@ -1,0 +1,962 @@
+﻿@page "/finished-board-properties"
+@using System.Net.Http.Json
+@using MauiApp1.Shared.Models
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@rendermode InteractiveServer
+
+<PageTitle>Finished Board Properties</PageTitle>
+
+<!-- Error Alert -->
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+    </div>
+}
+
+@if (isLoading)
+{
+    <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else if (data is not null)
+{
+    <div class="row">
+        <!-- General Info Card -->
+        <div class="card card-default col-md-4" style="height:280px">
+            <div class="card-header align-items-center">
+                <h2>General Info</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-6 d-flex align-items-center">
+                        <label class="col-4 col-form-label text-end">Dataset</label>
+                        <div class="input-group col-8 d-flex">
+                            <button class="btn btn-primary m-auto" style="padding: 9px" @onclick="NavigateNext" disabled="@(!data.GDataSetNext)">
+                                <span class="mdi mdi-chevron-left"></span>
+                            </button>
+                            <input type="number" class="form-control text-center w-50" disabled value="@data.GID">
+                            <button class="btn btn-primary m-auto" style="padding: 9px" @onclick="NavigatePrev" disabled="@(!data.GDataSetPrev)">
+                                <span class="mdi mdi-chevron-right"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-floating mb-2">
+                            <input type="number" class="form-control @(data.GIPLengthBackground ? "" : "illegalValue")" disabled value="@data.GIPLength" />
+                            <label>IP Length</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-floating mb-2">
+                            <input type="number" class="form-control @(data.GIPWidthBackground ? "" : "illegalValue")" disabled value="@data.GIPWidth" />
+                            <label>IP Width</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating mb-2">
+                            <input type="datetime-local" class="form-control" disabled value="@data.GTestDate">
+                            <label>Mfg. Date</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating mb-2">
+                            <input type="text" class="form-control" disabled value="@data.GProdCode">
+                            <label>Product Code</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="form-floating mb-2">
+                            <input type="datetime-local" class="form-control @(data.GFBTimeHostBackground ? "" : "illegalValue")"
+                                   value="@FormatDateTime(data.GFBTimeStamp)"
+                                   @onchange="e => UpdateDateTime(nameof(data.GFBTimeStamp), e.Value?.ToString())">
+                            <label>Finished Board Time Stamp</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-floating mb-2">
+                            <input type="number" class="form-control" value="@data.GBundleHeight"
+                                   @onchange="e => UpdateField(nameof(data.GBundleHeight), e.Value?.ToString())">
+                            <label>Bundle Height</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check mb-2">
+                            <input type="checkbox" class="form-check-input" id="passedQualityTesting" checked="@data.GTestingPassed"
+                                   @onchange="e => UpdateBool(nameof(data.GTestingPassed), (bool)e.Value!)">
+                            <label class="form-check-label" for="passedQualityTesting">Passed Quality Testing</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="fgTestingComplete" checked="@data.GFinsihedGoodsDone"
+                                   @onchange="e => UpdateBool(nameof(data.GFinsihedGoodsDone), (bool)e.Value!)">
+                            <label class="form-check-label" for="fgTestingComplete">FG Testing Complete</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- QC Times Card -->
+        <div class="card card-default col-md-2" style="height:280px">
+            <div class="card-header align-items-center">
+                <h2>QC Times</h2>
+            </div>
+            <div class="card-body my-3">
+                <div class="form-floating mb-2">
+                    <input type="time" class="form-control text-center" disabled value="@data.GTimePourTableQC">
+                    <label>Time Pour Table QC Check</label>
+                </div>
+                <div class="form-floating mb-2">
+                    <input type="datetime-local" class="form-control text-center" disabled value="@data.GIPBoardTimeStamp">
+                    <label>In Process Board Time Stamp</label>
+                </div>
+                <div class="form-floating mb-2">
+                    <input type="datetime-local" class="form-control text-center"
+                           value="@FormatDateTime(data.GQCTimesDateTime)"
+                           @onchange="e => UpdateDateTime(nameof(data.GQCTimesDateTime), e.Value?.ToString())">
+                    <label>Next Day QC Collection Time</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input type="checkbox" class="form-check-input" checked="@data.GIPTimeNotLegible"
+                           @onchange="e => UpdateBool(nameof(data.GIPTimeNotLegible), (bool)e.Value!)">
+                    <label class="form-check-label">If Checked - IP Time Stamp was NOT Legible</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <!-- QC Summary Card -->
+            <div class="card card-default">
+                <div class="card-header align-items-center">
+                    <h2>QC Summary</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-2">
+                                <input type="number" class="form-control text-center @(data.GCoreDensityBackground ? "" : "illegalValue")" disabled value="@data.GCoreDensity">
+                                <label>FG Core Density</label>
+                            </div>
+                            <div class="form-floating mb-2">
+                                <input type="number" class="form-control text-center @(data.GCompStrFG_Avg5Background ? "" : "illegalValue")" disabled value="@data.GCompStrFG_Avg5">
+                                <label>Avg Comp Strength-5</label>
+                            </div>
+                            <div class="form-floating mb-2">
+                                <input type="number" class="form-control text-center @(data.GCompStrFG_Avg6Background ? "" : "illegalValue")" disabled value="@data.GCompStrFG_Avg6">
+                                <label>Avg Comp Strength-6</label>
+                            </div>
+                            <div class="form-floating mb-2">
+                                <input type="number" class="form-control text-center @(data.GThicknessBackground ? "" : "illegalValue")" disabled value="@data.GThickness">
+                                <label>Thickness Avg FG</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-2">
+                                <input type="number" class="form-control text-center" disabled value="@data.GFlatness">
+                                <label>Board Profile FG</label>
+                            </div>
+                            <div class="form-floating mb-2">
+                                <input type="number" class="form-control text-center @(data.GRValueBackground ? "" : "illegalValue")" disabled value="@data.GRValue">
+                                <label>Initial R Value Avg</label>
+                            </div>
+                            <div class="form-floating mb-2">
+                                <input type="number" class="form-control text-center @(data.GFacerPeelAvg_QCBackground ? "" : "illegalValue")" disabled value="@data.GFacerPeelAvg_QC">
+                                <label>Facer Peel Avg</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <!-- IP QC Summary Card -->
+            <div class="card card-default">
+                <div class="card-header align-items-center">
+                    <h2>IP QC Summary</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-2">
+                                <input type="number" class="form-control text-center" disabled value="@data.GWarehouseTemp">
+                                <label>Warehouse Temp</label>
+                            </div>
+                            <div class="form-floating mb-2">
+                                <input type="number" class="form-control text-center" disabled value="@data.GWarehouseHumidity">
+                                <label>Warehouse Humidity</label>
+                            </div>
+                            <div class="form-floating mb-2">
+                                <input type="number" class="form-control text-center" disabled value="@data.GBundleHeightIP">
+                                <label>Bundle Height IP</label>
+                            </div>
+                            <div class="form-floating mb-2">
+                                <input type="number" class="form-control text-center @(data.GThicknessIPBackground ? "" : "illegalValue")" disabled value="@data.GThicknessIP">
+                                <label>Thickness IP</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-2">
+                                <input type="number" class="form-control text-center @(data.GCoreDensityIPBackground ? "" : "illegalValue")" disabled value="@data.GCoreDensityIP">
+                                <label>Core Density IP</label>
+                            </div>
+                            <div class="form-floating mb-2">
+                                <input type="number" class="form-control text-center @(data.GCompressiveIP5Background ? "" : "illegalValue")" disabled value="@data.GCompressiveIP5">
+                                <label>Avg Comp Strength-5 IP</label>
+                            </div>
+                            <div class="form-floating mb-2">
+                                <input type="number" class="form-control text-center @(data.GCompressiveIPBackground ? "" : "illegalValue")" disabled value="@data.GCompressiveIP">
+                                <label>Avg Comp Strength-6 IP</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Thickness Card -->
+        <div class="card card-default col-md-2">
+            <div class="card-header align-items-center">
+                <h2>Thickness</h2>
+            </div>
+            <div class="card-body d-flex flex-column justify-content-evenly">
+                <p class="text-end" style="color: #894DD9">@data.GLoc3F</p>
+                @for (int i = 1; i <= 17; i++)
+                {
+                    var idx = i;
+                    var fieldName = "gThicknessFG_" + idx;
+                    var val = GetThicknessValue(idx);
+                    <div class="form-floating mb-2">
+                        <input type="number" class="form-control" value="@val"
+                               @onchange="e => UpdateField(fieldName, e.Value?.ToString())">
+                        <label>Thickness Ip @idx</label>
+                    </div>
+                }
+                <p class="text-end" style="color: #894DD9">@data.GLoc1F</p>
+            </div>
+        </div>
+
+        <div class="col-md-10 ps-4 pe-2">
+            <div class="row" style="height:400px">
+                <div class="col-md-4">
+                    <!-- Compressive Strength Card -->
+                    <div class="card card-default" style="height:385px">
+                        <div class="card-header align-items-center">
+                            <h2>Compressive Strength</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="text-end" style="color: #894DD9">Knit Line</p>
+                                    @for (int i = 1; i <= 6; i++)
+                                    {
+                                        var idx = i;
+                                        var fieldName = "gCompStrFG_" + idx;
+                                        var knitName = "gCompStrFGKnit_" + idx;
+                                        <div class="row">
+                                            <div class="form-floating mb-2 col-9">
+                                                <input type="number" class="form-control" value="@GetCompStrValue(idx)"
+                                                       @onchange="e => UpdateField(fieldName, e.Value?.ToString())">
+                                                <label>Comp. Str-@idx</label>
+                                            </div>
+                                            <div class="form-check col-3 text-center">
+                                                <input type="checkbox" class="form-check-input" checked="@GetCompStrKnit(idx)"
+                                                       @onchange="e => UpdateBool(knitName, (bool)e.Value!)">
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-md-5 h-50">
+                                    <div class="form-floating mt-5">
+                                        <textarea class="form-control" style="height: 300px;" value="@data.GNotes"
+                                                  @onchange="e => UpdateNotes(e.Value?.ToString()!)"></textarea>
+                                        <label>Comments</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <!-- RValue Card -->
+                    <div class="card card-default" style="height:385px">
+                        <div class="card-header align-items-center">
+                            <h2>R Value</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center" style="color: #894DD9">
+                                <div class="col-4">k Factor</div>
+                                <div class="col-2">Knit Line</div>
+                                <div class="col-6">Test Time & Date</div>
+                            </div>
+                            @for (int i = 3; i >= 1; i--)
+                            {
+                                var idx = i;
+                                var fieldName = "gkFactor_" + idx;
+                                var knitName = "gRValueKnitPresent" + idx;
+                                var timeName = "gkFactorTime" + idx;
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div class="form-floating mb-2">
+                                            <input type="number" class="form-control" value="@GetKFactorValue(idx)"
+                                                   @onchange="e => UpdateField(fieldName, e.Value?.ToString())">
+                                            <label>@GetLocLabel(idx, "B")</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-2 d-flex justify-content-center align-items-center">
+                                        <input type="checkbox" class="form-check-input" checked="@GetRValueKnit(idx)"
+                                               @onchange="e => UpdateBool(knitName, (bool)e.Value!)">
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="datetime-local" class="form-control text-center"
+                                                   value="@FormatDateTime(GetKFactorTime(idx))"
+                                                   @onchange="e => UpdateDateTime(timeName, e.Value?.ToString())">
+                                            <label>Test Time</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            <div class="form-floating mb-2 w-50">
+                                <input type="number" class="form-control @(data.GkFactor_AvgBackground ? "" : "illegalValue")" disabled value="@data.GkFactor_Avg">
+                                <label>Initial R Value Avg</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-2">
+                    <!-- FG Board Dimensions Card -->
+                    <div class="card card-default" style="height:385px">
+                        <div class="card-header align-items-center">
+                            <h2>FG Board Dimensions</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-floating mb-2">
+                                <input type="number" class="form-control text-center" value="@data.GFGLength"
+                                       @onchange="e => UpdateField(nameof(data.GFGLength), e.Value?.ToString())">
+                                <label>length</label>
+                            </div>
+                            <div class="form-floating mb-2">
+                                <input type="number" class="form-control text-center" value="@data.GFGWidth"
+                                       @onchange="e => UpdateField(nameof(data.GFGWidth), e.Value?.ToString())">
+                                <label>Width</label>
+                            </div>
+                            <div class="form-floating mb-2">
+                                <input type="number" class="form-control text-center" value="@data.GFGDiagoanl1"
+                                       @onchange="e => UpdateField(nameof(data.GFGDiagoanl1), e.Value?.ToString())">
+                                <label>Diagonal 1</label>
+                            </div>
+                            <div class="form-floating mb-2">
+                                <input type="number" class="form-control text-center" value="@data.GFGDiagoanl2"
+                                       @onchange="e => UpdateField(nameof(data.GFGDiagoanl2), e.Value?.ToString())">
+                                <label>Diagonal 2</label>
+                            </div>
+                            <div class="form-floating mb-2">
+                                <input type="number" class="form-control text-center @(data.GFGDiagonalDiffBackground ? "" : "illegalValue")" disabled value="@data.GFGDiagonalDiff">
+                                <label>Abs. Diagonal Diff.</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Compressive Strength Retest -->
+                <div class="col-md-4">
+                    <div class="card card-default">
+                        <div class="card-header align-items-center">
+                            <h2>Compressive Strength - Retest</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="text-end" style="color: #894DD9">Knit Line</p>
+                                    @for (int i = 1; i <= 6; i++)
+                                    {
+                                        var idx = i;
+                                        var fieldName = "gCompStrFGRetest_" + idx;
+                                        var knitName = "gCompStrFGKnitRetest_" + idx;
+                                        <div class="row">
+                                            <div class="form-floating mb-2 col-9">
+                                                <input type="number" class="form-control" value="@GetCompStrRetestValue(idx)"
+                                                       @onchange="e => UpdateField(fieldName, e.Value?.ToString())">
+                                                <label>Comp. Str-@idx</label>
+                                            </div>
+                                            <div class="form-check col-3 text-center">
+                                                <input type="checkbox" class="form-check-input" checked="@GetCompStrRetestKnit(idx)"
+                                                       @onchange="e => UpdateBool(knitName, (bool)e.Value!)">
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-md-6 my-auto">
+                                    <div class="form-floating mb-3">
+                                        <input type="datetime-local" class="form-control text-center"
+                                               value="@FormatDateTime(data.GRetestQCTime)"
+                                               @onchange="e => UpdateDateTime(nameof(data.GRetestQCTime), e.Value?.ToString())">
+                                        <label>Retest Collection Time</label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input type="checkbox" class="form-check-input" checked="@data.GRestestFromSameBundle"
+                                               @onchange="e => UpdateBool(nameof(data.GRestestFromSameBundle), (bool)e.Value!)">
+                                        <label class="form-check-label">Is Retest From Same Bundle?</label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input type="number" class="form-control text-center @(data.GCompStrFGRetest_Avg5Background ? "" : "illegalValue")" disabled value="@data.GCompStrFGRetest_Avg5">
+                                        <label>Retest Avg Comp Strength - 5</label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input type="number" class="form-control text-center @(data.GCompStrFGRetest_Avg6Background ? "" : "illegalValue")" disabled value="@data.GCompStrFGRetest_Avg6">
+                                        <label>Retest Avg Comp Strength - 6</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aged R Value -->
+                <div class="col-md-4">
+                    <div class="card card-default" style="height:400px">
+                        <div class="card-header align-items-center">
+                            <h2>Aged R Value - k Factor</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center" style="color: #894DD9">
+                                <div class="col-2">90 Day - k Factor</div>
+                                <div class="col-4">Date Measured</div>
+                                <div class="col-2">180 Day - k Factor</div>
+                                <div class="col-4">Date Measured</div>
+                            </div>
+                            @for (int i = 3; i >= 1; i--)
+                            {
+                                var idx = i;
+                                var f90 = "gkFactor90_" + idx;
+                                var d90 = "gkFactor90Date_" + idx;
+                                var f180 = "gkFactor180_" + idx;
+                                var d180 = "gkFactor180Date_" + idx;
+                                <div class="row">
+                                    <div class="col-2">
+                                        <div class="form-floating mb-2">
+                                            <input type="number" class="form-control" value="@GetKFactor90Value(idx)"
+                                                   @onchange="e => UpdateField(f90, e.Value?.ToString())">
+                                            <label>@GetLocLabel(idx, "C")</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-floating mb-3">
+                                            <input type="date" class="form-control text-center"
+                                                   value="@FormatDate(GetKFactor90Date(idx))"
+                                                   @onchange="e => UpdateDateTime(d90, e.Value?.ToString())">
+                                            <label>Measure Date</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-2">
+                                        <div class="form-floating mb-2">
+                                            <input type="number" class="form-control" value="@GetKFactor180Value(idx)"
+                                                   @onchange="e => UpdateField(f180, e.Value?.ToString())">
+                                            <label>@GetLocLabel(idx, "C")</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-floating mb-3">
+                                            <input type="date" class="form-control text-center"
+                                                   value="@FormatDate(GetKFactor180Date(idx))"
+                                                   @onchange="e => UpdateDateTime(d180, e.Value?.ToString())">
+                                            <label>Measure Date</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            <div class="row">
+                                <div class="form-floating mb-2 w-50">
+                                    <input type="number" class="form-control @(data.GkFactor90Background ? "" : "illegalValue")" disabled value="@data.GkFactor90">
+                                    <label>Aged R Value Avg - 90 Days</label>
+                                </div>
+                                <div class="form-floating mb-2 w-50">
+                                    <input type="number" class="form-control @(data.GkFactor180Background ? "" : "illegalValue")" disabled value="@data.GkFactor180">
+                                    <label>Aged R Value Avg - 180 Days</label>
+                                </div>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" checked="@data.GAgedRValueDone"
+                                       @onchange="e => UpdateBool(nameof(data.GAgedRValueDone), (bool)e.Value!)">
+                                <label class="form-check-label">Aged R Value Testing Complete</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bundle Temps -->
+                <div class="col-4">
+                    <div class="card card-default" style="height:400px">
+                        <div class="card-header align-items-center">
+                            <h2>Bundle Temps</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-2">
+                                        <input type="text" class="form-control text-center" value="@data.GLoggerID"
+                                               @onchange="e => UpdateField(nameof(data.GLoggerID), e.Value?.ToString())">
+                                        <label>Logger ID #</label>
+                                    </div>
+                                    <div class="form-floating mb-2">
+                                        <input type="number" class="form-control text-center" value="@data.GInitProbeTemp"
+                                               @onchange="e => UpdateField(nameof(data.GInitProbeTemp), e.Value?.ToString())">
+                                        <label>Initial Probe Temp</label>
+                                    </div>
+                                    <div class="form-floating mb-2">
+                                        <input type="datetime-local" class="form-control"
+                                               value="@FormatDateTime(data.GInitProbeTime)"
+                                               @onchange="e => UpdateDateTime(nameof(data.GInitProbeTime), e.Value?.ToString())">
+                                        <label>Initial Probe Time</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-2">
+                                        <input type="number" class="form-control text-center" value="@data.GMaxProbeTemp"
+                                               @onchange="e => UpdateField(nameof(data.GMaxProbeTemp), e.Value?.ToString())">
+                                        <label>Max. Probe Temp</label>
+                                    </div>
+                                    <div class="form-floating mb-2">
+                                        <input type="datetime-local" class="form-control"
+                                               value="@FormatDateTime(data.GMaxTempTimeInit)"
+                                               @onchange="e => UpdateDateTime(nameof(data.GMaxTempTimeInit), e.Value?.ToString())">
+                                        <label>Max Probe Time - Initial</label>
+                                    </div>
+                                    <div class="form-floating mb-2">
+                                        <input type="datetime-local" class="form-control"
+                                               value="@FormatDateTime(data.GMaxTempTimeFinal)"
+                                               @onchange="e => UpdateDateTime(nameof(data.GMaxTempTimeFinal), e.Value?.ToString())">
+                                        <label>Max Probe Time - Final</label>
+                                    </div>
+                                    <div class="form-floating mb-2">
+                                        <input type="number" class="form-control text-center" value="@data.GFinalProbeTemp"
+                                               @onchange="e => UpdateField(nameof(data.GFinalProbeTemp), e.Value?.ToString())">
+                                        <label>Final Probe Temp</label>
+                                    </div>
+                                    <div class="form-floating mb-2">
+                                        <input type="datetime-local" class="form-control"
+                                               value="@FormatDateTime(data.GFinalProbeTime)"
+                                               @onchange="e => UpdateDateTime(nameof(data.GFinalProbeTime), e.Value?.ToString())">
+                                        <label>Final Probe Time</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Core Density -->
+                <div class="col-8">
+                    <div class="card card-default" style="height:280px">
+                        <div class="card-header align-items-center">
+                            <h2>Core Density</h2>
+                        </div>
+                        <div class="card-body">
+                            <table class="table" style="font-size: 0.85rem;">
+                                <thead>
+                                    <tr class="text-center">
+                                        <th></th>
+                                        <th>Mass</th>
+                                        <th>Length</th>
+                                        <th>Width</th>
+                                        <th colspan="5">Thickness</th>
+                                        <th>Core Knit Present</th>
+                                        <th>Density</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int row = 3; row >= 1; row--)
+                                    {
+                                        var r = row;
+                                        var massName = "gMass" + r;
+                                        var l1Name = "gL1_" + r;
+                                        var w1Name = "gW1_" + r;
+                                        var knitName = "gCoreDensKnitLine" + r;
+                                        <tr>
+                                            <th>@GetLocLabel(r, "A")</th>
+                                            <td><input type="number" class="form-control form-control-sm" value="@GetCoreMass(r)" @onchange="e => UpdateField(massName, e.Value?.ToString())"></td>
+                                            <td><input type="number" class="form-control form-control-sm" value="@GetCoreL1(r)" @onchange="e => UpdateField(l1Name, e.Value?.ToString())"></td>
+                                            <td><input type="number" class="form-control form-control-sm" value="@GetCoreW1(r)" @onchange="e => UpdateField(w1Name, e.Value?.ToString())"></td>
+                                            @for (int t = 1; t <= 5; t++)
+                                            {
+                                                var ti = t;
+                                                var tName = "gT" + ti + "_" + r;
+                                                <td><input type="number" class="form-control form-control-sm" value="@GetCoreT(r, ti)" @onchange="e => UpdateField(tName, e.Value?.ToString())"></td>
+                                            }
+                                            <td class="text-center">
+                                                <input type="checkbox" class="form-check-input" checked="@GetCoreKnit(r)" @onchange="e => UpdateBool(knitName, (bool)e.Value!)">
+                                            </td>
+                                            <td><input type="number" class="form-control form-control-sm text-center @(GetCoreDensBackground(r) ? "" : "illegalValue")" disabled value="@GetCoreDens(r)"></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Facer Peel -->
+                <div class="col-2">
+                    <div class="card card-default">
+                        <div class="card-header align-items-center">
+                            <h2>Facer Peel</h2>
+                        </div>
+                        <div class="card-body">
+                            @for (int i = 3; i >= 1; i--)
+                            {
+                                var idx = i;
+                                var fieldName = "gFacerPeel" + idx;
+                                <div class="form-floating mb-2">
+                                    <input type="number" class="form-control text-center" value="@GetFacerPeelValue(idx)"
+                                           @onchange="e => UpdateField(fieldName, e.Value?.ToString())">
+                                    <label>@GetLocLabel(idx, "E")</label>
+                                </div>
+                            }
+                            <div class="form-floating mb-2">
+                                <input type="number" class="form-control text-center @(data.GFacerPeelAvgBackground ? "" : "illegalValue")" disabled value="@data.GFacerPeelAvg">
+                                <label>Avg</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nail Pull -->
+                <div class="col-2">
+                    <div class="card card-default">
+                        <div class="card-header align-items-center">
+                            <h2>Nail Pull</h2>
+                        </div>
+                        <div class="card-body">
+                            @for (int i = 3; i >= 1; i--)
+                            {
+                                var idx = i;
+                                var fieldName = "gNailPull_" + idx;
+                                <div class="form-floating mb-2">
+                                    <input type="number" class="form-control text-center" value="@GetNailPullValue(idx)"
+                                           @onchange="e => UpdateField(fieldName, e.Value?.ToString())">
+                                    <label>@GetLocLabel(idx, "D")</label>
+                                </div>
+                            }
+                            <div class="form-floating mb-2">
+                                <input type="number" class="form-control text-center" disabled value="@data.GNailPull">
+                                <label>Avg</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private const string ApiBaseUrl = "https://localhost:44323/api";
+    private FinishedBoardDataDto? data;
+    private string? errorMessage;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isLoading = true;
+            var response = await Http.GetFromJsonAsync<ApiResponse>($"{ApiBaseUrl}/FinishedBoardProperties/data");
+            if (response?.success == true && response.data != null)
+            {
+                data = System.Text.Json.JsonSerializer.Deserialize<FinishedBoardDataDto>(
+                    System.Text.Json.JsonSerializer.Serialize(response.data));
+            }
+            else
+            {
+                errorMessage = response?.error ?? "Failed to load data.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    // ========== NAVIGATION ==========
+    private Task NavigateNext() => Navigate("next");
+    private Task NavigatePrev() => Navigate("prev");
+
+    private async Task Navigate(string direction)
+    {
+        try
+        {
+            isLoading = true;
+            var response = await Http.PostAsJsonAsync($"{ApiBaseUrl}/FinishedBoardProperties/navigate", new { direction });
+            var result = await response.Content.ReadFromJsonAsync<ApiResponse>();
+            if (result?.success == true && result.data != null)
+            {
+                data = System.Text.Json.JsonSerializer.Deserialize<FinishedBoardDataDto>(
+                    System.Text.Json.JsonSerializer.Serialize(result.data));
+            }
+            else
+            {
+                errorMessage = result?.error;
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    // ========== FIELD UPDATES ==========
+    private async Task UpdateField(string name, string? value)
+    {
+        await PostUpdate("update-field", new { name, value });
+    }
+
+    private async Task UpdateBool(string name, bool value)
+    {
+        await PostUpdate("update-bool", new { name, value });
+    }
+
+    private async Task UpdateDateTime(string name, string? value)
+    {
+        DateTime? dt = null;
+        if (!string.IsNullOrEmpty(value) && DateTime.TryParse(value, out var parsed))
+            dt = parsed;
+
+        await PostUpdate("update-datetime", new { name, value = dt });
+    }
+
+    private async Task UpdateNotes(string value)
+    {
+        await PostUpdate("update-notes", new { name = "gNotes", value });
+    }
+
+    private async Task PostUpdate(string endpoint, object payload)
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync($"{ApiBaseUrl}/FinishedBoardProperties/{endpoint}", payload);
+            var result = await response.Content.ReadFromJsonAsync<ApiResponse>();
+            if (result?.success == true && result.data != null)
+            {
+                data = System.Text.Json.JsonSerializer.Deserialize<FinishedBoardDataDto>(
+                    System.Text.Json.JsonSerializer.Serialize(result.data));
+            }
+            else
+            {
+                errorMessage = result?.error;
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    // ========== HELPERS ==========
+    private string FormatDateTime(DateTime? dt) => dt.HasValue ? dt.Value.ToString("yyyy-MM-ddTHH:mm") : string.Empty;
+    private string FormatDate(DateTime? dt) => dt.HasValue ? dt.Value.ToString("yyyy-MM-dd") : string.Empty;
+
+    private string GetThicknessValue(int i) => i switch
+    {
+        1 => data?.GThicknessFG_1 ?? "",
+        2 => data?.GThicknessFG_2 ?? "",
+        3 => data?.GThicknessFG_3 ?? "",
+        4 => data?.GThicknessFG_4 ?? "",
+        5 => data?.GThicknessFG_5 ?? "",
+        6 => data?.GThicknessFG_6 ?? "",
+        7 => data?.GThicknessFG_7 ?? "",
+        8 => data?.GThicknessFG_8 ?? "",
+        9 => data?.GThicknessFG_9 ?? "",
+        10 => data?.GThicknessFG_10 ?? "",
+        11 => data?.GThicknessFG_11 ?? "",
+        12 => data?.GThicknessFG_12 ?? "",
+        13 => data?.GThicknessFG_13 ?? "",
+        14 => data?.GThicknessFG_14 ?? "",
+        15 => data?.GThicknessFG_15 ?? "",
+        16 => data?.GThicknessFG_16 ?? "",
+        17 => data?.GThicknessFG_17 ?? "",
+        _ => ""
+    };
+
+    private string GetCompStrValue(int i) => i switch
+    {
+        1 => data?.GCompStrFG_1 ?? "",
+        2 => data?.GCompStrFG_2 ?? "",
+        3 => data?.GCompStrFG_3 ?? "",
+        4 => data?.GCompStrFG_4 ?? "",
+        5 => data?.GCompStrFG_5 ?? "",
+        6 => data?.GCompStrFG_6 ?? "",
+        _ => ""
+    };
+
+    private bool GetCompStrKnit(int i) => i switch
+    {
+        1 => data?.GCompStrFGKnit_1 ?? false,
+        2 => data?.GCompStrFGKnit_2 ?? false,
+        3 => data?.GCompStrFGKnit_3 ?? false,
+        4 => data?.GCompStrFGKnit_4 ?? false,
+        5 => data?.GCompStrFGKnit_5 ?? false,
+        6 => data?.GCompStrFGKnit_6 ?? false,
+        _ => false
+    };
+
+    private string GetCompStrRetestValue(int i) => i switch
+    {
+        1 => data?.GCompStrFGRetest_1 ?? "",
+        2 => data?.GCompStrFGRetest_2 ?? "",
+        3 => data?.GCompStrFGRetest_3 ?? "",
+        4 => data?.GCompStrFGRetest_4 ?? "",
+        5 => data?.GCompStrFGRetest_5 ?? "",
+        6 => data?.GCompStrFGRetest_6 ?? "",
+        _ => ""
+    };
+
+    private bool GetCompStrRetestKnit(int i) => i switch
+    {
+        1 => data?.GCompStrFGKnitRetest_1 ?? false,
+        2 => data?.GCompStrFGKnitRetest_2 ?? false,
+        3 => data?.GCompStrFGKnitRetest_3 ?? false,
+        4 => data?.GCompStrFGKnitRetest_4 ?? false,
+        5 => data?.GCompStrFGKnitRetest_5 ?? false,
+        6 => data?.GCompStrFGKnitRetest_6 ?? false,
+        _ => false
+    };
+
+    private string GetKFactorValue(int i) => i switch
+    {
+        1 => data?.GkFactor_1 ?? "",
+        2 => data?.GkFactor_2 ?? "",
+        3 => data?.GkFactor_3 ?? "",
+        _ => ""
+    };
+
+    private DateTime? GetKFactorTime(int i) => i switch
+    {
+        1 => data?.GkFactorTime1,
+        2 => data?.GkFactorTime2,
+        3 => data?.GkFactorTime3,
+        _ => null
+    };
+
+    private bool GetRValueKnit(int i) => i switch
+    {
+        1 => data?.GRValueKnitPresent1 ?? false,
+        2 => data?.GRValueKnitPresent2 ?? false,
+        3 => data?.GRValueKnitPresent3 ?? false,
+        _ => false
+    };
+
+    private string GetKFactor90Value(int i) => i switch
+    {
+        1 => data?.GkFactor90_1 ?? "",
+        2 => data?.GkFactor90_2 ?? "",
+        3 => data?.GkFactor90_3 ?? "",
+        _ => ""
+    };
+
+    private DateTime? GetKFactor90Date(int i) => i switch
+    {
+        1 => data?.GKFactor90Date_1,
+        2 => data?.GKFactor90Date_2,
+        3 => data?.GKFactor90Date_3,
+        _ => null
+    };
+
+    private string GetKFactor180Value(int i) => i switch
+    {
+        1 => data?.GkFactor180_1 ?? "",
+        2 => data?.GkFactor180_2 ?? "",
+        3 => data?.GkFactor180_3 ?? "",
+        _ => ""
+    };
+
+    private DateTime? GetKFactor180Date(int i) => i switch
+    {
+        1 => data?.GKFactor180Date_1,
+        2 => data?.GKFactor180Date_2,
+        3 => data?.GKFactor180Date_3,
+        _ => null
+    };
+
+    private string GetLocLabel(int idx, string suffix) => idx switch
+    {
+        1 => (suffix == "A" ? data?.GLoc1A : suffix == "B" ? data?.GLoc1B : suffix == "C" ? data?.GLoc1C : suffix == "D" ? data?.GLoc1D : data?.GLoc1E) ?? "",
+        2 => (suffix == "A" ? data?.GLoc2A : suffix == "B" ? data?.GLoc2B : suffix == "C" ? data?.GLoc2C : suffix == "D" ? data?.GLoc2D : data?.GLoc2E) ?? "",
+        3 => (suffix == "A" ? data?.GLoc3A : suffix == "B" ? data?.GLoc3B : suffix == "C" ? data?.GLoc3C : suffix == "D" ? data?.GLoc3D : data?.GLoc3E) ?? "",
+        _ => ""
+    };
+
+    private string GetCoreMass(int r) => r switch { 1 => data?.GMass1 ?? "", 2 => data?.GMass2 ?? "", 3 => data?.GMass3 ?? "", _ => "" };
+    private string GetCoreL1(int r) => r switch { 1 => data?.GL1_1 ?? "", 2 => data?.GL1_2 ?? "", 3 => data?.GL1_3 ?? "", _ => "" };
+    private string GetCoreW1(int r) => r switch { 1 => data?.GW1_1 ?? "", 2 => data?.GW1_2 ?? "", 3 => data?.GW1_3 ?? "", _ => "" };
+    private string GetCoreT(int r, int t) => (r, t) switch
+    {
+        (1, 1) => data?.GT1_1 ?? "",
+        (1, 2) => data?.GT2_1 ?? "",
+        (1, 3) => data?.GT3_1 ?? "",
+        (1, 4) => data?.GT4_1 ?? "",
+        (1, 5) => data?.GT5_1 ?? "",
+        (2, 1) => data?.GT1_2 ?? "",
+        (2, 2) => data?.GT2_2 ?? "",
+        (2, 3) => data?.GT3_2 ?? "",
+        (2, 4) => data?.GT4_2 ?? "",
+        (2, 5) => data?.GT5_2 ?? "",
+        (3, 1) => data?.GT1_3 ?? "",
+        (3, 2) => data?.GT2_3 ?? "",
+        (3, 3) => data?.GT3_3 ?? "",
+        (3, 4) => data?.GT4_3 ?? "",
+        (3, 5) => data?.GT5_3 ?? "",
+        _ => ""
+    };
+    private bool GetCoreKnit(int r) => r switch { 1 => data?.GCoreDensKnitLine1 ?? false, 2 => data?.GCoreDensKnitLine2 ?? false, 3 => data?.GCoreDensKnitLine3 ?? false, _ => false };
+    private string GetCoreDens(int r) => r switch { 1 => data?.GCoreDens1 ?? "", 2 => data?.GCoreDens2 ?? "", 3 => data?.GCoreDens3 ?? "", _ => "" };
+    private bool GetCoreDensBackground(int r) => r switch
+    {
+        1 => data?.GCoreDens1Background ?? true,
+        2 => data?.GCoreDens2Background ?? true,
+        3 => data?.GCoreDens3Background ?? true,
+        _ => true
+    };
+
+    private string GetFacerPeelValue(int i) => i switch { 1 => data?.GFacerPeel1 ?? "", 2 => data?.GFacerPeel2 ?? "", 3 => data?.GFacerPeel3 ?? "", _ => "" };
+    private string GetNailPullValue(int i) => i switch { 1 => data?.GNailPull_1 ?? "", 2 => data?.GNailPull_2 ?? "", 3 => data?.GNailPull_3 ?? "", _ => "" };
+
+    // Response wrapper
+    public class ApiResponse
+    {
+        public bool success { get; set; }
+        public object? data { get; set; }
+        public string? error { get; set; }
+    }
+}

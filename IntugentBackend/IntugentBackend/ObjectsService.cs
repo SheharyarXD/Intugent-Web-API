@@ -52,6 +52,10 @@ namespace IntugentBackend
         public RNDTDRV RNDTDRV { get; set; } = new();
         public AIModel AIModel { get; set; } = new();
 
+
+        public bool gInProcessDoneIsChecked { get; set; }
+        public int gInputIndex { get; set; }
+
         public ObjectsService()
         {
             // 1. Initialize dependencies first

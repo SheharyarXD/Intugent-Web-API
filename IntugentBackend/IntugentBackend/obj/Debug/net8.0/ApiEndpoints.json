@@ -1,5 +1,95 @@
 [
   {
+    "ContainingType": "IntugentBackend.Controllers.FinishedBoardPropertiesController",
+    "Method": "GetData",
+    "RelativePath": "api/FinishedBoardProperties/data",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.FinishedBoardPropertiesController",
+    "Method": "Navigate",
+    "RelativePath": "api/FinishedBoardProperties/navigate",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "IntugentBackend.Models.NavigateRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.FinishedBoardPropertiesController",
+    "Method": "UpdateBool",
+    "RelativePath": "api/FinishedBoardProperties/update-bool",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "IntugentBackend.Models.BoolUpdateRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.FinishedBoardPropertiesController",
+    "Method": "UpdateDateTime",
+    "RelativePath": "api/FinishedBoardProperties/update-datetime",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "IntugentBackend.Models.DateTimeUpdateRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.FinishedBoardPropertiesController",
+    "Method": "UpdateField",
+    "RelativePath": "api/FinishedBoardProperties/update-field",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "IntugentBackend.Models.FieldUpdateRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.FinishedBoardPropertiesController",
+    "Method": "UpdateNotes",
+    "RelativePath": "api/FinishedBoardProperties/update-notes",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "IntugentBackend.Models.FieldUpdateRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "IntugentBackend.Controllers.FormulationsController",
     "Method": "GetFormulationData",
     "RelativePath": "api/Formulations/data/{id}",

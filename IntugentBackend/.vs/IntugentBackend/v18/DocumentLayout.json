@@ -3,16 +3,28 @@
   "WorkspaceRootPath": "E:\\IntugentBackend\\IntugentBackend\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|e:\\intugentbackend\\intugentbackend\\intugentbackend\\controllers\\finishedboardpropertiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\controllers\\finishedboardpropertiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|e:\\intugentbackend\\intugentbackend\\intugentbackend\\controllers\\mfganalysiscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\controllers\\mfganalysiscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|e:\\intugentbackend\\intugentbackend\\intugentbackend\\models\\finishedboardmodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\models\\finishedboardmodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|e:\\intugentbackend\\intugentbackend\\intugentbackend\\objectsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\objectsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|e:\\intugentbackend\\intugentbackend\\intugentbackend\\controllers\\mfghomecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\controllers\\mfghomecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|e:\\intugentbackend\\intugentbackend\\intugentbackend\\models\\mfghomemodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\models\\mfghomemodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|e:\\intugentbackend\\intugentbackend\\intugentbackend\\objectsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\objectsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|e:\\intugentbackend\\intugentbackend\\intugentbackend\\services\\core\\mainwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -50,19 +62,59 @@
           "Children": [
             {
               "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MfgAnalysisController.cs",
+              "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Controllers\\MfgAnalysisController.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Controllers\\MfgAnalysisController.cs",
+              "ToolTip": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Controllers\\MfgAnalysisController.cs",
+              "RelativeToolTip": "IntugentBackend\\Controllers\\MfgAnalysisController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-19T13:10:35.507Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "FinishedBoardModels.cs",
+              "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Models\\FinishedBoardModels.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Models\\FinishedBoardModels.cs",
+              "ToolTip": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Models\\FinishedBoardModels.cs",
+              "RelativeToolTip": "IntugentBackend\\Models\\FinishedBoardModels.cs",
+              "ViewState": "AgIAANkAAAAAAAAAAAA7wP0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-19T12:18:00.196Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "FinishedBoardPropertiesController.cs",
+              "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Controllers\\FinishedBoardPropertiesController.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Controllers\\FinishedBoardPropertiesController.cs",
+              "ToolTip": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Controllers\\FinishedBoardPropertiesController.cs",
+              "RelativeToolTip": "IntugentBackend\\Controllers\\FinishedBoardPropertiesController.cs",
+              "ViewState": "AgIAAPACAAAAAAAAAAAcwAEDAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-19T12:15:20.32Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "ObjectsService.cs",
               "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\ObjectsService.cs",
               "RelativeDocumentMoniker": "IntugentBackend\\ObjectsService.cs",
               "ToolTip": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\ObjectsService.cs",
               "RelativeToolTip": "IntugentBackend\\ObjectsService.cs",
-              "ViewState": "AgIAAAEAAAAAAAAAAAAAAA8AAAAVAAAAAAAAAA==",
+              "ViewState": "AgIAACMAAAAAAAAAAAAAACYAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-18T18:11:52.439Z"
+              "WhenOpened": "2026-06-18T18:11:52.439Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 5,
               "Title": "MfgHomeModels.cs",
               "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Models\\MfgHomeModels.cs",
               "RelativeDocumentMoniker": "IntugentBackend\\Models\\MfgHomeModels.cs",
@@ -74,7 +126,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 4,
               "Title": "MfgHomeController.cs",
               "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Controllers\\MfgHomeController.cs",
               "RelativeDocumentMoniker": "IntugentBackend\\Controllers\\MfgHomeController.cs",
@@ -87,7 +139,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 6,
               "Title": "MainWindow.cs",
               "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Services\\Core\\MainWindow.cs",
               "RelativeDocumentMoniker": "IntugentBackend\\Services\\Core\\MainWindow.cs",
@@ -99,7 +151,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 7,
               "Title": "CDBase.cs",
               "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Services\\Data\\CDBase.cs",
               "RelativeDocumentMoniker": "IntugentBackend\\Services\\Data\\CDBase.cs",
@@ -111,7 +163,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 8,
               "Title": "Cbfile.cs",
               "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Services\\Core\\Cbfile.cs",
               "RelativeDocumentMoniker": "IntugentBackend\\Services\\Core\\Cbfile.cs",
@@ -123,7 +175,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 9,
               "Title": "appsettings.json",
               "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\appsettings.json",
               "RelativeDocumentMoniker": "IntugentBackend\\appsettings.json",
@@ -135,7 +187,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 10,
               "Title": "Program.cs",
               "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Program.cs",
               "RelativeDocumentMoniker": "IntugentBackend\\Program.cs",
@@ -147,7 +199,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 11,
               "Title": "SessionController.cs",
               "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Controllers\\SessionController.cs",
               "RelativeDocumentMoniker": "IntugentBackend\\Controllers\\SessionController.cs",

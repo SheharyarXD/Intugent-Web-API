@@ -27,6 +27,10 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ291bnRlci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[E:/IntugentBackend/IntugentFrontend/MauiApp1/MauiApp1/MauiApp1.Shared/Pages/FinishedBoardProperties.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmluaXNoZWRCb2FyZFByb3BlcnRpZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [E:/IntugentBackend/IntugentFrontend/MauiApp1/MauiApp1/MauiApp1.Shared/Pages/Home.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSG9tZS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 

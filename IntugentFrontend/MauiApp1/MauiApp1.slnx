@@ -1,5 +1,7 @@
 <Solution>
   <Project Path="MauiApp1/MauiApp1.Shared/MauiApp1.Shared.csproj" />
   <Project Path="MauiApp1/MauiApp1.Web/MauiApp1.Web.csproj" />
-  <Project Path="MauiApp1/MauiApp1/MauiApp1.csproj" />
+  <Project Path="MauiApp1/MauiApp1/MauiApp1.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
 </Solution>
