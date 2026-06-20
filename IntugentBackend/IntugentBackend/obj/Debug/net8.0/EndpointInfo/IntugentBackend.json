@@ -335,6 +335,18 @@
         }
       }
     },
+    "/api/RndHome/filters": {
+      "get": {
+        "tags": [
+          "RndHome"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/RndHome/search": {
       "post": {
         "tags": [
@@ -344,21 +356,88 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SearchCriteria"
+                "$ref": "#/components/schemas/SearchRndRequest"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/SearchCriteria"
+                "$ref": "#/components/schemas/SearchRndRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/SearchCriteria"
+                "$ref": "#/components/schemas/SearchRndRequest"
               }
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/RndHome/results": {
+      "get": {
+        "tags": [
+          "RndHome"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/RndHome/select-dataset": {
+      "post": {
+        "tags": [
+          "RndHome"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectRndDatasetRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectRndDatasetRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectRndDatasetRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/RndHome/new-dataset": {
+      "post": {
+        "tags": [
+          "RndHome"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/RndHome/copy": {
+      "post": {
+        "tags": [
+          "RndHome"
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -755,21 +834,6 @@
         },
         "additionalProperties": { }
       },
-      "SearchCriteria": {
-        "type": "object",
-        "properties": {
-          "date1": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "SearchMfgRequest": {
         "type": "object",
         "properties": {
@@ -806,7 +870,57 @@
         },
         "additionalProperties": false
       },
+      "SearchRndRequest": {
+        "type": "object",
+        "properties": {
+          "productCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateFrom": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "dateTo": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "testingStatusId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "studyTypeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nameSearch": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "SelectDatasetRequest": {
+        "type": "object",
+        "properties": {
+          "selectedIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "rowCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "datasetId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SelectRndDatasetRequest": {
         "type": "object",
         "properties": {
           "selectedIndex": {

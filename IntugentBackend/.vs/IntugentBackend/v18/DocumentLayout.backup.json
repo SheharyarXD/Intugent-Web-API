@@ -3,8 +3,23 @@
   "WorkspaceRootPath": "E:\\IntugentBackend\\IntugentBackend\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\VisualStudio\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|e:\\intugentbackend\\intugentbackend\\intugentbackend\\controllers\\rndhomecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\controllers\\rndhomecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|e:\\intugentbackend\\intugentbackend\\intugentbackend\\models\\rndhomemodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\models\\rndhomemodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|e:\\intugentbackend\\intugentbackend\\intugentbackend\\controllers\\finishedboardpropertiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\controllers\\finishedboardpropertiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|e:\\intugentbackend\\intugentbackend\\intugentbackend\\controllers\\mfghomecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\controllers\\mfghomecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|e:\\intugentbackend\\intugentbackend\\intugentbackend\\controllers\\mfganalysiscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -17,10 +32,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|e:\\intugentbackend\\intugentbackend\\intugentbackend\\objectsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\objectsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|e:\\intugentbackend\\intugentbackend\\intugentbackend\\controllers\\mfghomecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\controllers\\mfghomecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|e:\\intugentbackend\\intugentbackend\\intugentbackend\\models\\mfghomemodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -58,24 +69,48 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "MfgAnalysisController.cs",
-              "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Controllers\\MfgAnalysisController.cs",
-              "RelativeDocumentMoniker": "IntugentBackend\\Controllers\\MfgAnalysisController.cs",
-              "ToolTip": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Controllers\\MfgAnalysisController.cs",
-              "RelativeToolTip": "IntugentBackend\\Controllers\\MfgAnalysisController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-19T13:10:35.507Z",
+              "DocumentIndex": 0,
+              "Title": "Microsoft.Common.CurrentVersion.targets",
+              "DocumentMoniker": "E:\\VisualStudio\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
+              "RelativeDocumentMoniker": "..\\..\\VisualStudio\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
+              "ToolTip": "E:\\VisualStudio\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
+              "RelativeToolTip": "..\\..\\VisualStudio\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
+              "ViewState": "AgIAACITAAAAAAAAAIAwwDYTAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
+              "WhenOpened": "2026-06-20T02:15:53.998Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "RndHomeController.cs",
+              "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Controllers\\RndHomeController.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Controllers\\RndHomeController.cs",
+              "ToolTip": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Controllers\\RndHomeController.cs",
+              "RelativeToolTip": "IntugentBackend\\Controllers\\RndHomeController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAO4AAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-20T02:04:13.766Z"
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "RndHomeModels.cs",
+              "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Models\\RndHomeModels.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Models\\RndHomeModels.cs",
+              "ToolTip": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Models\\RndHomeModels.cs",
+              "RelativeToolTip": "IntugentBackend\\Models\\RndHomeModels.cs",
+              "ViewState": "AgIAACYAAAAAAAAAAAAAADIAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-20T02:04:41.256Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "FinishedBoardModels.cs",
               "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Models\\FinishedBoardModels.cs",
               "RelativeDocumentMoniker": "IntugentBackend\\Models\\FinishedBoardModels.cs",
@@ -83,12 +118,11 @@
               "RelativeToolTip": "IntugentBackend\\Models\\FinishedBoardModels.cs",
               "ViewState": "AgIAANkAAAAAAAAAAAA7wP0AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-19T12:18:00.196Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-06-19T12:18:00.196Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "FinishedBoardPropertiesController.cs",
               "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Controllers\\FinishedBoardPropertiesController.cs",
               "RelativeDocumentMoniker": "IntugentBackend\\Controllers\\FinishedBoardPropertiesController.cs",
@@ -96,12 +130,11 @@
               "RelativeToolTip": "IntugentBackend\\Controllers\\FinishedBoardPropertiesController.cs",
               "ViewState": "AgIAAPACAAAAAAAAAAAcwAEDAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-19T12:15:20.32Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-06-19T12:15:20.32Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 7,
               "Title": "ObjectsService.cs",
               "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\ObjectsService.cs",
               "RelativeDocumentMoniker": "IntugentBackend\\ObjectsService.cs",
@@ -109,12 +142,35 @@
               "RelativeToolTip": "IntugentBackend\\ObjectsService.cs",
               "ViewState": "AgIAACMAAAAAAAAAAAAAACYAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-18T18:11:52.439Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-06-18T18:11:52.439Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "MfgHomeController.cs",
+              "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Controllers\\MfgHomeController.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Controllers\\MfgHomeController.cs",
+              "ToolTip": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Controllers\\MfgHomeController.cs",
+              "RelativeToolTip": "IntugentBackend\\Controllers\\MfgHomeController.cs",
+              "ViewState": "AgIAAH0AAAAAAAAAAAAvwI4AAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-18T18:07:46.728Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 5,
+              "Title": "MfgAnalysisController.cs",
+              "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Controllers\\MfgAnalysisController.cs",
+              "RelativeDocumentMoniker": "IntugentBackend\\Controllers\\MfgAnalysisController.cs",
+              "ToolTip": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Controllers\\MfgAnalysisController.cs",
+              "RelativeToolTip": "IntugentBackend\\Controllers\\MfgAnalysisController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-19T13:10:35.507Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
               "Title": "MfgHomeModels.cs",
               "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Models\\MfgHomeModels.cs",
               "RelativeDocumentMoniker": "IntugentBackend\\Models\\MfgHomeModels.cs",
@@ -126,20 +182,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "MfgHomeController.cs",
-              "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Controllers\\MfgHomeController.cs",
-              "RelativeDocumentMoniker": "IntugentBackend\\Controllers\\MfgHomeController.cs",
-              "ToolTip": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Controllers\\MfgHomeController.cs",
-              "RelativeToolTip": "IntugentBackend\\Controllers\\MfgHomeController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAfAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-18T18:07:46.728Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 9,
               "Title": "MainWindow.cs",
               "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Services\\Core\\MainWindow.cs",
               "RelativeDocumentMoniker": "IntugentBackend\\Services\\Core\\MainWindow.cs",
@@ -151,7 +194,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 10,
               "Title": "CDBase.cs",
               "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Services\\Data\\CDBase.cs",
               "RelativeDocumentMoniker": "IntugentBackend\\Services\\Data\\CDBase.cs",
@@ -163,7 +206,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 11,
               "Title": "Cbfile.cs",
               "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Services\\Core\\Cbfile.cs",
               "RelativeDocumentMoniker": "IntugentBackend\\Services\\Core\\Cbfile.cs",
@@ -175,7 +218,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 12,
               "Title": "appsettings.json",
               "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\appsettings.json",
               "RelativeDocumentMoniker": "IntugentBackend\\appsettings.json",
@@ -187,7 +230,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 13,
               "Title": "Program.cs",
               "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Program.cs",
               "RelativeDocumentMoniker": "IntugentBackend\\Program.cs",
@@ -199,7 +242,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 14,
               "Title": "SessionController.cs",
               "DocumentMoniker": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Controllers\\SessionController.cs",
               "RelativeDocumentMoniker": "IntugentBackend\\Controllers\\SessionController.cs",

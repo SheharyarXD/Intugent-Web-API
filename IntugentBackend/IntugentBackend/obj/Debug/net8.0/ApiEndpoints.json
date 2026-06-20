@@ -190,15 +190,71 @@
   },
   {
     "ContainingType": "IntugentBackend.Controllers.RndHomeController",
-    "Method": "SearchDataSets",
+    "Method": "CopyToClipboard",
+    "RelativePath": "api/RndHome/copy",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.RndHomeController",
+    "Method": "GetFilters",
+    "RelativePath": "api/RndHome/filters",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.RndHomeController",
+    "Method": "CreateNewDataset",
+    "RelativePath": "api/RndHome/new-dataset",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.RndHomeController",
+    "Method": "GetResults",
+    "RelativePath": "api/RndHome/results",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.RndHomeController",
+    "Method": "Search",
     "RelativePath": "api/RndHome/search",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "criteria",
-        "Type": "IntugentBackend.Controllers.SearchCriteria",
+        "Name": "request",
+        "Type": "IntugentBackend.Models.SearchRndRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.RndHomeController",
+    "Method": "SelectDataset",
+    "RelativePath": "api/RndHome/select-dataset",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "IntugentBackend.Models.SelectRndDatasetRequest",
         "IsRequired": true
       }
     ],

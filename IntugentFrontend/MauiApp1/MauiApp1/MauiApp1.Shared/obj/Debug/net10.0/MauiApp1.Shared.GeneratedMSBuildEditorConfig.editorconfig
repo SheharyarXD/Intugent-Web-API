@@ -43,6 +43,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTm90Rm91bmQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[E:/IntugentBackend/IntugentFrontend/MauiApp1/MauiApp1/MauiApp1.Shared/Pages/RndHome.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUm5kSG9tZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
 [E:/IntugentBackend/IntugentFrontend/MauiApp1/MauiApp1/MauiApp1.Shared/Pages/Weather.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcV2VhdGhlci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 

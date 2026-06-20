@@ -1,0 +1,456 @@
+﻿@page "/rnd-home"
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@rendermode InteractiveServer
+
+<PageTitle>R&D Home</PageTitle>
+
+<!-- Error Alert -->
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+    </div>
+}
+
+<div class="row">
+    <div class="col">
+
+        <!-- Search Card -->
+        <div class="card card-default">
+            <div class="card-header align-items-center">
+                <h2>Search Historical Data</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <!-- Testing Status -->
+                        <div class="form-floating mb-2">
+                            <select class="form-select" id="testingStatus" @bind="searchParams.TestingStatusId">
+                                @foreach (var opt in filters?.TestingStatus ?? new())
+                                {
+                                    <option value="@opt.Id">@opt.Name</option>
+                                }
+                            </select>
+                            <label for="testingStatus">Testing Status</label>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <!-- Product Code -->
+                        <div class="form-floating mb-2">
+                            <select class="form-select" id="productCode" @bind="searchParams.ProductCode">
+                                @foreach (var opt in filters?.Products ?? new())
+                                {
+                                    <option value="@opt.Code">@opt.Name</option>
+                                }
+                            </select>
+                            <label for="productCode">Product Code</label>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <!-- Study Type -->
+                        <div class="form-floating mb-2">
+                            <select class="form-select" id="studyType" @bind="searchParams.StudyTypeId">
+                                @foreach (var opt in filters?.StudyTypes ?? new())
+                                {
+                                    <option value="@opt.Id">@opt.Name</option>
+                                }
+                            </select>
+                            <label for="studyType">Study Type</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-4">
+                        <!-- Group -->
+                        <div class="mb-2 row">
+                            <label for="Groups" class="col-md-3 text-right mr-5 col-form-label">Group</label>
+                            <div class="col-md-8">
+                                <input type="text" value="@(filters?.Location)" class="form-control" id="Groups" disabled>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <!-- After Date -->
+                        <div class="form-floating mb-2">
+                            <input type="date" class="form-control" @bind="searchParams.DateTo" id="afterDate">
+                            <label for="afterDate">Experiment Date - After or At</label>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <!-- Before Date -->
+                        <div class="form-floating mb-2">
+                            <input type="date" class="form-control" @bind="searchParams.DateFrom" id="beforeDate">
+                            <label for="beforeDate">Experiment Date - Before or At</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- Project Study Name -->
+                        <div class="form-floating mb-2">
+                            <input type="text" class="form-control" @bind="searchParams.NameSearch" id="projectStudyName">
+                            <label for="projectStudyName">Project/Study Name - Contains</label>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 d-flex justify-content-end">
+                        <button type="button" class="btn btn-primary m-auto" @onclick="SearchDatasets" disabled="@isLoading">
+                            @if (isLoading)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                            }
+                            Retrieve Top 20 Datasets
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="text-end">
+    <button type="button" class="btn btn-primary mb-5" @onclick="CopyDataToClipboard">
+        Copy All Datasets Meeting Search Criteria
+    </button>
+</div>
+
+<div class="row">
+    <div class="col">
+
+        <!-- Search Results -->
+        <div class="card card-default">
+            <div class="card-header align-items-center">
+                <h2>Search Results - Select any Data Record in the List Below to see Detailed Data</h2>
+            </div>
+            <div class="card-body">
+                @if (searchResults?.Rows?.Count > 0)
+                {
+                    <div class="table-responsive">
+                        <table id="searchResultsTable" class="table table-hover table-product dataTable" style="width:100%">
+                            <thead>
+                                <tr>
+                                    @foreach (var col in searchResults.Columns)
+                                    {
+                                        <th>@col</th>
+                                    }
+                                    <th>Select</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int rowIdx = 0;
+                                }
+                                @foreach (var row in searchResults.Rows)
+                                {
+                                    var currentIdx = rowIdx;
+                                    var rowId = row.GetValueOrDefault("ID")?.ToString() ?? currentIdx.ToString();
+                                    <tr>
+                                        @foreach (var col in searchResults.Columns)
+                                        {
+                                            <td>@(row.GetValueOrDefault(col)?.ToString() ?? "")</td>
+                                        }
+                                        <td>
+                                            <label class="switch switch-primary switch-pill form-control-label">
+                                                <input type="checkbox"
+                                                       class="switch-input form-check-input"
+                                                       checked="@(currentIdx == selectedIndex)"
+                                                       @onchange="() => SelectDataset(currentIdx, rowId)" />
+                                                <span class="switch-label"></span>
+                                                <span class="switch-handle"></span>
+                                            </label>
+                                        </td>
+                                    </tr>
+                                    rowIdx++;
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else if (!isLoading)
+                {
+                    <p class="text-muted text-center">No datasets found. Adjust filters and search.</p>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="text-end">
+    <button type="button" class="btn btn-primary mb-2" @onclick="CreateNewDataset">
+        Create A New Dataset
+    </button>
+</div>
+
+@code {
+    private const string ApiBaseUrl = "https://localhost:44323/api";
+
+    // State
+    private RndFiltersDto? filters;
+    private RndSearchResultDto? searchResults;
+    private SearchRndRequest searchParams = new();
+    private int selectedIndex = -1;
+    private string? errorMessage;
+    private bool isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadFilters();
+        await LoadResults();
+    }
+
+    private async Task LoadFilters()
+    {
+        try
+        {
+            isLoading = true;
+            var response = await Http.GetFromJsonAsync<ApiResponse<RndFiltersDto>>($"{ApiBaseUrl}/RndHome/filters");
+
+            if (response?.Success == true && response.Data != null)
+            {
+                filters = response.Data;
+
+                // Set defaults
+                searchParams.ProductCode = filters.DefaultProductCode;
+                searchParams.TestingStatusId = filters.DefaultTestingStatusId;
+                searchParams.StudyTypeId = filters.DefaultStudyTypeId;
+                searchParams.DateFrom = filters.DefaultDateFrom;
+                searchParams.DateTo = filters.DefaultDateTo;
+                searchParams.NameSearch = filters.DefaultNameSearch;
+            }
+            else
+            {
+                errorMessage = response?.Error ?? "Failed to load filters.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading filters: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task LoadResults()
+    {
+        try
+        {
+            var response = await Http.GetFromJsonAsync<ApiResponse<RndSearchResultDto>>($"{ApiBaseUrl}/RndHome/results");
+
+            if (response?.Success == true && response.Data != null)
+            {
+                searchResults = response.Data;
+                selectedIndex = searchResults.SelectedIndex;
+            }
+        }
+        catch
+        {
+            // Silently fail - no results yet is OK
+        }
+    }
+
+    private async Task SearchDatasets()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = null;
+
+            var response = await Http.PostAsJsonAsync($"{ApiBaseUrl}/RndHome/search", searchParams);
+            var result = await response.Content.ReadFromJsonAsync<ApiResponse<RndSearchResultDto>>();
+
+            if (result?.Success == true && result.Data != null)
+            {
+                searchResults = result.Data;
+                selectedIndex = searchResults.SelectedIndex;
+            }
+            else
+            {
+                errorMessage = result?.Error ?? "Search failed.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Search error: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task SelectDataset(int index, string rowId)
+    {
+        if (searchResults?.Rows == null || index < 0 || index >= searchResults.Rows.Count)
+            return;
+
+        try
+        {
+            isLoading = true;
+            selectedIndex = index;
+
+            int datasetId = 0;
+            if (int.TryParse(rowId, out var parsedId))
+                datasetId = parsedId;
+
+            var request = new SelectRndDatasetRequest
+            {
+                SelectedIndex = index,
+                RowCount = searchResults.Rows.Count,
+                DatasetId = datasetId
+            };
+
+            var response = await Http.PostAsJsonAsync($"{ApiBaseUrl}/RndHome/select-dataset", request);
+            var result = await response.Content.ReadFromJsonAsync<ApiResponse<object>>();
+
+            if (result?.Success != true)
+            {
+                errorMessage = result?.Error ?? "Failed to select dataset.";
+                selectedIndex = searchResults.SelectedIndex; // Revert
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Selection error: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task CreateNewDataset()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = null;
+
+            var response = await Http.PostAsJsonAsync<object>($"{ApiBaseUrl}/RndHome/new-dataset", new { });
+            var result = await response.Content.ReadFromJsonAsync<ApiResponse<NewDatasetResponseDto>>();
+
+            if (result?.Success == true && result.Data != null)
+            {
+                // Refresh results
+                await LoadResults();
+            }
+            else
+            {
+                errorMessage = result?.Error ?? "Failed to create new dataset.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Create error: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task CopyDataToClipboard()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = null;
+
+            var response = await Http.PostAsJsonAsync<object>($"{ApiBaseUrl}/RndHome/copy", new { });
+            var result = await response.Content.ReadFromJsonAsync<ApiResponse<string>>();
+
+            if (result?.Success == true && result.Data != null)
+            {
+                await JS.InvokeVoidAsync("navigator.clipboard.writeText", result.Data);
+                await JS.InvokeVoidAsync("alert", "Data copied to clipboard!");
+            }
+            else
+            {
+                errorMessage = result?.Error ?? "Copy failed.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Copy error: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    // ========== DTO CLASSES ==========
+
+    public class RndFiltersDto
+    {
+        public List<FilterOptionDto> Products { get; set; } = new();
+        public List<FilterOptionDto> TestingStatus { get; set; } = new();
+        public List<FilterOptionDto> StudyTypes { get; set; } = new();
+        public string Location { get; set; } = string.Empty;
+        public string DefaultProductCode { get; set; } = string.Empty;
+        public int DefaultTestingStatusId { get; set; }
+        public int DefaultStudyTypeId { get; set; }
+        public DateTime? DefaultDateFrom { get; set; }
+        public DateTime? DefaultDateTo { get; set; }
+        public string? DefaultNameSearch { get; set; }
+    }
+
+    public class FilterOptionDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string? Code { get; set; }
+    }
+
+    public class RndSearchResultDto
+    {
+        public List<Dictionary<string, object?>> Rows { get; set; } = new();
+        public List<string> Columns { get; set; } = new();
+        public int SelectedIndex { get; set; }
+        public int CurrentDatasetId { get; set; }
+    }
+
+    public class SearchRndRequest
+    {
+        public string? ProductCode { get; set; }
+        public DateTime? DateFrom { get; set; }
+        public DateTime? DateTo { get; set; }
+        public int TestingStatusId { get; set; }
+        public int StudyTypeId { get; set; }
+        public string? NameSearch { get; set; }
+    }
+
+    public class SelectRndDatasetRequest
+    {
+        public int SelectedIndex { get; set; }
+        public int RowCount { get; set; }
+        public int DatasetId { get; set; }
+    }
+
+    public class NewDatasetResponseDto
+    {
+        public List<string[]>? Rows { get; set; }
+        public int SelectedIndex { get; set; }
+        public int DatasetId { get; set; }
+    }
+
+    public class ApiResponse<T>
+    {
+        public bool Success { get; set; }
+        public T? Data { get; set; }
+        public string? Error { get; set; }
+    }
+}
