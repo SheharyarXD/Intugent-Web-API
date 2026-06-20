@@ -2,6 +2,7 @@
 using IntugentBackend.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
+using System.Text.Json;
 
 namespace IntugentBackend.Controllers
 {
@@ -18,9 +19,6 @@ namespace IntugentBackend.Controllers
             _logger = logger;
         }
 
-        /// <summary>
-        /// Get all filter dropdown data and default values for Mfg Home page
-        /// </summary>
         [HttpGet("filters")]
         public IActionResult GetFilters()
         {
@@ -35,12 +33,9 @@ namespace IntugentBackend.Controllers
                     });
                 }
 
-                // Location
                 string location = _objectsService.CDefualts.IDLocation != 3
-                    ? _objectsService.CDefualts.sLocation
-                    : string.Empty;
+                    ? _objectsService.CDefualts.sLocation : string.Empty;
 
-                // Products (from dvComProdAll)
                 var products = new List<FilterOptionDto>();
                 if (_objectsService.CLists.dvComProdAll != null)
                 {
@@ -54,12 +49,10 @@ namespace IntugentBackend.Controllers
                     }
                 }
 
-                // Helper to extract lists
                 List<FilterOptionDto> ExtractList(string listName)
                 {
                     var result = new List<FilterOptionDto>();
                     if (_objectsService.CLists.dvLists == null) return result;
-
                     var dv = _objectsService.CLists.dtLists.DefaultView;
                     dv.RowFilter = $"sList = '{listName}'";
                     foreach (DataRowView row in dv)
@@ -81,7 +74,6 @@ namespace IntugentBackend.Controllers
                     DimStability = ExtractList("Dim Stability Mfg"),
                     RunTypes = ExtractList("Run Type Mfg"),
                     Location = location,
-                    // Default values from drEmployee
                     DefaultProductCode = _objectsService.CLists.drEmployee?["Mfg Product Code"] == DBNull.Value
                         ? _objectsService.CDefualts.sProdMfgAll
                         : (_objectsService.CLists.drEmployee?["Mfg Product Code"]?.ToString() ?? string.Empty),
@@ -98,105 +90,66 @@ namespace IntugentBackend.Controllers
                         ? _objectsService.CDefualts.iMfgRunType
                         : Convert.ToInt32(_objectsService.CLists.drEmployee?["MfgIDRunType"]),
                     DefaultDateFrom = _objectsService.CLists.drEmployee?["MfgDate1"] == DBNull.Value
-                        ? null
-                        : Convert.ToDateTime(_objectsService.CLists.drEmployee?["MfgDate1"]),
+                        ? null : Convert.ToDateTime(_objectsService.CLists.drEmployee?["MfgDate1"]),
                     DefaultDateTo = _objectsService.CLists.drEmployee?["MfgDate2"] == DBNull.Value
-                        ? null
-                        : Convert.ToDateTime(_objectsService.CLists.drEmployee?["MfgDate2"])
+                        ? null : Convert.ToDateTime(_objectsService.CLists.drEmployee?["MfgDate2"])
                 };
 
-                return Ok(new ApiResponse<MfgFiltersDto>
-                {
-                    Success = true,
-                    Data = filters
-                });
+                return Ok(new ApiResponse<MfgFiltersDto> { Success = true, Data = filters });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting Mfg filters");
                 return StatusCode(500, new ApiResponse<MfgFiltersDto>
-                {
-                    Success = false,
-                    Error = ex.Message
-                });
+                { Success = false, Error = ex.Message });
             }
         }
 
-        /// <summary>
-        /// Search Mfg database with filters
-        /// </summary>
         [HttpPost("search")]
         public IActionResult Search([FromBody] SearchMfgRequest request)
         {
             try
             {
-                if (_objectsService.MfgHome == null)
+                if (_objectsService.MfgHome == null || _objectsService.CLists?.drEmployee == null)
                 {
                     return BadRequest(new ApiResponse<MfgSearchResultDto>
-                    {
-                        Success = false,
-                        Error = "MfgHome not initialized."
-                    });
+                    { Success = false, Error = "MfgHome not initialized." });
                 }
 
-                // Apply filters to drEmployee (same as old OnPostSearchDB_Click)
                 _objectsService.CLists.drEmployee["Mfg Product Code"] =
                     string.IsNullOrEmpty(request.ProductCode) ? DBNull.Value : request.ProductCode;
-
                 _objectsService.CLists.drEmployee["MfgDate1"] =
                     request.DateFrom == null ? DBNull.Value : request.DateFrom;
-
                 _objectsService.CLists.drEmployee["MfgDate2"] =
                     request.DateTo == null ? DBNull.Value : request.DateTo;
-
                 _objectsService.CLists.drEmployee["MfgIDTestingStatus"] =
                     request.TestingStatusId <= 0 ? DBNull.Value : request.TestingStatusId;
-
                 _objectsService.CLists.drEmployee["MfgIDAgedTesting"] =
                     request.AgedRValueId <= 0 ? DBNull.Value : request.AgedRValueId;
-
                 _objectsService.CLists.drEmployee["MfgIDDimStability"] =
                     request.DimStabilityId <= 0 ? DBNull.Value : request.DimStabilityId;
-
                 _objectsService.CLists.drEmployee["MfgIDRunType"] =
                     request.RunTypeId <= 0 ? DBNull.Value : request.RunTypeId;
 
-                // Perform search
                 bool found = _objectsService.MfgHome.SearchMfgDB();
 
-                // Update Cbfile
                 if (found && _objectsService.MfgHome.dt.Rows.Count > 0)
                 {
                     _objectsService.Cbfile.iIDMfgIndex = 0;
                     _objectsService.Cbfile.iIDMfg = Convert.ToInt32(_objectsService.MfgHome.dt.Rows[0]["ID4ALL"]);
                 }
 
-                // Save employee preferences
-                //CLists_UpdateEmployee.UpdateEmployee(_objectsService.CLists);
-
-                // Build response
                 var result = BuildSearchResult();
-
-                return Ok(new ApiResponse<MfgSearchResultDto>
-                {
-                    Success = true,
-                    Data = result
-                });
+                return Ok(new ApiResponse<MfgSearchResultDto> { Success = true, Data = result });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error searching Mfg DB");
                 return StatusCode(500, new ApiResponse<MfgSearchResultDto>
-                {
-                    Success = false,
-                    Error = ex.Message
-                });
+                { Success = false, Error = ex.Message });
             }
         }
 
-        /// <summary>
-        /// Get current search results (for page reload/navigation)
-        /// </summary>
         [HttpGet("results")]
         public IActionResult GetResults()
         {
@@ -205,33 +158,20 @@ namespace IntugentBackend.Controllers
                 if (_objectsService.MfgHome?.dt == null)
                 {
                     return Ok(new ApiResponse<MfgSearchResultDto>
-                    {
-                        Success = true,
-                        Data = new MfgSearchResultDto()
-                    });
+                    { Success = true, Data = new MfgSearchResultDto() });
                 }
 
                 var result = BuildSearchResult();
-                return Ok(new ApiResponse<MfgSearchResultDto>
-                {
-                    Success = true,
-                    Data = result
-                });
+                return Ok(new ApiResponse<MfgSearchResultDto> { Success = true, Data = result });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting Mfg results");
                 return StatusCode(500, new ApiResponse<MfgSearchResultDto>
-                {
-                    Success = false,
-                    Error = ex.Message
-                });
+                { Success = false, Error = ex.Message });
             }
         }
 
-        /// <summary>
-        /// Select a dataset from search results
-        /// </summary>
         [HttpPost("select-dataset")]
         public IActionResult SelectDataset([FromBody] SelectDatasetRequest request)
         {
@@ -240,64 +180,41 @@ namespace IntugentBackend.Controllers
                 if (!_objectsService.Cbfile.bCanSwitchRecord)
                 {
                     return Ok(new ApiResponse<object>
-                    {
-                        Success = false,
-                        Error = "Cannot switch record: " + _objectsService.Cbfile.sNoRecSwitchMsg
-                    });
+                    { Success = false, Error = "Cannot switch record: " + _objectsService.Cbfile.sNoRecSwitchMsg });
                 }
 
                 if (request.SelectedIndex < 0 || request.SelectedIndex >= request.RowCount)
                 {
                     return BadRequest(new ApiResponse<object>
-                    {
-                        Success = false,
-                        Error = "Invalid selection index."
-                    });
+                    { Success = false, Error = "Invalid selection index." });
                 }
 
                 if (_objectsService.MfgHome.dt.Rows[request.SelectedIndex]["ID4ALL"] == DBNull.Value)
                 {
                     return BadRequest(new ApiResponse<object>
-                    {
-                        Success = false,
-                        Error = "Selected dataset does not have a valid ID."
-                    });
+                    { Success = false, Error = "Selected dataset does not have a valid ID." });
                 }
 
-                // Update state
                 _objectsService.Cbfile.iIDMfgIndex = request.SelectedIndex;
                 _objectsService.Cbfile.iIDMfg = request.DatasetId;
 
-                // Load all Mfg data
-                (_objectsService.MfgInProcess,
-                 _objectsService.MfgFinishedGoods,
-                 _objectsService.MfgDimStability,
-                 _objectsService.MfgPlantData,
+                (_objectsService.MfgInProcess, _objectsService.MfgFinishedGoods,
+                 _objectsService.MfgDimStability, _objectsService.MfgPlantData,
                  _objectsService.MfgJetMixing) = _objectsService.MfgHome.GetAllMfgData(
-                     _objectsService.MfgInProcess,
-                     _objectsService.MfgFinishedGoods,
-                     _objectsService.MfgDimStability,
-                     _objectsService.MfgPlantData,
+                     _objectsService.MfgInProcess, _objectsService.MfgFinishedGoods,
+                     _objectsService.MfgDimStability, _objectsService.MfgPlantData,
                      _objectsService.MfgJetMixing);
 
                 return Ok(new ApiResponse<object>
-                {
-                    Success = true,
-                    Data = new { message = $"Dataset {request.DatasetId} selected." }
-                });
+                { Success = true, Data = new { message = $"Dataset {request.DatasetId} selected." } });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error selecting dataset");
                 return StatusCode(500, new ApiResponse<object>
-                {
-                    Success = false,
-                    Error = ex.Message
-                });
+                { Success = false, Error = ex.Message });
             }
         }
-
-        // ========== HELPERS ==========
 
         private MfgSearchResultDto BuildSearchResult()
         {
@@ -309,19 +226,15 @@ namespace IntugentBackend.Controllers
 
             if (_objectsService.MfgHome.dt == null) return result;
 
-            // Get columns
             foreach (DataColumn col in _objectsService.MfgHome.dt.Columns)
-            {
                 result.Columns.Add(col.ColumnName);
-            }
 
-            // Get rows
             foreach (DataRow row in _objectsService.MfgHome.dt.Rows)
             {
-                var dict = new Dictionary<string, object?>();
+                var dict = new Dictionary<string, JsonValue>();
                 foreach (DataColumn col in _objectsService.MfgHome.dt.Columns)
                 {
-                    dict[col.ColumnName] = row[col] == DBNull.Value ? null : row[col];
+                    dict[col.ColumnName] = new JsonValue(row[col] == DBNull.Value ? null : row[col]);
                 }
                 result.Rows.Add(dict);
             }
@@ -329,4 +242,105 @@ namespace IntugentBackend.Controllers
             return result;
         }
     }
+
+    // ========== DTOs ==========
+
+    public class MfgFiltersDto
+    {
+        public List<FilterOptionDto> Products { get; set; } = new();
+        public List<FilterOptionDto> TestingStatus { get; set; } = new();
+        public List<FilterOptionDto> AgedRValue { get; set; } = new();
+        public List<FilterOptionDto> DimStability { get; set; } = new();
+        public List<FilterOptionDto> RunTypes { get; set; } = new();
+        public string Location { get; set; } = string.Empty;
+        public string DefaultProductCode { get; set; } = string.Empty;
+        public int DefaultTestingStatusId { get; set; }
+        public int DefaultAgedRValueId { get; set; }
+        public int DefaultDimStabilityId { get; set; }
+        public int DefaultRunTypeId { get; set; }
+        public DateTime? DefaultDateFrom { get; set; }
+        public DateTime? DefaultDateTo { get; set; }
+    }
+
+
+    public class JsonValue
+    {
+        private readonly object? _value;
+        public JsonValue() { }
+        public JsonValue(object? value) => _value = value;
+        public object? RawValue => _value;
+
+        public override string ToString()
+        {
+            if (_value == null) return "";
+            if (_value is JsonElement je)
+            {
+                return je.ValueKind switch
+                {
+                    JsonValueKind.Null => "",
+                    JsonValueKind.String => je.GetString() ?? "",
+                    JsonValueKind.Number => je.TryGetInt32(out var i) ? i.ToString() : je.GetDouble().ToString(),
+                    JsonValueKind.True => "True",
+                    JsonValueKind.False => "False",
+                    _ => je.ToString()
+                };
+            }
+            return _value.ToString() ?? "";
+        }
+
+        public int GetInt32()
+        {
+            if (_value == null) return 0;
+            if (_value is JsonElement je)
+            {
+                if (je.ValueKind == JsonValueKind.Number && je.TryGetInt32(out var i)) return i;
+                if (je.ValueKind == JsonValueKind.String && int.TryParse(je.GetString(), out var p)) return p;
+                return 0;
+            }
+            if (_value is int i2) return i2;
+            if (_value is long l) return (int)l;
+            if (_value is double d) return (int)d;
+            if (int.TryParse(_value.ToString(), out var parsed)) return parsed;
+            return 0;
+        }
+
+        public double GetDouble()
+        {
+            if (_value == null) return 0;
+            if (_value is JsonElement je && je.ValueKind == JsonValueKind.Number) return je.GetDouble();
+            if (_value is double d) return d;
+            if (_value is int i) return i;
+            if (double.TryParse(_value.ToString(), out var p)) return p;
+            return 0;
+        }
+
+        public DateTime? GetDateTime()
+        {
+            if (_value == null) return null;
+            if (_value is JsonElement je && je.ValueKind == JsonValueKind.String)
+                if (DateTime.TryParse(je.GetString(), out var dt)) return dt;
+            if (_value is DateTime dt2) return dt2;
+            return null;
+        }
+    }
+
+    public class MfgSearchResultDto
+    {
+        public List<Dictionary<string, JsonValue>> Rows { get; set; } = new();
+        public List<string> Columns { get; set; } = new();
+        public int SelectedIndex { get; set; }
+        public int CurrentDatasetId { get; set; }
+    }
+
+    public class SearchMfgRequest
+    {
+        public string? ProductCode { get; set; }
+        public DateTime? DateFrom { get; set; }
+        public DateTime? DateTo { get; set; }
+        public int TestingStatusId { get; set; }
+        public int AgedRValueId { get; set; }
+        public int DimStabilityId { get; set; }
+        public int RunTypeId { get; set; }
+    }
+
 }

@@ -166,7 +166,7 @@
     "Parameters": [
       {
         "Name": "request",
-        "Type": "IntugentBackend.Models.SearchMfgRequest",
+        "Type": "IntugentBackend.Controllers.SearchMfgRequest",
         "IsRequired": true
       }
     ],

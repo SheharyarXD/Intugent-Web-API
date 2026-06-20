@@ -3,3 +3,6 @@ E:\IntugentBackend\IntugentFrontend\MauiApp1\MauiApp1\MauiApp1.Shared\obj\Debug\
 E:\IntugentBackend\IntugentFrontend\MauiApp1\MauiApp1\MauiApp1.Shared\obj\Debug\net10.0\staticwebassets.build.json
 E:\IntugentBackend\IntugentFrontend\MauiApp1\MauiApp1\MauiApp1.Shared\obj\Debug\net10.0\staticwebassets.build.json
 E:\IntugentBackend\IntugentFrontend\MauiApp1\MauiApp1\MauiApp1.Shared\obj\Debug\net10.0\staticwebassets.build.json
+E:\IntugentBackend\IntugentFrontend\MauiApp1\MauiApp1\MauiApp1.Shared\obj\Debug\net10.0\staticwebassets.build.json
+E:\IntugentBackend\IntugentFrontend\MauiApp1\MauiApp1\MauiApp1.Shared\obj\Debug\net10.0\staticwebassets.build.json
+E:\IntugentBackend\IntugentFrontend\MauiApp1\MauiApp1\MauiApp1.Shared\obj\Debug\net10.0\staticwebassets.build.json

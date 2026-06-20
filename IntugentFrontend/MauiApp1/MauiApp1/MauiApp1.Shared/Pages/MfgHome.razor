@@ -1,5 +1,6 @@
 @page "/mfg-home"
 @using System.Net.Http.Json
+@using System.Text.Json
 @inject HttpClient Http
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
@@ -7,7 +8,6 @@
 
 <PageTitle>Mfg. Home</PageTitle>
 
-<!-- Error Alert -->
 @if (!string.IsNullOrEmpty(errorMessage))
 {
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -17,14 +17,10 @@
 }
 
 <div class="row">
-    <!-- Search Card -->
     <div class="card card-default">
-        <div class="card-header align-items-center">
-            <h2>Search Datasets to Work With</h2>
-        </div>
+        <div class="card-header align-items-center"><h2>Search Datasets to Work With</h2></div>
         <div class="card-body">
             <div class="row">
-                <!-- Testing Status -->
                 <div class="col-lg-4">
                     <div class="form-floating mb-2">
                         <select class="form-select" id="testingStatus" @bind="searchParams.TestingStatusId">
@@ -36,8 +32,6 @@
                         <label for="testingStatus">Testing Status</label>
                     </div>
                 </div>
-
-                <!-- Aged R Value -->
                 <div class="col-lg-4">
                     <div class="form-floating mb-2">
                         <select class="form-select" id="agedRValue" @bind="searchParams.AgedRValueId">
@@ -49,8 +43,6 @@
                         <label for="agedRValue">Aged R Value Testing</label>
                     </div>
                 </div>
-
-                <!-- Dimension Stability -->
                 <div class="col-lg-4">
                     <div class="form-floating mb-2">
                         <select class="form-select" id="dimensionStability" @bind="searchParams.DimStabilityId">
@@ -65,7 +57,6 @@
             </div>
 
             <div class="row">
-                <!-- Product Code -->
                 <div class="col-lg-4">
                     <div class="form-floating mb-2">
                         <select class="form-select" id="productCode" @bind="searchParams.ProductCode">
@@ -77,8 +68,6 @@
                         <label for="productCode">Product Code</label>
                     </div>
                 </div>
-
-                <!-- Run Type -->
                 <div class="col-lg-4">
                     <div class="form-floating mb-2">
                         <select class="form-select" id="runType" @bind="searchParams.RunTypeId">
@@ -90,8 +79,6 @@
                         <label for="runType">Run Type</label>
                     </div>
                 </div>
-
-                <!-- Group -->
                 <div class="col-lg-4">
                     <div class="mb-2 d-flex align-items-center">
                         <label for="Group" class="col-md-3 col-form-label text-md-end">Group</label>
@@ -103,23 +90,18 @@
             </div>
 
             <div class="row">
-                <!-- After Date -->
                 <div class="col-lg-4">
                     <div class="form-floating mb-2">
                         <input type="date" class="form-control" id="afterDate" @bind="searchParams.DateTo">
                         <label for="afterDate">Manufactured - After or At</label>
                     </div>
                 </div>
-
-                <!-- Before Date -->
                 <div class="col-lg-4">
                     <div class="form-floating mb-2">
                         <input type="date" class="form-control" id="beforeDate" @bind="searchParams.DateFrom">
                         <label for="beforeDate">Manufactured - Before or At</label>
                     </div>
                 </div>
-
-                <!-- Search Button -->
                 <div class="col-lg-4 d-flex justify-content-end">
                     <button type="button" class="btn btn-primary m-auto" @onclick="SearchDatasets" disabled="@isLoading">
                         @if (isLoading)
@@ -134,14 +116,12 @@
     </div>
 </div>
 
-<!-- Copy Button -->
 <div class="text-end mt-3">
     <button type="button" class="btn btn-primary mb-3" @onclick="CopyDataToClipboard">
         Copy All Datasets Meeting Search Criteria
     </button>
 </div>
 
-<!-- Search Results -->
 <div class="row">
     <div class="card card-default">
         <div class="card-header align-items-center">
@@ -171,13 +151,11 @@
                                 <tr class="@(currentIdx == selectedIndex ? "table-primary" : "")">
                                     @foreach (var col in searchResults.Columns)
                                     {
-                                        <td>@(row.GetValueOrDefault(col)?.ToString() ?? "")</td>
+                                        <td>@(GetValueAsString(row, col))</td>
                                     }
                                     <td>
                                         <div class="form-check">
-                                            <input type="radio"
-                                                   class="form-check-input"
-                                                   name="datasetSelect"
+                                            <input type="radio" class="form-check-input" name="datasetSelect"
                                                    checked="@(currentIdx == selectedIndex)"
                                                    @onchange="() => SelectDataset(currentIdx)" />
                                         </div>
@@ -197,18 +175,13 @@
     </div>
 </div>
 
-<!-- Create New Dataset Button -->
 <div class="text-end mt-3">
     <button type="button" class="btn btn-primary mb-2" @onclick="CreateNewDataset">
         Create A New Dataset
     </button>
 </div>
-
 @code {
-    // API Base URL - configure per environment
     private const string ApiBaseUrl = "https://localhost:44323/api";
-
-    // State
     private MfgFiltersDto? filters;
     private MfgSearchResultDto? searchResults;
     private SearchMfgRequest searchParams = new();
@@ -219,7 +192,7 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadFilters();
-        await LoadResults(); // Load existing results if any
+        await LoadResults();
     }
 
     private async Task LoadFilters()
@@ -228,12 +201,9 @@
         {
             isLoading = true;
             var response = await Http.GetFromJsonAsync<ApiResponse<MfgFiltersDto>>($"{ApiBaseUrl}/MfgHome/filters");
-
             if (response?.Success == true && response.Data != null)
             {
                 filters = response.Data;
-
-                // Set defaults
                 searchParams.ProductCode = filters.DefaultProductCode;
                 searchParams.TestingStatusId = filters.DefaultTestingStatusId;
                 searchParams.AgedRValueId = filters.DefaultAgedRValueId;
@@ -242,19 +212,10 @@
                 searchParams.DateFrom = filters.DefaultDateFrom;
                 searchParams.DateTo = filters.DefaultDateTo;
             }
-            else
-            {
-                errorMessage = response?.Error ?? "Failed to load filters.";
-            }
+            else errorMessage = response?.Error ?? "Failed to load filters.";
         }
-        catch (Exception ex)
-        {
-            errorMessage = $"Error loading filters: {ex.Message}";
-        }
-        finally
-        {
-            isLoading = false;
-        }
+        catch (Exception ex) { errorMessage = $"Error loading filters: {ex.Message}"; }
+        finally { isLoading = false; }
     }
 
     private async Task LoadResults()
@@ -262,66 +223,42 @@
         try
         {
             var response = await Http.GetFromJsonAsync<ApiResponse<MfgSearchResultDto>>($"{ApiBaseUrl}/MfgHome/results");
-
             if (response?.Success == true && response.Data != null)
             {
                 searchResults = response.Data;
                 selectedIndex = searchResults.SelectedIndex;
             }
         }
-        catch
-        {
-            // Silently fail - no results yet is OK
-        }
+        catch { /* Silently fail */ }
     }
 
     private async Task SearchDatasets()
     {
         try
         {
-            isLoading = true;
-            errorMessage = null;
-
+            isLoading = true; errorMessage = null;
             var response = await Http.PostAsJsonAsync($"{ApiBaseUrl}/MfgHome/search", searchParams);
             var result = await response.Content.ReadFromJsonAsync<ApiResponse<MfgSearchResultDto>>();
-
             if (result?.Success == true && result.Data != null)
             {
                 searchResults = result.Data;
                 selectedIndex = searchResults.SelectedIndex;
             }
-            else
-            {
-                errorMessage = result?.Error ?? "Search failed.";
-            }
+            else errorMessage = result?.Error ?? "Search failed.";
         }
-        catch (Exception ex)
-        {
-            errorMessage = $"Search error: {ex.Message}";
-        }
-        finally
-        {
-            isLoading = false;
-        }
+        catch (Exception ex) { errorMessage = $"Search error: {ex.Message}"; }
+        finally { isLoading = false; }
     }
 
     private async Task SelectDataset(int index)
     {
-        if (searchResults?.Rows == null || index < 0 || index >= searchResults.Rows.Count)
-            return;
+        if (searchResults?.Rows == null || index < 0 || index >= searchResults.Rows.Count) return;
 
         try
         {
-            isLoading = true;
-            selectedIndex = index;
-
-            // Get the ID4ALL value from the row
+            isLoading = true; selectedIndex = index;
             var row = searchResults.Rows[index];
-            int datasetId = 0;
-            if (row.ContainsKey("ID4ALL") && row["ID4ALL"] != null)
-            {
-                datasetId = Convert.ToInt32(row["ID4ALL"]);
-            }
+            int datasetId = GetIntValue(row, "ID4ALL");
 
             var request = new SelectDatasetRequest
             {
@@ -332,22 +269,16 @@
 
             var response = await Http.PostAsJsonAsync($"{ApiBaseUrl}/MfgHome/select-dataset", request);
             var result = await response.Content.ReadFromJsonAsync<ApiResponse<object>>();
-
             if (result?.Success != true)
             {
                 errorMessage = result?.Error ?? "Failed to select dataset.";
-                selectedIndex = searchResults.SelectedIndex; // Revert
+                selectedIndex = searchResults.SelectedIndex;
             }
         }
-        catch (Exception ex)
-        {
-            errorMessage = $"Selection error: {ex.Message}";
-        }
-        finally
-        {
-            isLoading = false;
-        }
+        catch (Exception ex) { errorMessage = $"Selection error: {ex.Message}"; }
+        finally { isLoading = false; }
     }
+
 
     private async Task CopyDataToClipboard()
     {
@@ -356,39 +287,24 @@
             await JS.InvokeVoidAsync("alert", "No data to copy.");
             return;
         }
-
         try
         {
-            // Build CSV string
             var sb = new System.Text.StringBuilder();
-
-            // Header
             sb.AppendLine(string.Join("\t", searchResults.Columns));
-
-            // Rows
             foreach (var row in searchResults.Rows)
             {
-                var values = searchResults.Columns.Select(col =>
-                    row.GetValueOrDefault(col)?.ToString() ?? "");
+                var values = searchResults.Columns.Select(col => GetValueAsString(row, col));
                 sb.AppendLine(string.Join("\t", values));
             }
-
             await JS.InvokeVoidAsync("navigator.clipboard.writeText", sb.ToString());
             await JS.InvokeVoidAsync("alert", "Data copied to clipboard!");
         }
-        catch (Exception ex)
-        {
-            errorMessage = $"Copy failed: {ex.Message}";
-        }
+        catch (Exception ex) { errorMessage = $"Copy failed: {ex.Message}"; }
     }
 
-    private void CreateNewDataset()
-    {
-        // Navigate to new dataset creation page
-        Navigation.NavigateTo("/mfg-home/new");
-    }
+    private void CreateNewDataset() => Navigation.NavigateTo("/mfg-home/new");
 
-    // ========== DTO CLASSES (mirror backend) ==========
+    // ========== DTOs ==========
 
     public class MfgFiltersDto
     {
@@ -416,7 +332,7 @@
 
     public class MfgSearchResultDto
     {
-        public List<Dictionary<string, object?>> Rows { get; set; } = new();
+        public List<Dictionary<string, JsonElement>> Rows { get; set; } = new();
         public List<string> Columns { get; set; } = new();
         public int SelectedIndex { get; set; }
         public int CurrentDatasetId { get; set; }
@@ -445,5 +361,40 @@
         public bool Success { get; set; }
         public T? Data { get; set; }
         public string? Error { get; set; }
+    }
+    private static string GetValueAsString(Dictionary<string, JsonElement> row, string key)
+    {
+        if (!row.TryGetValue(key, out var element)) return "";
+
+        // Unwrap if backend sent JsonValue wrapper: {"rawValue": ...}
+        if (element.ValueKind == JsonValueKind.Object && element.TryGetProperty("rawValue", out var raw))
+        {
+            element = raw;
+        }
+
+        return element.ValueKind switch
+        {
+            JsonValueKind.Null => "",
+            JsonValueKind.String => element.GetString() ?? "",
+            JsonValueKind.Number => element.TryGetInt32(out var i) ? i.ToString() : element.GetDouble().ToString(),
+            JsonValueKind.True => "True",
+            JsonValueKind.False => "False",
+            _ => element.ToString()
+        };
+    }
+
+    private static int GetIntValue(Dictionary<string, JsonElement> row, string key)
+    {
+        if (!row.TryGetValue(key, out var element)) return 0;
+
+        // Unwrap if backend sent JsonValue wrapper: {"rawValue": ...}
+        if (element.ValueKind == JsonValueKind.Object && element.TryGetProperty("rawValue", out var raw))
+        {
+            element = raw;
+        }
+
+        if (element.ValueKind == JsonValueKind.Number && element.TryGetInt32(out var i)) return i;
+        if (element.ValueKind == JsonValueKind.String && int.TryParse(element.GetString(), out var p)) return p;
+        return 0;
     }
 }
