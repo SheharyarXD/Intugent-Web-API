@@ -18,7 +18,7 @@ builder.Services.AddScoped<RndPropertiesService>();
 builder.Services.AddScoped<RNDTDRVService>();
 builder.Services.AddScoped<RndRawPropsService>();
 builder.Services.AddScoped<MfgAnalysisService>();
-
+ObjectsService.ConnectionString = builder.Configuration.GetConnectionString("Default")!;
 // Essential Framework Services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

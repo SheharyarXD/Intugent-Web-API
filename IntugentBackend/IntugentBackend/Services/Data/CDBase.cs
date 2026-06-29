@@ -12,7 +12,7 @@ namespace IntugentBackend.Services.Data
 {
     public class CDBase
     {
-        public static string sDBLocalConStr = @"Data Source=XD-1510\SQLEXPRESS; Initial Catalog= IntugentPI; Integrated Security=SSPI;TrustServerCertificate=True;";
+        public static string sDBLocalConStr = ObjectsService.ConnectionString;
         //        public static SqlConnection DBCon;
         public SqlDataAdapter da;
         public DataTable dt;
@@ -41,7 +41,7 @@ namespace IntugentBackend.Services.Data
                 if (itmp < 1)
                 {
                     sMsg = ("No AI Model was found to meet the search criteria.  Check the network connection and/or relax the search criteria");
-                   // MessageBox.Show(sMsg, Cbfile.sAppName, MessageBoxButton.OK, MessageBoxImage.Information);
+                    // MessageBox.Show(sMsg, Cbfile.sAppName, MessageBoxButton.OK, MessageBoxImage.Information);
                     return false;
                 }
             }
@@ -68,17 +68,17 @@ namespace IntugentBackend.Services.Data
             }
             catch (Exception ex)
             {
-               // MessageBox.Show(sMsg, Cbfile.sAppName, MessageBoxButton.OK, MessageBoxImage.Stop);
+                // MessageBox.Show(sMsg, Cbfile.sAppName, MessageBoxButton.OK, MessageBoxImage.Stop);
                 sMsg = "Could not save the InProcess dataset " + IDModel.ToString();
                 System.Diagnostics.Trace.TraceError(sMsg + "\n\n" + ex.Message);
                 //                    CTelClient.TelException(ex, sMsg);
                 return;
             }
 
-           // CStatusBar.SetText("Data Saved at " + DateTime.Now.ToString("hh:mm:ss:tt"));
+            // CStatusBar.SetText("Data Saved at " + DateTime.Now.ToString("hh:mm:ss:tt"));
 
         }
-        public  bool CreateNewModel()
+        public bool CreateNewModel()
         {
 
             string sMsg = "Could not create a new Mfg dataset.";
@@ -114,7 +114,7 @@ namespace IntugentBackend.Services.Data
             }
             catch (Exception ex)
             {
-              //  MessageBox.Show(sMsg, Cbfile.sAppName, MessageBoxButton.OK, MessageBoxImage.Stop);
+                //  MessageBox.Show(sMsg, Cbfile.sAppName, MessageBoxButton.OK, MessageBoxImage.Stop);
                 sMsg = "Could not create a new Model with ID " + iDummy.ToString();
                 System.Diagnostics.Trace.TraceError(sMsg + "\n\n" + ex.Message);
                 //                CTelClient.TelException(ex, sMsg);
@@ -124,7 +124,7 @@ namespace IntugentBackend.Services.Data
             IDModel = iDummy;
             IndexModel = 0;
             //CPages.PageModel_1.nnModel = new CNNModel();
-           // CNNData.Reset();
+            // CNNData.Reset();
             for (int i = 0; i < dt.Rows.Count; i++) if (IDModel == (int)dt.Rows[i]["ID"]) IndexModel = i;
 
             return true;

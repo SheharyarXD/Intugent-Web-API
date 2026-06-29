@@ -1,10 +1,13 @@
 using Microsoft.ApplicationInsights;
 using Microsoft.Data.SqlClient;
+using IntugentBackend;
 
 namespace IntugentBackend.Services.Core
 {
     public class Cbfile
     {
+
+        public readonly ObjectsService _objectService;
         public bool bConAz = false;
         public bool bCanSwitchRecord = true;
         public bool bChanged;
@@ -28,7 +31,7 @@ namespace IntugentBackend.Services.Core
         public Cbfile()
         {
             // IMPORTANT: Initialize the connection object here to prevent NullReferenceException
-            string connectionString = @"Data Source=XD-1510\SQLEXPRESS;Initial Catalog=IntugentPI;Integrated Security=SSPI;TrustServerCertificate=True;";
+            string connectionString = ObjectsService.ConnectionString;
             conAZ = new SqlConnection(connectionString);
         }
 
@@ -37,8 +40,7 @@ namespace IntugentBackend.Services.Core
             string sCon = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=";
             return sCon + sIntDir + sDBFile;
         }
-
-        public string sConSql = @"Data Source=XD-1510\SQLEXPRESS; Initial Catalog=IntugentPI; Integrated Security=SSPI; TrustServerCertificate=True;";
+        public string sConSql = ObjectsService.ConnectionString;
         public int iIDMfg = 1943;
         public int iIndexRND = 0;
         public int iIDMfgIndex = 0;

@@ -3,11 +3,13 @@ using IntugentBackend.Services.Core;
 using IntugentBackend.Services.Data;
 using IntugentBackend.Services.Mfg;
 using IntugentBackend.Services.Rnd;
+using System.Configuration;
 
 namespace IntugentBackend
 {
     public class ObjectsService
     {
+        public static string ConnectionString { get; set; } = "";
         public int UserIndex { get; set; }
 
         // --- Core Services ---
@@ -56,7 +58,7 @@ namespace IntugentBackend
         public bool gInProcessDoneIsChecked { get; set; }
         public int gInputIndex { get; set; }
 
-        public ObjectsService()
+        public ObjectsService(IConfiguration configuration)
         {
             // 1. Initialize dependencies first
             // Ensure Cbfile, CDefualts, CLists are available as they are common dependencies
@@ -83,6 +85,9 @@ namespace IntugentBackend
             RNDHome = new RNDHome(CDefualts, CLists, Cbfile);
             RNDRValues = new RNDRValues(CLists);
             RNDFormulations = new RNDFormulations(CDefualts, Cbfile, RNDHome);
+            ConnectionString = configuration.GetConnectionString("Default")
+    ?? throw new InvalidOperationException("Connection string 'Default' not found.");
+
         }
 
         public void InitializeSession(int userId)
