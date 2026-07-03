@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IntugentBackend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+775c1dd331765f09d85f9cd9b9628942aa6377d7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1fe4b2fe3a902e2dc4c3b433c6f898a3e795ff48")]
 [assembly: System.Reflection.AssemblyProductAttribute("IntugentBackend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IntugentBackend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

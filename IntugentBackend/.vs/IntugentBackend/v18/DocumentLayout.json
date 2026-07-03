@@ -44,7 +44,7 @@
               "RelativeDocumentMoniker": "IntugentBackend\\Program.cs",
               "ToolTip": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Program.cs",
               "RelativeToolTip": "IntugentBackend\\Program.cs",
-              "ViewState": "AgIAAC8AAAAAAAAAAAAAABQAAABYAAAAAAAAAA==",
+              "ViewState": "AgIAAC8AAAAAAAAAAAAAAD4AAAAKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-06-29T20:38:50.107Z",
               "EditorCaption": ""
@@ -59,8 +59,7 @@
               "RelativeToolTip": "IntugentBackend\\appsettings.json",
               "ViewState": "AgIAAAkAAAAAAAAAAAAAAAsAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-06-29T20:38:39.252Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-06-29T20:38:39.252Z"
             },
             {
               "$type": "Document",
@@ -72,8 +71,7 @@
               "RelativeToolTip": "IntugentBackend\\Services\\Core\\Cbfile.cs",
               "ViewState": "AgIAABIAAAAAAAAAAAAswCEAAAA0AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-29T20:18:16.104Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-06-29T20:18:16.104Z"
             },
             {
               "$type": "Document",
@@ -85,8 +83,7 @@
               "RelativeToolTip": "IntugentBackend\\Services\\Data\\CDBase.cs",
               "ViewState": "AgIAAAUAAAAAAAAAAAAAAAwAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-29T20:11:49.234Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-06-29T20:11:49.234Z"
             },
             {
               "$type": "Document",
@@ -98,8 +95,7 @@
               "RelativeToolTip": "IntugentBackend\\ObjectsService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAABBAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-29T20:10:03.994Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-06-29T20:10:03.994Z"
             },
             {
               "$type": "Document",
@@ -111,8 +107,7 @@
               "RelativeToolTip": "IntugentBackend\\Services\\Core\\MainWindow.cs",
               "ViewState": "AgIAAFAAAAAAAAAAAAAmwGEAAABUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-29T20:06:51.133Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-06-29T20:06:51.133Z"
             }
           ]
         }
