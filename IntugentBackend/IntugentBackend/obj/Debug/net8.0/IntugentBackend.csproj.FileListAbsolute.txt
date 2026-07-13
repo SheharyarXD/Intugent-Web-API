@@ -522,7 +522,6 @@ E:\IntugentBackend\IntugentBackend\IntugentBackend\obj\Debug\net8.0\staticwebass
 E:\IntugentBackend\IntugentBackend\IntugentBackend\obj\Debug\net8.0\staticwebassets.development.json
 E:\IntugentBackend\IntugentBackend\IntugentBackend\obj\Debug\net8.0\staticwebassets.build.endpoints.json
 E:\IntugentBackend\IntugentBackend\IntugentBackend\obj\Debug\net8.0\swae.build.ex.cache
-E:\IntugentBackend\IntugentBackend\IntugentBackend\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 E:\IntugentBackend\IntugentBackend\IntugentBackend\obj\Debug\net8.0\Intugent.E876B52B.Up2Date
 E:\IntugentBackend\IntugentBackend\IntugentBackend\obj\Debug\net8.0\IntugentBackend.genruntimeconfig.cache
 E:\IntugentBackend\IntugentBackend\IntugentBackend\obj\Debug\net8.0\ref\IntugentBackend.dll

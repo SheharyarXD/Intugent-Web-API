@@ -9,12 +9,16 @@ namespace IntugentBackend.Controllers.Rnd
     [Route("api/[controller]")]
     public class RndRawPropsController : ControllerBase
     {
-        private readonly ObjectsService _os;
+        private readonly RNDHome _rndHome;
+        private readonly RNDRawProps _rndRawProps;
+        private readonly SessionState _sessionState;
         private readonly RndRawPropsService _svc;
 
-        public RndRawPropsController(ObjectsService os, RndRawPropsService svc)
+        public RndRawPropsController(RNDHome rndHome, RNDRawProps rndRawProps, SessionState sessionState, RndRawPropsService svc)
         {
-            _os = os;
+            _rndHome = rndHome;
+            _rndRawProps = rndRawProps;
+            _sessionState = sessionState;
             _svc = svc;
         }
 
@@ -22,9 +26,9 @@ namespace IntugentBackend.Controllers.Rnd
         [HttpGet("load-density")]
         public IActionResult LoadDensity()
         {
-            _os.RNDHome.GetDataSet(1);
+            _rndHome.GetDataSet(1);
 
-            var data = _os.RNDRawProps.dtDensityE.AsEnumerable()
+            var data = _rndRawProps.dtDensityE.AsEnumerable()
                 .Select(row => {
                     var dict = new Dictionary<string, object>();
                     foreach (DataColumn col in row.Table.Columns)
@@ -42,8 +46,8 @@ namespace IntugentBackend.Controllers.Rnd
         [HttpPost("update-density")]
         public IActionResult UpdateDensity([FromBody] TdrvUpdateModel model)
         {
-            System.Diagnostics.Debug.WriteLine("Loading Dataset ID: " + _os.UserIndex);
-            _os.RNDHome.GetDataSet(1);
+            System.Diagnostics.Debug.WriteLine("Loading Dataset ID: " + _sessionState.UserIndex);
+            _rndHome.GetDataSet(1);
             // 1. Data initialization
 
             // 2. Input validation
@@ -55,9 +59,9 @@ namespace IntugentBackend.Controllers.Rnd
             int icol1 = icol - 1;
 
             // 3. Safety check to prevent IndexOutOfRangeException
-            if (icol1 < 0 || icol1 >= _os.RNDHome.dtF.Rows.Count)
+            if (icol1 < 0 || icol1 >= _rndHome.dtF.Rows.Count)
             {
-                return BadRequest($"Index {icol1} out of range. Rows available: {_os.RNDHome.dtF.Rows.Count}");
+                return BadRequest($"Index {icol1} out of range. Rows available: {_rndHome.dtF.Rows.Count}");
             }
 
             string[] sFields = { "DensT1", "DensT2", "DensT3", "DensT4", "DensT5", "DensL1", "DensL2", "DensW1", "DensW2", "DensMass" };
@@ -66,7 +70,7 @@ namespace IntugentBackend.Controllers.Rnd
             _svc.GetDoubleFromGrid(sFields, irow, icol1, model.Text);
             _svc.CalculateDensity(icol, icol1);
 
-            _os.RNDHome.UpdateFormulatiions();
+            _rndHome.UpdateFormulatiions();
 
             return Ok(new { success = true });
         }

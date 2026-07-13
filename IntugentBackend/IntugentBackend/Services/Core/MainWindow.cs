@@ -28,7 +28,14 @@ namespace IntugentBackend.Services.Core
         public CLists cLists;
         public CDefualts cDefualts;
 
-        public (CDefualts, CLists, Cbfile) MainWindowConstructor(int IDLocation)
+        public MainWindow(Cbfile cbfile, CDefualts cDefualts, CLists cLists)
+        {
+            this.cbfile = cbfile;
+            this.cDefualts = cDefualts;
+            this.cLists = cLists;
+        }
+
+        public bool MainWindowConstructor(int IDLocation)
         {
             string sMsg;
 
@@ -52,9 +59,6 @@ namespace IntugentBackend.Services.Core
             //  CTelClient.TelTrace("App. & Okta authorization page Initialized");  //Azure Insight Trace Message
 
             //check for the local user.  If not local user, get Azure secrets and Okta authentication
-            cbfile = new Cbfile();
-            cLists = new CLists();
-            cDefualts = new CDefualts();
             cDefualts.sEmployee = Environment.UserName;
 
             // TRYING TO RUN LOCALLY....!!!!!!!!!!!!!!
@@ -95,15 +99,13 @@ namespace IntugentBackend.Services.Core
                 else
                 {
                     //   MessageBox.Show("Welcome " + CDefualts.sEmployee + "\n\n Intugent PI will be connecting to Local Database", cbfile.sAppName);
-                    cbfile.conAZ = new SqlConnection(ObjectsService.ConnectionString);
-
                     MainWindow_Rendered(IDLocation);
 
 
                 }
 
 
-                return (cDefualts, cLists, cbfile);
+                return true;
             }
             catch (Exception ex)
             {
@@ -112,7 +114,7 @@ namespace IntugentBackend.Services.Core
                 System.Diagnostics.Trace.TraceError("Initial connection to AzureSQL\n\n" + ex.Message);
                 //  CTelClient.TelExceptionFlush(ex, sMsg);  //Azue Insight Trace Message
                 // this.Close(); return;
-                return (null, null, null);
+                return false;
             }
 
 

@@ -12,12 +12,32 @@ namespace IntugentBackend.Controllers
     [Route("api/[controller]")]
     public class SessionController : ControllerBase
     {
-        private readonly ObjectsService _objectsService;
+        private readonly Cbfile _cbfile;
+        private readonly CDefualts _cDefualts;
+        private readonly CLists _cLists;
+        private readonly MainWindow _mainWindow;
+        private readonly MfgJetMixing _mfgJetMixing;
+        private readonly MfgInProcess _mfgInProcess;
+        private readonly SessionState _sessionState;
         private readonly ILogger<SessionController> _logger;
 
-        public SessionController(ObjectsService objectsService, ILogger<SessionController> logger)
+        public SessionController(
+            Cbfile cbfile,
+            CDefualts cDefualts,
+            CLists cLists,
+            MainWindow mainWindow,
+            MfgJetMixing mfgJetMixing,
+            MfgInProcess mfgInProcess,
+            SessionState sessionState,
+            ILogger<SessionController> logger)
         {
-            _objectsService = objectsService;
+            _cbfile = cbfile;
+            _cDefualts = cDefualts;
+            _cLists = cLists;
+            _mainWindow = mainWindow;
+            _mfgJetMixing = mfgJetMixing;
+            _mfgInProcess = mfgInProcess;
+            _sessionState = sessionState;
             _logger = logger;
         }
 
@@ -39,20 +59,22 @@ namespace IntugentBackend.Controllers
 
                 _logger.LogInformation("Beginning session for UserId: {UserId}", request.UserId);
 
-                MainWindow mainWindow = new MainWindow();
-                (_objectsService.CDefualts, _objectsService.CLists, _objectsService.Cbfile)
-                    = mainWindow.MainWindowConstructor(request.UserId);
+                bool ok = _mainWindow.MainWindowConstructor(request.UserId);
 
-                if (_objectsService.CDefualts == null || _objectsService.CLists == null || _objectsService.Cbfile == null)
+                if (!ok)
                 {
-                    _logger.LogError("MainWindowConstructor returned null for UserId: {UserId}", request.UserId);
-                    return BadRequest(new { message = "Failed to initialize session — MainWindowConstructor returned null." });
+                    _logger.LogError("MainWindowConstructor failed for UserId: {UserId}", request.UserId);
+                    return BadRequest(new { message = "Failed to initialize session." });
                 }
 
-                SetOptionBoxes(_objectsService.CDefualts, _objectsService.CLists);
-                InitializeServices(request.UserId);
+                SetOptionBoxes(_cDefualts, _cLists);
 
-                _objectsService.UserIndex = request.UserId;
+                // These two snapshot data at construction time, so they must be re-run
+                // now that CLists/Cbfile have been refreshed for this session.
+                _mfgJetMixing.Startup();
+                _mfgInProcess.GetDataSet();
+
+                _sessionState.UserIndex = request.UserId;
 
                 return Ok(new BeginSessionResponse
                 {
@@ -85,48 +107,6 @@ namespace IntugentBackend.Controllers
             };
 
             return Ok(groups);
-        }
-
-        private void InitializeServices(int userId)
-        {
-            // Production Targets
-            _objectsService.CProdTargets = new CProdTargets(_objectsService.Cbfile, _objectsService.CDefualts);
-
-            // Matrix
-            _objectsService.cMatrix = new cMatrix();
-
-            // Database
-            _objectsService.CDBase = new CDBase(_objectsService.Cbfile);
-
-            // Neural Network
-            _objectsService.CNNData = new CNNData(_objectsService.Cbfile);
-            _objectsService.CNNModel = new CNNModel(_objectsService.CNNData);
-
-            // Analysis
-            _objectsService.CAnalysisData = new CAnalysisData(_objectsService.Cbfile, _objectsService.CDefualts);
-
-            // MFG Pages
-            _objectsService.MfgHome = new MfgHome(_objectsService.CDefualts, _objectsService.CLists, _objectsService.Cbfile);
-            _objectsService.MfgInProcess = new MfgInProcess(_objectsService.Cbfile);
-            _objectsService.CIPProdTargets = new CIPProdTargets(_objectsService.Cbfile, _objectsService.MfgInProcess);
-            _objectsService.MfgFinishedGoods = new MfgFinishedGoods(_objectsService.Cbfile);
-            _objectsService.MfgDimStability = new MfgDimStability(_objectsService.Cbfile);
-            _objectsService.MfgPlantData = new MfgPlantData(_objectsService.Cbfile, _objectsService.CLists, _objectsService.CDefualts);
-            _objectsService.MfgJetMixing = new MfgJetMixing(_objectsService.CLists);
-            _objectsService.MfgProcessCheck = new MfgProcessCheck(_objectsService.Cbfile, _objectsService.CDefualts);
-            _objectsService.MfgReports = new MfgReports(_objectsService.Cbfile, _objectsService.CDefualts);
-
-            // R&D Pages
-            _objectsService.RNDHome = new RNDHome(_objectsService.CDefualts, _objectsService.CLists, _objectsService.Cbfile);
-            _objectsService.RNDFormulations = new RNDFormulations(_objectsService.CDefualts, _objectsService.Cbfile, _objectsService.RNDHome);
-            _objectsService.RNDRValues = new RNDRValues(_objectsService.CLists);
-            _objectsService.RNDRawProps = new RNDRawProps();
-            _objectsService.RNDProperties = new RNDProperties();
-            _objectsService.RNDTDRV = new RNDTDRV();
-
-            // Admin & AI
-            _objectsService.MfgAdmin = new MfgAdmin(_objectsService.Cbfile);
-            _objectsService.AIModel = new AIModel();
         }
 
         private void SetOptionBoxes(CDefualts defualts, CLists lists)

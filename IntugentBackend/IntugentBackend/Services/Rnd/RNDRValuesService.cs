@@ -11,16 +11,18 @@ namespace IntugentBackend.Services.Rnd
 {
     public class RNDRValuesService
     {
-        private readonly ObjectsService _objectsService;
+        private readonly RNDRValues _rndRValues;
+        private readonly RNDFormulations _rndFormulations;
 
-        public RNDRValuesService(ObjectsService objectsService)
+        public RNDRValuesService(RNDRValues rndRValues, RNDFormulations rndFormulations)
         {
-            _objectsService = objectsService;
+            _rndRValues = rndRValues;
+            _rndFormulations = rndFormulations;
         }
 
         public void LoadDataFromEmployee()
         {
-            var rValues = _objectsService.RNDRValues;
+            var rValues = _rndRValues;
             // Defensive check for CLists and drEmployee
             if (rValues?.CLists?.drEmployee != null)
             {
@@ -39,11 +41,11 @@ namespace IntugentBackend.Services.Rnd
 
         public void CollectBlowGases()
         {
-            var rValues = _objectsService.RNDRValues;
+            var rValues = _rndRValues;
             rValues.RCalc.GasMats.Clear();
             int iba = -1;
 
-            foreach (var mat in _objectsService.RNDFormulations.Forms.POMats)
+            foreach (var mat in _rndFormulations.Forms.POMats)
             {
                 if (mat.GassToLiqWtRatio > 0)
                 {
@@ -51,8 +53,8 @@ namespace IntugentBackend.Services.Rnd
                     rValues.RCalc.GasMats.Add(mat); // Simplified adding logic
                     for (int ifo = 0; ifo < Params.nFormMax; ifo++)
                     {
-                        int matIndex = _objectsService.RNDFormulations.Forms.POMats.IndexOf(mat);
-                        rValues.RCalc.MoleFracs[ifo, iba] = _objectsService.RNDFormulations.Forms.FormAr[ifo].POMatPbw[matIndex]
+                        int matIndex = _rndFormulations.Forms.POMats.IndexOf(mat);
+                        rValues.RCalc.MoleFracs[ifo, iba] = _rndFormulations.Forms.FormAr[ifo].POMatPbw[matIndex]
                             * mat.GassToLiqWtRatio / mat.GassMolWt;
                     }
                 }
@@ -62,7 +64,7 @@ namespace IntugentBackend.Services.Rnd
 
         public void UpdateDataset()
         {
-            var rValues = _objectsService.RNDRValues;
+            var rValues = _rndRValues;
 
             if (rValues?.CLists?.drEmployee == null)
             {

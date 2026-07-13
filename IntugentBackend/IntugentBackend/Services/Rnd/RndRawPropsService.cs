@@ -5,20 +5,26 @@ namespace IntugentBackend.Services.Rnd
 {
     public class RndRawPropsService
     {
-        private readonly ObjectsService _os;
-        public RndRawPropsService(ObjectsService os) => _os = os;
+        private readonly RNDHome _rndHome;
+        private readonly RNDRawProps _rndRawProps;
+
+        public RndRawPropsService(RNDHome rndHome, RNDRawProps rndRawProps)
+        {
+            _rndHome = rndHome;
+            _rndRawProps = rndRawProps;
+        }
 
         public bool GetDoubleFromGrid(string[] sFields, int irow, int icol1, string tb)
         {
             string sField = sFields[irow];
             if (string.IsNullOrEmpty(tb))
             {
-                _os.RNDHome.dtF.Rows[icol1][sField] = DBNull.Value;
+                _rndHome.dtF.Rows[icol1][sField] = DBNull.Value;
                 return true;
             }
             if (double.TryParse(tb, out double dtmp))
             {
-                _os.RNDHome.dtF.Rows[icol1][sField] = dtmp;
+                _rndHome.dtF.Rows[icol1][sField] = dtmp;
                 return true;
             }
             return false;
@@ -26,7 +32,7 @@ namespace IntugentBackend.Services.Rnd
 
         public void CalculateDensity(int icol, int icol1)
         {
-            var dtF = _os.RNDHome.dtF.Rows[icol1];
+            var dtF = _rndHome.dtF.Rows[icol1];
             if (dtF["DensAvgT"] != DBNull.Value && dtF["DensAvgL"] != DBNull.Value &&
                 dtF["DensAvgW"] != DBNull.Value && dtF["DensMass"] != DBNull.Value)
             {
@@ -35,7 +41,7 @@ namespace IntugentBackend.Services.Rnd
                 {
                     double dens = 0.00220462 * (double)dtF["DensMass"] / vol;
                     dtF["Density"] = dens;
-                    _os.RNDRawProps.dtDensityC.Rows[3][icol] = dens.ToString("0.###");
+                    _rndRawProps.dtDensityC.Rows[3][icol] = dens.ToString("0.###");
                 }
             }
         }

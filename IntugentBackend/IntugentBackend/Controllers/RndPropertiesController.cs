@@ -7,12 +7,12 @@ using IntugentBackend.Services.Rnd;
 [Route("api/[controller]")]
 public class RndPropertiesController : ControllerBase
 {
-    private readonly ObjectsService _os;
+    private readonly RNDHome _rndHome;
     private readonly RndPropertiesService _svc;
 
-    public RndPropertiesController(ObjectsService os, RndPropertiesService svc)
+    public RndPropertiesController(RNDHome rndHome, RndPropertiesService svc)
     {
-        _os = os;
+        _rndHome = rndHome;
         _svc = svc;
     }
 
@@ -20,7 +20,7 @@ public class RndPropertiesController : ControllerBase
     public IActionResult UpdateReaction([FromBody] TdrvUpdateModel model)
     {
         // 1. Always initialize
-        _os.RNDHome.GetDataSet(1);
+        _rndHome.GetDataSet(1);
 
         // 2. Validate inputs (Path A)
         if (!int.TryParse(model.RowId, out int irow) || !int.TryParse(model.ColId, out int icol))
@@ -37,14 +37,14 @@ public class RndPropertiesController : ControllerBase
         // ... your logic here ...
 
         // 4. Final Success Path (Path C)
-        _os.RNDHome.UpdateFormulatiions();
+        _rndHome.UpdateFormulatiions();
         return Ok(new { success = true });
     }
     [HttpPost("update-notes")]
     public IActionResult UpdateNotes([FromBody] TdrvUpdateModel model)
     {
         // 1. INITIALIZATION: Always ensure data is loaded for the current user
-        _os.RNDHome.GetDataSet(1);
+        _rndHome.GetDataSet(1);
 
         // 2. DEFENSIVE VALIDATION: Check numeric format FIRST
         if (!int.TryParse(model.RowId, out int irow))
@@ -53,14 +53,14 @@ public class RndPropertiesController : ControllerBase
         }
 
         // 3. BOUNDS CHECK: Ensure the row actually exists before trying to access it
-        if (irow < 0 || irow >= _os.RNDHome.dtF.Rows.Count)
+        if (irow < 0 || irow >= _rndHome.dtF.Rows.Count)
         {
-            return BadRequest($"Invalid row index. Rows available: {_os.RNDHome.dtF.Rows.Count}");
+            return BadRequest($"Invalid row index. Rows available: {_rndHome.dtF.Rows.Count}");
         }
 
         // 4. LOGIC: Now it is safe to proceed
-        _os.RNDHome.dtF.Rows[irow]["sNote"] = model.Text;
-        _os.RNDHome.UpdateFormulatiions();
+        _rndHome.dtF.Rows[irow]["sNote"] = model.Text;
+        _rndHome.UpdateFormulatiions();
 
         return Ok(new { success = true });
     }

@@ -10,9 +10,9 @@ namespace IntugentBackend.Controllers
     {
         private readonly RNDRValuesService _service;
 
-        public RndValuesController(ObjectsService objectsService)
+        public RndValuesController(RNDRValuesService service)
         {
-            _service = new RNDRValuesService(objectsService);
+            _service = service;
         }
        
         [HttpPost("update")]

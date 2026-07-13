@@ -9,12 +9,12 @@ namespace IntugentBackend.Controllers.Mfg
     [Route("api/[controller]")]
     public class MfgAnalysisController : ControllerBase
     {
-        private readonly ObjectsService _os;
+        private readonly RNDHome _rndHome;
         private readonly MfgAnalysisService _svc;
 
-        public MfgAnalysisController(ObjectsService os, MfgAnalysisService svc)
+        public MfgAnalysisController(RNDHome rndHome, MfgAnalysisService svc)
         {
-            _os = os;
+            _rndHome = rndHome;
             _svc = svc;
         }
 
@@ -22,7 +22,7 @@ namespace IntugentBackend.Controllers.Mfg
         public IActionResult Load()
         {
             // Always ensure data is loaded
-            _os.RNDHome.GetDataSet(1);
+            _rndHome.GetDataSet(1);
 
             // Call service logic to perform analysis
             var results = _svc.PerformAnalysis();

@@ -5,8 +5,8 @@ namespace IntugentBackend.Services.Rnd
 {
     public class RndPropertiesService
     {
-        private readonly ObjectsService _os;
-        public RndPropertiesService(ObjectsService os) => _os = os;
+        private readonly RNDHome _os;
+        public RndPropertiesService(RNDHome rndHome) => _os = rndHome;
 
         public void UpdateReactionData(int rowId, int colId, string text)
         {
@@ -26,11 +26,11 @@ namespace IntugentBackend.Services.Rnd
         private void UpdateField(string fieldName, int rowIndex, string value)
         {
             if (string.IsNullOrEmpty(value))
-                _os.RNDHome.dtF.Rows[rowIndex][fieldName] = DBNull.Value;
+                _os.dtF.Rows[rowIndex][fieldName] = DBNull.Value;
             else if (double.TryParse(value, out double dtmp))
-                _os.RNDHome.dtF.Rows[rowIndex][fieldName] = dtmp;
+                _os.dtF.Rows[rowIndex][fieldName] = dtmp;
             else
-                _os.RNDHome.dtF.Rows[rowIndex][fieldName] = value;
+                _os.dtF.Rows[rowIndex][fieldName] = value;
         }
     }
 }

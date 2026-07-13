@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using IntugentBackend.Services.Core;
+using IntugentBackend.Services.Rnd;
 using System.Data;
 
 namespace IntugentBackend.Controllers.Rnd
@@ -8,9 +9,9 @@ namespace IntugentBackend.Controllers.Rnd
     [Route("api/[controller]")]
     public class RndTdrvController : ControllerBase
     {
-        private readonly ObjectsService _os;
+        private readonly RNDHome _rndHome;
 
-        public RndTdrvController(ObjectsService os) => _os = os;
+        public RndTdrvController(RNDHome rndHome) => _rndHome = rndHome;
 
         // Inside Controllers/Rnd/RndTdrvController.cs
 
@@ -20,10 +21,10 @@ namespace IntugentBackend.Controllers.Rnd
         public IActionResult UpdateProps([FromBody] TdrvUpdateModel model)
         {
             // Direct processing here
-            var dtF = _os.RNDHome.dtF;
+            var dtF = _rndHome.dtF;
             // Your logic for GetTDRVValues moved directly into this scope
 
-            _os.RNDHome.UpdateFormulatiions();
+            _rndHome.UpdateFormulatiions();
             return Ok(new { success = true });
         }
     }

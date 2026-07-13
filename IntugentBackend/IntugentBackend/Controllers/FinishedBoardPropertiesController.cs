@@ -1,6 +1,8 @@
 ﻿using IntugentBackend;
 using IntugentBackend.Models;
 using IntugentBackend.Services;
+using IntugentBackend.Services.Core;
+using IntugentBackend.Services.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 using IntugentBackend.Services.Mfg;
@@ -10,12 +12,47 @@ namespace IntugentBackend.Controllers
     [Route("api/[controller]")]
     public class FinishedBoardPropertiesController : ControllerBase
     {
-        private readonly ObjectsService _objectsService;
+        private readonly MfgFinishedGoods _mfgFinishedGoods;
+        private readonly Cbfile _cbfile;
+        private readonly MfgHome _mfgHome;
+        private readonly CLists _cLists;
+        private readonly MfgInProcess _mfgInProcess;
+        private readonly MfgDimStability _mfgDimStability;
+        private readonly MfgPlantData _mfgPlantData;
+        private readonly MfgJetMixing _mfgJetMixing;
+        private readonly CDefualts _cDefualts;
+        private readonly CProdTargets _cProdTargets;
+        private readonly CIPProdTargets _cipProdTargets;
+        private readonly SessionState _sessionState;
         private readonly ILogger<FinishedBoardPropertiesController> _logger;
 
-        public FinishedBoardPropertiesController(ObjectsService objectsService, ILogger<FinishedBoardPropertiesController> logger)
+        public FinishedBoardPropertiesController(
+            MfgFinishedGoods mfgFinishedGoods,
+            Cbfile cbfile,
+            MfgHome mfgHome,
+            CLists cLists,
+            MfgInProcess mfgInProcess,
+            MfgDimStability mfgDimStability,
+            MfgPlantData mfgPlantData,
+            MfgJetMixing mfgJetMixing,
+            CDefualts cDefualts,
+            CProdTargets cProdTargets,
+            CIPProdTargets cipProdTargets,
+            SessionState sessionState,
+            ILogger<FinishedBoardPropertiesController> logger)
         {
-            _objectsService = objectsService;
+            _mfgFinishedGoods = mfgFinishedGoods;
+            _cbfile = cbfile;
+            _mfgHome = mfgHome;
+            _cLists = cLists;
+            _mfgInProcess = mfgInProcess;
+            _mfgDimStability = mfgDimStability;
+            _mfgPlantData = mfgPlantData;
+            _mfgJetMixing = mfgJetMixing;
+            _cDefualts = cDefualts;
+            _cProdTargets = cProdTargets;
+            _cipProdTargets = cipProdTargets;
+            _sessionState = sessionState;
             _logger = logger;
         }
 
@@ -27,13 +64,13 @@ namespace IntugentBackend.Controllers
         {
             try
             {
-                if (_objectsService.MfgFinishedGoods == null)
+                if (_mfgFinishedGoods == null)
                 {
                     return BadRequest(new { success = false, error = "MfgFinishedGoods not initialized." });
                 }
 
                 // Ensure data is loaded
-                _objectsService.MfgFinishedGoods.GetDataSet();
+                _mfgFinishedGoods.GetDataSet();
                 var data = BuildDto();
                 return Ok(new { success = true, data });
             }
@@ -52,28 +89,28 @@ namespace IntugentBackend.Controllers
         {
             try
             {
-                if (!_objectsService.Cbfile.bCanSwitchRecord)
+                if (!_cbfile.bCanSwitchRecord)
                 {
-                    return Ok(new { success = false, error = _objectsService.Cbfile.sNoRecSwitchMsg });
+                    return Ok(new { success = false, error = _cbfile.sNoRecSwitchMsg });
                 }
 
                 switch (request.Direction)
                 {
                     case "prev":
-                        _objectsService.Cbfile.iIDMfgIndex += 1;
+                        _cbfile.iIDMfgIndex += 1;
                         break;
                     case "next":
-                        _objectsService.Cbfile.iIDMfgIndex -= 1;
+                        _cbfile.iIDMfgIndex -= 1;
                         break;
                     default:
                         return BadRequest(new { success = false, error = "Invalid direction" });
                 }
 
                 // Clamp bounds
-                if (_objectsService.Cbfile.iIDMfgIndex < 0)
-                    _objectsService.Cbfile.iIDMfgIndex = 0;
-                if (_objectsService.Cbfile.iIDMfgIndex > _objectsService.MfgHome.dt.Rows.Count - 1)
-                    _objectsService.Cbfile.iIDMfgIndex = _objectsService.MfgHome.dt.Rows.Count - 1;
+                if (_cbfile.iIDMfgIndex < 0)
+                    _cbfile.iIDMfgIndex = 0;
+                if (_cbfile.iIDMfgIndex > _mfgHome.dt.Rows.Count - 1)
+                    _cbfile.iIDMfgIndex = _mfgHome.dt.Rows.Count - 1;
 
                 // Update dataset view
                 UpdateDataSetView();
@@ -97,7 +134,7 @@ namespace IntugentBackend.Controllers
         {
             try
             {
-                _objectsService.MfgFinishedGoods.bDataSetChanged = true;
+                _mfgFinishedGoods.bDataSetChanged = true;
                 string result = string.Empty;
 
                 switch (request.Name)
@@ -213,7 +250,7 @@ namespace IntugentBackend.Controllers
 
                 // Recalculate and save
                 Recalculate(request.Name);
-                _objectsService.MfgFinishedGoods.UpdateDataSet();
+                _mfgFinishedGoods.UpdateDataSet();
 
                 return Ok(new { success = true, data = BuildDto() });
             }
@@ -232,50 +269,50 @@ namespace IntugentBackend.Controllers
         {
             try
             {
-                _objectsService.MfgFinishedGoods.bDataSetChanged = true;
+                _mfgFinishedGoods.bDataSetChanged = true;
 
                 switch (request.Name)
                 {
-                    case "gCoreDensKnitLine1": _objectsService.MfgFinishedGoods.dr["Core Knit Present FG 1"] = request.Value; break;
-                    case "gCoreDensKnitLine2": _objectsService.MfgFinishedGoods.dr["Core Knit Present FG 2"] = request.Value; break;
-                    case "gCoreDensKnitLine3": _objectsService.MfgFinishedGoods.dr["Core Knit Present FG 3"] = request.Value; break;
+                    case "gCoreDensKnitLine1": _mfgFinishedGoods.dr["Core Knit Present FG 1"] = request.Value; break;
+                    case "gCoreDensKnitLine2": _mfgFinishedGoods.dr["Core Knit Present FG 2"] = request.Value; break;
+                    case "gCoreDensKnitLine3": _mfgFinishedGoods.dr["Core Knit Present FG 3"] = request.Value; break;
 
-                    case "gRValueKnitPresent1": _objectsService.MfgFinishedGoods.dr["R Value - Knit Present FG 1"] = request.Value; break;
-                    case "gRValueKnitPresent2": _objectsService.MfgFinishedGoods.dr["R Value - Knit Present FG 2"] = request.Value; break;
-                    case "gRValueKnitPresent3": _objectsService.MfgFinishedGoods.dr["R Value - Knit Present FG 3"] = request.Value; break;
+                    case "gRValueKnitPresent1": _mfgFinishedGoods.dr["R Value - Knit Present FG 1"] = request.Value; break;
+                    case "gRValueKnitPresent2": _mfgFinishedGoods.dr["R Value - Knit Present FG 2"] = request.Value; break;
+                    case "gRValueKnitPresent3": _mfgFinishedGoods.dr["R Value - Knit Present FG 3"] = request.Value; break;
 
-                    case "gAgedrValueDone": _objectsService.MfgFinishedGoods.dr["FG Aged R Value Complete"] = request.Value; break;
-                    case "gTestingPassed": _objectsService.MfgFinishedGoods.dr["QC Test Passed"] = request.Value; break;
+                    case "gAgedrValueDone": _mfgFinishedGoods.dr["FG Aged R Value Complete"] = request.Value; break;
+                    case "gTestingPassed": _mfgFinishedGoods.dr["QC Test Passed"] = request.Value; break;
 
                     case "gFinsihedGoodsDone":
-                        if (!request.Value || !_objectsService.gInProcessDoneIsChecked)
-                            _objectsService.MfgFinishedGoods.dr["FG Testing Complete"] = false;
+                        if (!request.Value || !_sessionState.gInProcessDoneIsChecked)
+                            _mfgFinishedGoods.dr["FG Testing Complete"] = false;
                         else
-                            _objectsService.MfgFinishedGoods.dr["FG Testing Complete"] = true;
+                            _mfgFinishedGoods.dr["FG Testing Complete"] = true;
                         break;
 
-                    case "gCompStrFGKnit_1": _objectsService.MfgFinishedGoods.dr["Comp 1 Knit Present FG"] = request.Value; break;
-                    case "gCompStrFGKnit_2": _objectsService.MfgFinishedGoods.dr["Comp 2 Knit Present FG"] = request.Value; break;
-                    case "gCompStrFGKnit_3": _objectsService.MfgFinishedGoods.dr["Comp 3 Knit Present FG"] = request.Value; break;
-                    case "gCompStrFGKnit_4": _objectsService.MfgFinishedGoods.dr["Comp 4 Knit Present FG"] = request.Value; break;
-                    case "gCompStrFGKnit_5": _objectsService.MfgFinishedGoods.dr["Comp 5 Knit Present FG"] = request.Value; break;
-                    case "gCompStrFGKnit_6": _objectsService.MfgFinishedGoods.dr["Comp 6 Knit Present FG"] = request.Value; break;
+                    case "gCompStrFGKnit_1": _mfgFinishedGoods.dr["Comp 1 Knit Present FG"] = request.Value; break;
+                    case "gCompStrFGKnit_2": _mfgFinishedGoods.dr["Comp 2 Knit Present FG"] = request.Value; break;
+                    case "gCompStrFGKnit_3": _mfgFinishedGoods.dr["Comp 3 Knit Present FG"] = request.Value; break;
+                    case "gCompStrFGKnit_4": _mfgFinishedGoods.dr["Comp 4 Knit Present FG"] = request.Value; break;
+                    case "gCompStrFGKnit_5": _mfgFinishedGoods.dr["Comp 5 Knit Present FG"] = request.Value; break;
+                    case "gCompStrFGKnit_6": _mfgFinishedGoods.dr["Comp 6 Knit Present FG"] = request.Value; break;
 
-                    case "gCompStrFGKnitRetest_1": _objectsService.MfgFinishedGoods.dr["Comp 1 Retest Knit Present FG"] = request.Value; break;
-                    case "gCompStrFGKnitRetest_2": _objectsService.MfgFinishedGoods.dr["Comp 2 Retest Knit Present FG"] = request.Value; break;
-                    case "gCompStrFGKnitRetest_3": _objectsService.MfgFinishedGoods.dr["Comp 3 Retest Knit Present FG"] = request.Value; break;
-                    case "gCompStrFGKnitRetest_4": _objectsService.MfgFinishedGoods.dr["Comp 4 Retest Knit Present FG"] = request.Value; break;
-                    case "gCompStrFGKnitRetest_5": _objectsService.MfgFinishedGoods.dr["Comp 5 Retest Knit Present FG"] = request.Value; break;
-                    case "gCompStrFGKnitRetest_6": _objectsService.MfgFinishedGoods.dr["Comp 6 Retest Knit Present FG"] = request.Value; break;
+                    case "gCompStrFGKnitRetest_1": _mfgFinishedGoods.dr["Comp 1 Retest Knit Present FG"] = request.Value; break;
+                    case "gCompStrFGKnitRetest_2": _mfgFinishedGoods.dr["Comp 2 Retest Knit Present FG"] = request.Value; break;
+                    case "gCompStrFGKnitRetest_3": _mfgFinishedGoods.dr["Comp 3 Retest Knit Present FG"] = request.Value; break;
+                    case "gCompStrFGKnitRetest_4": _mfgFinishedGoods.dr["Comp 4 Retest Knit Present FG"] = request.Value; break;
+                    case "gCompStrFGKnitRetest_5": _mfgFinishedGoods.dr["Comp 5 Retest Knit Present FG"] = request.Value; break;
+                    case "gCompStrFGKnitRetest_6": _mfgFinishedGoods.dr["Comp 6 Retest Knit Present FG"] = request.Value; break;
 
-                    case "gIPTimeNotLegible": _objectsService.MfgFinishedGoods.dr["IP Time Stamp Not Legible"] = request.Value; break;
-                    case "gRestestFromSameBundle": _objectsService.MfgFinishedGoods.dr["Is Retest From Same Bundle? FG"] = request.Value; break;
+                    case "gIPTimeNotLegible": _mfgFinishedGoods.dr["IP Time Stamp Not Legible"] = request.Value; break;
+                    case "gRestestFromSameBundle": _mfgFinishedGoods.dr["Is Retest From Same Bundle? FG"] = request.Value; break;
 
                     default:
                         return BadRequest(new { success = false, error = $"Unknown bool field: {request.Name}" });
                 }
 
-                _objectsService.MfgFinishedGoods.UpdateDataSet();
+                _mfgFinishedGoods.UpdateDataSet();
                 return Ok(new { success = true, data = BuildDto() });
             }
             catch (Exception ex)
@@ -293,64 +330,64 @@ namespace IntugentBackend.Controllers
         {
             try
             {
-                _objectsService.MfgFinishedGoods.bDataSetChanged = true;
+                _mfgFinishedGoods.bDataSetChanged = true;
 
                 switch (request.Name)
                 {
                     case "gFBTimeStamp":
-                        _objectsService.MfgFinishedGoods.dr["Finished Board Time Stamp FG"] = request.Value ?? (object)DBNull.Value;
+                        _mfgFinishedGoods.dr["Finished Board Time Stamp FG"] = request.Value ?? (object)DBNull.Value;
                         if (request.Value != null) CheckBoardTimeStamp();
                         break;
                     case "gQCTimesDateTime":
-                        _objectsService.MfgFinishedGoods.dr["Next Day QC Collection Time FG"] = request.Value ?? (object)DBNull.Value;
+                        _mfgFinishedGoods.dr["Next Day QC Collection Time FG"] = request.Value ?? (object)DBNull.Value;
                         break;
                     case "gkFactorTime1":
-                        _objectsService.MfgFinishedGoods.dr["k Factor DateTime FG 1"] = request.Value ?? (object)DBNull.Value;
+                        _mfgFinishedGoods.dr["k Factor DateTime FG 1"] = request.Value ?? (object)DBNull.Value;
                         break;
                     case "gkFactorTime2":
-                        _objectsService.MfgFinishedGoods.dr["k Factor DateTime FG 2"] = request.Value ?? (object)DBNull.Value;
+                        _mfgFinishedGoods.dr["k Factor DateTime FG 2"] = request.Value ?? (object)DBNull.Value;
                         break;
                     case "gkFactorTime3":
-                        _objectsService.MfgFinishedGoods.dr["k Factor DateTime FG 3"] = request.Value ?? (object)DBNull.Value;
+                        _mfgFinishedGoods.dr["k Factor DateTime FG 3"] = request.Value ?? (object)DBNull.Value;
                         break;
                     case "gInitProbeTime":
-                        _objectsService.MfgFinishedGoods.dr["Initial Probe Time FG"] = request.Value ?? (object)DBNull.Value;
+                        _mfgFinishedGoods.dr["Initial Probe Time FG"] = request.Value ?? (object)DBNull.Value;
                         break;
                     case "gMaxTempTimeInit":
-                        _objectsService.MfgFinishedGoods.dr["Max Probe Time - Initial FG"] = request.Value ?? (object)DBNull.Value;
+                        _mfgFinishedGoods.dr["Max Probe Time - Initial FG"] = request.Value ?? (object)DBNull.Value;
                         break;
                     case "gMaxTempTimeFinal":
-                        _objectsService.MfgFinishedGoods.dr["Max Probe Time - Final FG"] = request.Value ?? (object)DBNull.Value;
+                        _mfgFinishedGoods.dr["Max Probe Time - Final FG"] = request.Value ?? (object)DBNull.Value;
                         break;
                     case "gFinalProbeTime":
-                        _objectsService.MfgFinishedGoods.dr["Final Probe Time FG"] = request.Value ?? (object)DBNull.Value;
+                        _mfgFinishedGoods.dr["Final Probe Time FG"] = request.Value ?? (object)DBNull.Value;
                         break;
                     case "gRetestQCTime":
-                        _objectsService.MfgFinishedGoods.dr["Retest QC Collection Time FG"] = request.Value ?? (object)DBNull.Value;
+                        _mfgFinishedGoods.dr["Retest QC Collection Time FG"] = request.Value ?? (object)DBNull.Value;
                         break;
                     case "gkFactor90Date_1":
-                        _objectsService.MfgFinishedGoods.dr["k Factor 90 Date FG 1"] = request.Value ?? (object)DBNull.Value;
+                        _mfgFinishedGoods.dr["k Factor 90 Date FG 1"] = request.Value ?? (object)DBNull.Value;
                         break;
                     case "gkFactor90Date_2":
-                        _objectsService.MfgFinishedGoods.dr["k Factor 90 Date FG 2"] = request.Value ?? (object)DBNull.Value;
+                        _mfgFinishedGoods.dr["k Factor 90 Date FG 2"] = request.Value ?? (object)DBNull.Value;
                         break;
                     case "gkFactor90Date_3":
-                        _objectsService.MfgFinishedGoods.dr["k Factor 90 Date FG 3"] = request.Value ?? (object)DBNull.Value;
+                        _mfgFinishedGoods.dr["k Factor 90 Date FG 3"] = request.Value ?? (object)DBNull.Value;
                         break;
                     case "gkFactor180Date_1":
-                        _objectsService.MfgFinishedGoods.dr["k Factor 180 Date FG 1"] = request.Value ?? (object)DBNull.Value;
+                        _mfgFinishedGoods.dr["k Factor 180 Date FG 1"] = request.Value ?? (object)DBNull.Value;
                         break;
                     case "gkFactor180Date_2":
-                        _objectsService.MfgFinishedGoods.dr["k Factor 180 Date FG 2"] = request.Value ?? (object)DBNull.Value;
+                        _mfgFinishedGoods.dr["k Factor 180 Date FG 2"] = request.Value ?? (object)DBNull.Value;
                         break;
                     case "gkFactor180Date_3":
-                        _objectsService.MfgFinishedGoods.dr["k Factor 180 Date FG 3"] = request.Value ?? (object)DBNull.Value;
+                        _mfgFinishedGoods.dr["k Factor 180 Date FG 3"] = request.Value ?? (object)DBNull.Value;
                         break;
                     default:
                         return BadRequest(new { success = false, error = $"Unknown datetime field: {request.Name}" });
                 }
 
-                _objectsService.MfgFinishedGoods.UpdateDataSet();
+                _mfgFinishedGoods.UpdateDataSet();
                 return Ok(new { success = true, data = BuildDto() });
             }
             catch (Exception ex)
@@ -368,12 +405,12 @@ namespace IntugentBackend.Controllers
         {
             try
             {
-                _objectsService.MfgFinishedGoods.bDataSetChanged = true;
-                _objectsService.MfgFinishedGoods.dr["Notes FG"] = string.IsNullOrEmpty(request.Value)
+                _mfgFinishedGoods.bDataSetChanged = true;
+                _mfgFinishedGoods.dr["Notes FG"] = string.IsNullOrEmpty(request.Value)
                     ? (object)DBNull.Value
                     : request.Value;
 
-                _objectsService.MfgFinishedGoods.UpdateDataSet();
+                _mfgFinishedGoods.UpdateDataSet();
                 return Ok(new { success = true, data = BuildDto() });
             }
             catch (Exception ex)
@@ -387,23 +424,21 @@ namespace IntugentBackend.Controllers
 
         private void SetField(string columnName, string? value)
         {
-            _objectsService.MfgFinishedGoods.dr[columnName] = string.IsNullOrEmpty(value)
+            _mfgFinishedGoods.dr[columnName] = string.IsNullOrEmpty(value)
                 ? (object)DBNull.Value
                 : value;
         }
 
         private void UpdateDataSetView()
         {
-            _objectsService.Cbfile.iIDMfg = (int)_objectsService.MfgHome.dt.Rows[_objectsService.Cbfile.iIDMfgIndex]["ID4All"];
-            _objectsService.CLists.drEmployee["MfgIDSelected"] = _objectsService.Cbfile.iIDMfg;
-            _objectsService.CLists.UpdateEmployee();
+            _cbfile.iIDMfg = (int)_mfgHome.dt.Rows[_cbfile.iIDMfgIndex]["ID4All"];
+            _cLists.drEmployee["MfgIDSelected"] = _cbfile.iIDMfg;
+            _cLists.UpdateEmployee();
 
-            (_objectsService.MfgInProcess, _objectsService.MfgFinishedGoods,
-             _objectsService.MfgDimStability, _objectsService.MfgPlantData,
-             _objectsService.MfgJetMixing) = _objectsService.MfgHome.GetAllMfgData(
-                 _objectsService.MfgInProcess, _objectsService.MfgFinishedGoods,
-                 _objectsService.MfgDimStability, _objectsService.MfgPlantData,
-                 _objectsService.MfgJetMixing);
+            _mfgHome.GetAllMfgData(
+                _mfgInProcess, _mfgFinishedGoods,
+                _mfgDimStability, _mfgPlantData,
+                _mfgJetMixing);
         }
 
         private void Recalculate(string fieldName)
@@ -466,7 +501,7 @@ namespace IntugentBackend.Controllers
             int nCount = 0; double dSum = 0, dtmp, dmin = double.MaxValue, dmax = double.MinValue;
             for (int i = 1; i <= 17; i++)
             {
-                var val = _objectsService.MfgFinishedGoods.dr[$"Thickness FG - {i}"];
+                var val = _mfgFinishedGoods.dr[$"Thickness FG - {i}"];
                 if (val != DBNull.Value)
                 {
                     dtmp = (double)val; dSum += dtmp; nCount++;
@@ -477,15 +512,15 @@ namespace IntugentBackend.Controllers
             dtmp = dSum / nCount;
             if (double.IsNaN(dtmp) || nCount < 17)
             {
-                _objectsService.MfgFinishedGoods.dr["Thickness Avg FG"] = DBNull.Value;
-                _objectsService.MfgFinishedGoods.dr["Flatness FG"] = DBNull.Value;
+                _mfgFinishedGoods.dr["Thickness Avg FG"] = DBNull.Value;
+                _mfgFinishedGoods.dr["Flatness FG"] = DBNull.Value;
             }
             else
             {
-                _objectsService.MfgFinishedGoods.dr["Thickness Avg FG"] = dtmp;
-                _objectsService.MfgFinishedGoods.dr["Flatness FG"] = dmin - dmax;
-                _objectsService.MfgFinishedGoods.dr["thickness valleys FG"] = dmin;
-                _objectsService.MfgFinishedGoods.dr["thickness peaks FG"] = dmax;
+                _mfgFinishedGoods.dr["Thickness Avg FG"] = dtmp;
+                _mfgFinishedGoods.dr["Flatness FG"] = dmin - dmax;
+                _mfgFinishedGoods.dr["thickness valleys FG"] = dmin;
+                _mfgFinishedGoods.dr["thickness peaks FG"] = dmax;
             }
         }
 
@@ -494,7 +529,7 @@ namespace IntugentBackend.Controllers
             int nCount = 0; double dSum = 0, dMin = double.MaxValue, dtmp;
             for (int i = 1; i <= 6; i++)
             {
-                var val = _objectsService.MfgFinishedGoods.dr[$"Compressive FG - {i}"];
+                var val = _mfgFinishedGoods.dr[$"Compressive FG - {i}"];
                 if (val != DBNull.Value)
                 {
                     nCount++; dtmp = (double)val; dSum += dtmp;
@@ -503,18 +538,18 @@ namespace IntugentBackend.Controllers
             }
             if (nCount == 6)
             {
-                _objectsService.MfgFinishedGoods.dr["Compressive Strength (6) FG"] = dSum / 6.0;
-                _objectsService.MfgFinishedGoods.dr["Compressive Strength (5) FG"] = (dSum - dMin) / 5.0;
+                _mfgFinishedGoods.dr["Compressive Strength (6) FG"] = dSum / 6.0;
+                _mfgFinishedGoods.dr["Compressive Strength (5) FG"] = (dSum - dMin) / 5.0;
             }
             else if (nCount == 5)
             {
-                _objectsService.MfgFinishedGoods.dr["Compressive Strength (6) FG"] = DBNull.Value;
-                _objectsService.MfgFinishedGoods.dr["Compressive Strength (5) FG"] = dSum / 5.0;
+                _mfgFinishedGoods.dr["Compressive Strength (6) FG"] = DBNull.Value;
+                _mfgFinishedGoods.dr["Compressive Strength (5) FG"] = dSum / 5.0;
             }
             else
             {
-                _objectsService.MfgFinishedGoods.dr["Compressive Strength (6) FG"] = DBNull.Value;
-                _objectsService.MfgFinishedGoods.dr["Compressive Strength (5) FG"] = DBNull.Value;
+                _mfgFinishedGoods.dr["Compressive Strength (6) FG"] = DBNull.Value;
+                _mfgFinishedGoods.dr["Compressive Strength (5) FG"] = DBNull.Value;
             }
         }
 
@@ -523,7 +558,7 @@ namespace IntugentBackend.Controllers
             int nCount = 0; double dSum = 0, dMin = double.MaxValue, dtmp;
             for (int i = 1; i <= 6; i++)
             {
-                var val = _objectsService.MfgFinishedGoods.dr[$"Retest - Comp {i} FG"];
+                var val = _mfgFinishedGoods.dr[$"Retest - Comp {i} FG"];
                 if (val != DBNull.Value)
                 {
                     nCount++; dtmp = (double)val; dSum += dtmp;
@@ -532,18 +567,18 @@ namespace IntugentBackend.Controllers
             }
             if (nCount == 6)
             {
-                _objectsService.MfgFinishedGoods.dr["Retest - AVG Comp Strength (6) FG"] = dSum / 6.0;
-                _objectsService.MfgFinishedGoods.dr["Retest - AVG Comp Strength (5) FG"] = (dSum - dMin) / 5.0;
+                _mfgFinishedGoods.dr["Retest - AVG Comp Strength (6) FG"] = dSum / 6.0;
+                _mfgFinishedGoods.dr["Retest - AVG Comp Strength (5) FG"] = (dSum - dMin) / 5.0;
             }
             else if (nCount == 5)
             {
-                _objectsService.MfgFinishedGoods.dr["Retest - AVG Comp Strength (6) FG"] = DBNull.Value;
-                _objectsService.MfgFinishedGoods.dr["Retest - AVG Comp Strength (5) FG"] = dSum / 5.0;
+                _mfgFinishedGoods.dr["Retest - AVG Comp Strength (6) FG"] = DBNull.Value;
+                _mfgFinishedGoods.dr["Retest - AVG Comp Strength (5) FG"] = dSum / 5.0;
             }
             else
             {
-                _objectsService.MfgFinishedGoods.dr["Retest - AVG Comp Strength (6) FG"] = DBNull.Value;
-                _objectsService.MfgFinishedGoods.dr["Retest - AVG Comp Strength (5) FG"] = DBNull.Value;
+                _mfgFinishedGoods.dr["Retest - AVG Comp Strength (6) FG"] = DBNull.Value;
+                _mfgFinishedGoods.dr["Retest - AVG Comp Strength (5) FG"] = DBNull.Value;
             }
         }
 
@@ -552,7 +587,7 @@ namespace IntugentBackend.Controllers
             int nCount = 0; double dSum = 0, dSumR = 0, dtmp, dtmpR;
             for (int i = 1; i <= 3; i++)
             {
-                var val = _objectsService.MfgFinishedGoods.dr[$"k Factor {i} FG"];
+                var val = _mfgFinishedGoods.dr[$"k Factor {i} FG"];
                 if (val != DBNull.Value)
                 {
                     nCount++; dSum += (double)val; dSumR += 1.0 / (double)val;
@@ -562,13 +597,13 @@ namespace IntugentBackend.Controllers
             {
                 dtmp = dSum / nCount;
                 dtmpR = dSumR / nCount;
-                _objectsService.MfgFinishedGoods.dr["k Factor FG"] = dtmp;
-                _objectsService.MfgFinishedGoods.dr["R Value - AVG FG"] = dtmpR;
+                _mfgFinishedGoods.dr["k Factor FG"] = dtmp;
+                _mfgFinishedGoods.dr["R Value - AVG FG"] = dtmpR;
             }
             else
             {
-                _objectsService.MfgFinishedGoods.dr["k Factor FG"] = DBNull.Value;
-                _objectsService.MfgFinishedGoods.dr["R Value - AVG FG"] = DBNull.Value;
+                _mfgFinishedGoods.dr["k Factor FG"] = DBNull.Value;
+                _mfgFinishedGoods.dr["R Value - AVG FG"] = DBNull.Value;
             }
         }
 
@@ -577,7 +612,7 @@ namespace IntugentBackend.Controllers
             int nCount = 0; double dSum = 0, dSumR = 0, dtmp, dtmpR;
             for (int i = 1; i <= 3; i++)
             {
-                var val = _objectsService.MfgFinishedGoods.dr[$"k Factor 90 FG {i}"];
+                var val = _mfgFinishedGoods.dr[$"k Factor 90 FG {i}"];
                 if (val != DBNull.Value)
                 {
                     nCount++; dSum += (double)val; dSumR += 1.0 / (double)val;
@@ -586,13 +621,13 @@ namespace IntugentBackend.Controllers
             if (nCount > 1)
             {
                 dtmp = dSum / nCount; dtmpR = dSumR / nCount;
-                _objectsService.MfgFinishedGoods.dr["k Factor 90 FG"] = dtmp;
-                _objectsService.MfgFinishedGoods.dr["R Value 90 - AVG FG"] = dtmpR;
+                _mfgFinishedGoods.dr["k Factor 90 FG"] = dtmp;
+                _mfgFinishedGoods.dr["R Value 90 - AVG FG"] = dtmpR;
             }
             else
             {
-                _objectsService.MfgFinishedGoods.dr["k Factor 90 FG"] = DBNull.Value;
-                _objectsService.MfgFinishedGoods.dr["R Value 90 - AVG FG"] = DBNull.Value;
+                _mfgFinishedGoods.dr["k Factor 90 FG"] = DBNull.Value;
+                _mfgFinishedGoods.dr["R Value 90 - AVG FG"] = DBNull.Value;
             }
         }
 
@@ -601,7 +636,7 @@ namespace IntugentBackend.Controllers
             int nCount = 0; double dSum = 0, dSumR = 0, dtmp, dtmpR;
             for (int i = 1; i <= 3; i++)
             {
-                var val = _objectsService.MfgFinishedGoods.dr[$"k Factor 180 FG {i}"];
+                var val = _mfgFinishedGoods.dr[$"k Factor 180 FG {i}"];
                 if (val != DBNull.Value)
                 {
                     nCount++; dSum += (double)val; dSumR += 1.0 / (double)val;
@@ -610,28 +645,28 @@ namespace IntugentBackend.Controllers
             if (nCount > 1)
             {
                 dtmp = dSum / nCount; dtmpR = dSumR / nCount;
-                _objectsService.MfgFinishedGoods.dr["k Factor 180 FG"] = dtmp;
-                _objectsService.MfgFinishedGoods.dr["R Value 180 - AVG FG"] = dtmpR;
+                _mfgFinishedGoods.dr["k Factor 180 FG"] = dtmp;
+                _mfgFinishedGoods.dr["R Value 180 - AVG FG"] = dtmpR;
             }
             else
             {
-                _objectsService.MfgFinishedGoods.dr["k Factor 180 FG"] = DBNull.Value;
-                _objectsService.MfgFinishedGoods.dr["R Value 180 - AVG FG"] = DBNull.Value;
+                _mfgFinishedGoods.dr["k Factor 180 FG"] = DBNull.Value;
+                _mfgFinishedGoods.dr["R Value 180 - AVG FG"] = DBNull.Value;
             }
         }
 
         private void RecalcBoardDims()
         {
-            var d1 = _objectsService.MfgFinishedGoods.dr["Diagonal FG 1"];
-            var d2 = _objectsService.MfgFinishedGoods.dr["Diagonal FG 2"];
+            var d1 = _mfgFinishedGoods.dr["Diagonal FG 1"];
+            var d2 = _mfgFinishedGoods.dr["Diagonal FG 2"];
             if (d1 != DBNull.Value && d2 != DBNull.Value)
             {
                 double dtmp = Math.Abs((double)d1 - (double)d2);
-                _objectsService.MfgFinishedGoods.dr["Diagonal Diff FG"] = dtmp;
+                _mfgFinishedGoods.dr["Diagonal Diff FG"] = dtmp;
             }
             else
             {
-                _objectsService.MfgFinishedGoods.dr["Diagonal Diff FG"] = DBNull.Value;
+                _mfgFinishedGoods.dr["Diagonal Diff FG"] = DBNull.Value;
             }
         }
 
@@ -640,11 +675,11 @@ namespace IntugentBackend.Controllers
             int nCount = 0; double dSum = 0, dtmp;
             for (int i = 1; i <= 3; i++)
             {
-                var val = _objectsService.MfgFinishedGoods.dr[$"Nail Pull FG {i}"];
+                var val = _mfgFinishedGoods.dr[$"Nail Pull FG {i}"];
                 if (val != DBNull.Value) { nCount++; dSum += (double)val; }
             }
-            if (nCount == 3) { dtmp = dSum / nCount; _objectsService.MfgFinishedGoods.dr["Nail Pull FG"] = dtmp; }
-            else { _objectsService.MfgFinishedGoods.dr["Nail Pull FG"] = DBNull.Value; }
+            if (nCount == 3) { dtmp = dSum / nCount; _mfgFinishedGoods.dr["Nail Pull FG"] = dtmp; }
+            else { _mfgFinishedGoods.dr["Nail Pull FG"] = DBNull.Value; }
         }
 
         private void RecalcFacerPeel()
@@ -652,15 +687,15 @@ namespace IntugentBackend.Controllers
             int nCount = 0; double dSum = 0, dtmp;
             for (int i = 1; i <= 3; i++)
             {
-                var val = _objectsService.MfgFinishedGoods.dr[$"Facer Peel {i} FG"];
+                var val = _mfgFinishedGoods.dr[$"Facer Peel {i} FG"];
                 if (val != DBNull.Value) { nCount++; dSum += (double)val; }
             }
             if (nCount == 3)
             {
                 dtmp = dSum / nCount;
-                _objectsService.MfgFinishedGoods.dr["Facer Peel FG"] = dtmp;
+                _mfgFinishedGoods.dr["Facer Peel FG"] = dtmp;
             }
-            else { _objectsService.MfgFinishedGoods.dr["Facer Peel FG"] = DBNull.Value; }
+            else { _mfgFinishedGoods.dr["Facer Peel FG"] = DBNull.Value; }
         }
 
         private void RecalcCoreDensity(string fieldName)
@@ -671,19 +706,19 @@ namespace IntugentBackend.Controllers
             double dm = 0, dl = 0, dw = 0, dt = 0;
             int nm = 0, nl = 0, nw = 0, nt = 0;
 
-            var mass = _objectsService.MfgFinishedGoods.dr[$"Mass {row} FG"];
+            var mass = _mfgFinishedGoods.dr[$"Mass {row} FG"];
             if (mass != DBNull.Value) { dm = (double)mass; nm = 1; }
 
-            var l1 = _objectsService.MfgFinishedGoods.dr[$"L1 {row} FG"];
+            var l1 = _mfgFinishedGoods.dr[$"L1 {row} FG"];
             if (l1 != DBNull.Value) { dl = (double)l1; nl = 2; }
 
-            var w1 = _objectsService.MfgFinishedGoods.dr[$"W1 {row} FG"];
+            var w1 = _mfgFinishedGoods.dr[$"W1 {row} FG"];
             if (w1 != DBNull.Value) { dw = (double)w1; nw = 2; }
 
             double dSum = 0; int nCount = 0;
             for (int i = 1; i <= 5; i++)
             {
-                var t = _objectsService.MfgFinishedGoods.dr[$"T{i} {row} FG"];
+                var t = _mfgFinishedGoods.dr[$"T{i} {row} FG"];
                 if (t != DBNull.Value) { nCount++; dSum += (double)t; }
             }
             if (nCount > 3) { dt = dSum / nCount; nt = 5; }
@@ -691,11 +726,11 @@ namespace IntugentBackend.Controllers
             if (nm * nl * nw * nt > 0 && dl * dw * dt > 0.0)
             {
                 double dtmp = dm / (dl * dw * dt) * 3.809590998;
-                _objectsService.MfgFinishedGoods.dr[$"FG Core Density {row}"] = dtmp;
+                _mfgFinishedGoods.dr[$"FG Core Density {row}"] = dtmp;
             }
             else
             {
-                _objectsService.MfgFinishedGoods.dr[$"FG Core Density {row}"] = DBNull.Value;
+                _mfgFinishedGoods.dr[$"FG Core Density {row}"] = DBNull.Value;
             }
 
             // Recalc average
@@ -707,28 +742,28 @@ namespace IntugentBackend.Controllers
             int nCount = 0; double dSum = 0, dtmp;
             for (int i = 1; i <= 3; i++)
             {
-                var val = _objectsService.MfgFinishedGoods.dr[$"FG Core Density {i}"];
+                var val = _mfgFinishedGoods.dr[$"FG Core Density {i}"];
                 if (val != DBNull.Value) { nCount++; dSum += (double)val; }
             }
             dtmp = dSum / nCount;
             if (double.IsNaN(dtmp) || nCount == 0)
-                _objectsService.MfgFinishedGoods.dr["FG Core Density"] = DBNull.Value;
+                _mfgFinishedGoods.dr["FG Core Density"] = DBNull.Value;
             else
-                _objectsService.MfgFinishedGoods.dr["FG Core Density"] = dtmp;
+                _mfgFinishedGoods.dr["FG Core Density"] = dtmp;
         }
 
         private void CheckBoardTimeStamp()
         {
             // Validation logic from old code
-            var fbTime = _objectsService.MfgFinishedGoods.dr["Finished Board Time Stamp FG"];
-            var ipTime = _objectsService.MfgFinishedGoods.drIP["Test Date"];
+            var fbTime = _mfgFinishedGoods.dr["Finished Board Time Stamp FG"];
+            var ipTime = _mfgFinishedGoods.drIP["Test Date"];
             if (fbTime == DBNull.Value || ipTime == DBNull.Value) return;
 
             DateTime fgDate = (DateTime)fbTime;
             DateTime ipDate = (DateTime)ipTime;
 
             if (fgDate < new DateTime(2000, 01, 01) ||
-                Math.Abs((fgDate - ipDate).TotalMinutes) > _objectsService.CDefualts.dDelTimeButton)
+                Math.Abs((fgDate - ipDate).TotalMinutes) > _cDefualts.dDelTimeButton)
             {
                 // Invalid - handled in CheckLimits via background color
             }
@@ -744,14 +779,14 @@ namespace IntugentBackend.Controllers
 
         private FinishedBoardDataDto BuildDto()
         {
-            var mfg = _objectsService.MfgFinishedGoods;
-            var defs = _objectsService.CDefualts;
+            var mfg = _mfgFinishedGoods;
+            var defs = _cDefualts;
 
             var dto = new FinishedBoardDataDto();
 
             // Navigation
-            dto.GDataSetNext = _objectsService.Cbfile.iIDMfgIndex == 0 ? false : true;
-            dto.GDataSetPrev = _objectsService.Cbfile.iIDMfgIndex >= _objectsService.MfgHome.dt.Rows.Count - 1 ? false : true;
+            dto.GDataSetNext = _cbfile.iIDMfgIndex == 0 ? false : true;
+            dto.GDataSetPrev = _cbfile.iIDMfgIndex >= _mfgHome.dt.Rows.Count - 1 ? false : true;
 
             // Location labels
             dto.GLoc1A = defs.sLocMfg1.ToUpper();
@@ -770,11 +805,11 @@ namespace IntugentBackend.Controllers
             if (mfg.drIP["Product ID"] != DBNull.Value)
             {
                 string stmp = mfg.drIP["Product ID"].ToString()!;
-                _objectsService.CLists.dvComProd.RowFilter = $"[Product Code] = '{stmp}'";
-                var dtxxx = _objectsService.CLists.dvComProd.ToTable();
+                _cLists.dvComProd.RowFilter = $"[Product Code] = '{stmp}'";
+                var dtxxx = _cLists.dvComProd.ToTable();
                 if (dtxxx.Rows.Count > 0 && dtxxx.Rows[0]["Product"] != DBNull.Value)
                     dto.GProdCode = dtxxx.Rows[0]["Product"].ToString()!;
-                _objectsService.CLists.dvComProd.RowFilter = null;
+                _cLists.dvComProd.RowFilter = null;
             }
 
             // Dates
@@ -954,9 +989,9 @@ return dto;
 
         private void RunCheckLimits(FinishedBoardDataDto dto)
 {
-    var mfg = _objectsService.MfgFinishedGoods;
-    var targets = _objectsService.CProdTargets;
-    var ipTargets = _objectsService.CIPProdTargets;
+    var mfg = _mfgFinishedGoods;
+    var targets = _cProdTargets;
+    var ipTargets = _cipProdTargets;
 
     // IP checks
     if (mfg.drIP["Length"] != DBNull.Value)
@@ -1012,7 +1047,7 @@ return dto;
         DateTime fgDate = (DateTime)mfg.dr["Finished Board Time Stamp FG"];
         DateTime ipDate = (DateTime)mfg.drIP["Test Date"];
         dto.GFBTimeHostBackground = fgDate >= new DateTime(2000, 01, 01) &&
-            Math.Abs((fgDate - ipDate).TotalMinutes) <= _objectsService.CDefualts.dDelTimeButton;
+            Math.Abs((fgDate - ipDate).TotalMinutes) <= _cDefualts.dDelTimeButton;
     }
 }
     }

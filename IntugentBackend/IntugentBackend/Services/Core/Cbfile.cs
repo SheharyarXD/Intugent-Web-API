@@ -1,13 +1,12 @@
 using Microsoft.ApplicationInsights;
 using Microsoft.Data.SqlClient;
-using IntugentBackend;
+using Microsoft.Extensions.Configuration;
 
 namespace IntugentBackend.Services.Core
 {
     public class Cbfile
     {
 
-        public readonly ObjectsService _objectService;
         public bool bConAz = false;
         public bool bCanSwitchRecord = true;
         public bool bChanged;
@@ -28,10 +27,11 @@ namespace IntugentBackend.Services.Core
 
         public SqlConnection conAZ;
 
-        public Cbfile()
+        public Cbfile(IConfiguration configuration)
         {
             // IMPORTANT: Initialize the connection object here to prevent NullReferenceException
-            string connectionString = ObjectsService.ConnectionString;
+            string connectionString = configuration.GetConnectionString("Default")
+                ?? throw new InvalidOperationException("Connection string 'Default' not found.");
             conAZ = new SqlConnection(connectionString);
         }
 
@@ -40,7 +40,6 @@ namespace IntugentBackend.Services.Core
             string sCon = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=";
             return sCon + sIntDir + sDBFile;
         }
-        public string sConSql = ObjectsService.ConnectionString;
         public int iIDMfg = 1943;
         public int iIndexRND = 0;
         public int iIDMfgIndex = 0;

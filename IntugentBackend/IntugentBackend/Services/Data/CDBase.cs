@@ -12,7 +12,6 @@ namespace IntugentBackend.Services.Data
 {
     public class CDBase
     {
-        public static string sDBLocalConStr = ObjectsService.ConnectionString;
         //        public static SqlConnection DBCon;
         public SqlDataAdapter da;
         public DataTable dt;

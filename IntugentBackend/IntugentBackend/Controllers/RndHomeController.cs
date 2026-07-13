@@ -1,5 +1,7 @@
 ﻿using IntugentBackend.Models;
 using IntugentBackend.Services;
+using IntugentBackend.Services.Core;
+using IntugentBackend.Services.Rnd;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using Microsoft.Data.SqlClient;
@@ -11,12 +13,23 @@ namespace IntugentBackend.Controllers
     [Route("api/[controller]")]
     public class RndHomeController : ControllerBase
     {
-        private readonly ObjectsService _objectsService;
+        private readonly CDefualts _cDefualts;
+        private readonly CLists _cLists;
+        private readonly RNDHome _rndHome;
+        private readonly Cbfile _cbfile;
         private readonly ILogger<RndHomeController> _logger;
 
-        public RndHomeController(ObjectsService objectsService, ILogger<RndHomeController> logger)
+        public RndHomeController(
+            CDefualts cDefualts,
+            CLists cLists,
+            RNDHome rndHome,
+            Cbfile cbfile,
+            ILogger<RndHomeController> logger)
         {
-            _objectsService = objectsService;
+            _cDefualts = cDefualts;
+            _cLists = cLists;
+            _rndHome = rndHome;
+            _cbfile = cbfile;
             _logger = logger;
         }
 
@@ -28,7 +41,7 @@ namespace IntugentBackend.Controllers
         {
             try
             {
-                if (_objectsService.CDefualts == null || _objectsService.CLists == null)
+                if (_cDefualts == null || _cLists == null)
                 {
                     return BadRequest(new ApiResponse<RndFiltersDto>
                     {
@@ -38,24 +51,24 @@ namespace IntugentBackend.Controllers
                 }
 
                 // Initialize RNDHome if not already done
-                _objectsService.RNDHome.bInit = false;
+                _rndHome.bInit = false;
 
                 // Setup lists (same as old OnGet/Startup)
-                _objectsService.CLists.dvLists = _objectsService.CLists.dtLists.DefaultView;
+                _cLists.dvLists = _cLists.dtLists.DefaultView;
 
                 // Testing Status
-                _objectsService.CLists.dvLists.RowFilter = "sList = 'Testing Status RND'";
-                _objectsService.CLists.dvTestingStatRND = _objectsService.CLists.dvLists.ToTable().DefaultView;
+                _cLists.dvLists.RowFilter = "sList = 'Testing Status RND'";
+                _cLists.dvTestingStatRND = _cLists.dvLists.ToTable().DefaultView;
 
                 // Study Type
-                _objectsService.CLists.dvLists.RowFilter = "sList = 'RND Study Type'";
-                _objectsService.CLists.dvRunTypeRND2 = _objectsService.CLists.dvLists.ToTable().DefaultView;
+                _cLists.dvLists.RowFilter = "sList = 'RND Study Type'";
+                _cLists.dvRunTypeRND2 = _cLists.dvLists.ToTable().DefaultView;
 
                 // Products
                 var products = new List<FilterOptionDto>();
-                if (_objectsService.CLists.dvComProdAll != null)
+                if (_cLists.dvComProdAll != null)
                 {
-                    foreach (DataRowView row in _objectsService.CLists.dvComProdAll)
+                    foreach (DataRowView row in _cLists.dvComProdAll)
                     {
                         products.Add(new FilterOptionDto
                         {
@@ -87,27 +100,27 @@ namespace IntugentBackend.Controllers
                 var filters = new RndFiltersDto
                 {
                     Products = products,
-                    TestingStatus = ExtractList(_objectsService.CLists.dvTestingStatRND),
-                    StudyTypes = ExtractList(_objectsService.CLists.dvRunTypeRND2),
-                    Location = _objectsService.CDefualts.sLocation,
-                    DefaultProductCode = _objectsService.CLists.drEmployee?["Rnd Product Code"] == DBNull.Value
-                        ? _objectsService.CDefualts.sProdRNDAll
-                        : (_objectsService.CLists.drEmployee?["Rnd Product Code"]?.ToString() ?? string.Empty),
-                    DefaultTestingStatusId = _objectsService.CLists.drEmployee?["RndIDTestingStatus"] == DBNull.Value
-                        ? _objectsService.CDefualts.iRNDTestingStat
-                        : Convert.ToInt32(_objectsService.CLists.drEmployee?["RndIDTestingStatus"]),
-                    DefaultStudyTypeId = _objectsService.CLists.drEmployee?["RndIDStudyType"] == DBNull.Value
-                        ? _objectsService.CDefualts.iMfgRunType
-                        : Convert.ToInt32(_objectsService.CLists.drEmployee?["RndIDStudyType"]),
-                    DefaultDateFrom = _objectsService.CLists.drEmployee?["RndDate1"] == DBNull.Value
+                    TestingStatus = ExtractList(_cLists.dvTestingStatRND),
+                    StudyTypes = ExtractList(_cLists.dvRunTypeRND2),
+                    Location = _cDefualts.sLocation,
+                    DefaultProductCode = _cLists.drEmployee?["Rnd Product Code"] == DBNull.Value
+                        ? _cDefualts.sProdRNDAll
+                        : (_cLists.drEmployee?["Rnd Product Code"]?.ToString() ?? string.Empty),
+                    DefaultTestingStatusId = _cLists.drEmployee?["RndIDTestingStatus"] == DBNull.Value
+                        ? _cDefualts.iRNDTestingStat
+                        : Convert.ToInt32(_cLists.drEmployee?["RndIDTestingStatus"]),
+                    DefaultStudyTypeId = _cLists.drEmployee?["RndIDStudyType"] == DBNull.Value
+                        ? _cDefualts.iMfgRunType
+                        : Convert.ToInt32(_cLists.drEmployee?["RndIDStudyType"]),
+                    DefaultDateFrom = _cLists.drEmployee?["RndDate1"] == DBNull.Value
                         ? null
-                        : Convert.ToDateTime(_objectsService.CLists.drEmployee?["RndDate1"]),
-                    DefaultDateTo = _objectsService.CLists.drEmployee?["RndDate2"] == DBNull.Value
+                        : Convert.ToDateTime(_cLists.drEmployee?["RndDate1"]),
+                    DefaultDateTo = _cLists.drEmployee?["RndDate2"] == DBNull.Value
                         ? null
-                        : Convert.ToDateTime(_objectsService.CLists.drEmployee?["RndDate2"]),
-                    DefaultNameSearch = _objectsService.CLists.drEmployee?["RNDNameSearch"] == DBNull.Value
+                        : Convert.ToDateTime(_cLists.drEmployee?["RndDate2"]),
+                    DefaultNameSearch = _cLists.drEmployee?["RNDNameSearch"] == DBNull.Value
                         ? null
-                        : _objectsService.CLists.drEmployee?["RNDNameSearch"]?.ToString()
+                        : _cLists.drEmployee?["RNDNameSearch"]?.ToString()
                 };
 
                 return Ok(new ApiResponse<RndFiltersDto>
@@ -135,7 +148,7 @@ namespace IntugentBackend.Controllers
         {
             try
             {
-                if (_objectsService.RNDHome == null)
+                if (_rndHome == null)
                 {
                     return BadRequest(new ApiResponse<RndSearchResultDto>
                     {
@@ -145,36 +158,36 @@ namespace IntugentBackend.Controllers
                 }
 
                 // Apply filters to drEmployee (same as old OnPostGSearchDataSets_Click)
-                _objectsService.CLists.drEmployee["RndDate1"] =
+                _cLists.drEmployee["RndDate1"] =
                     request.DateFrom == null ? DBNull.Value : request.DateFrom;
 
-                _objectsService.CLists.drEmployee["RndDate2"] =
+                _cLists.drEmployee["RndDate2"] =
                     request.DateTo == null ? DBNull.Value : request.DateTo;
 
-                _objectsService.CLists.drEmployee["Rnd Product Code"] =
+                _cLists.drEmployee["Rnd Product Code"] =
                     string.IsNullOrEmpty(request.ProductCode) ? DBNull.Value : request.ProductCode;
 
-                _objectsService.CLists.drEmployee["RndIDTestingStatus"] =
+                _cLists.drEmployee["RndIDTestingStatus"] =
                     request.TestingStatusId <= 0 ? DBNull.Value : request.TestingStatusId;
 
-                _objectsService.CLists.drEmployee["RndIDStudyType"] =
+                _cLists.drEmployee["RndIDStudyType"] =
                     request.StudyTypeId <= 0 ? DBNull.Value : request.StudyTypeId;
 
-                _objectsService.CLists.drEmployee["RNDNameSearch"] =
+                _cLists.drEmployee["RNDNameSearch"] =
                     string.IsNullOrEmpty(request.NameSearch) ? DBNull.Value : request.NameSearch;
 
                 // Perform search
                 bool found = SearchRNDDB();
 
-                if (found && _objectsService.RNDHome.dt.Rows.Count > 0)
+                if (found && _rndHome.dt.Rows.Count > 0)
                 {
-                    _objectsService.RNDHome.indSet = 0;
-                    _objectsService.RNDHome.IdSet = (int)_objectsService.RNDHome.dt.Rows[0]["ID"];
-                    _objectsService.CLists.UpdateEmployee();
+                    _rndHome.indSet = 0;
+                    _rndHome.IdSet = (int)_rndHome.dt.Rows[0]["ID"];
+                    _cLists.UpdateEmployee();
                 }
                 else
                 {
-                    _objectsService.RNDHome.EnableRNDPages(false);
+                    _rndHome.EnableRNDPages(false);
                 }
 
                 // Build response
@@ -205,7 +218,7 @@ namespace IntugentBackend.Controllers
         {
             try
             {
-                if (_objectsService.RNDHome?.dt == null)
+                if (_rndHome?.dt == null)
                 {
                     return Ok(new ApiResponse<RndSearchResultDto>
                     {
@@ -240,15 +253,15 @@ namespace IntugentBackend.Controllers
         {
             try
             {
-                int iOldSet = _objectsService.RNDHome.IdSet;
+                int iOldSet = _rndHome.IdSet;
                 if (request.SelectedIndex >= 0)
                 {
-                    _objectsService.RNDHome.IdSet = request.DatasetId;
-                    if (_objectsService.RNDHome.GetDataSet(request.DatasetId))
+                    _rndHome.IdSet = request.DatasetId;
+                    if (_rndHome.GetDataSet(request.DatasetId))
                     {
-                        _objectsService.RNDHome.indSet = request.SelectedIndex;
-                        _objectsService.CLists.drEmployee["RndIDSelected"] = _objectsService.RNDHome.IdSet;
-                        _objectsService.CLists.UpdateEmployee();
+                        _rndHome.indSet = request.SelectedIndex;
+                        _cLists.drEmployee["RndIDSelected"] = _rndHome.IdSet;
+                        _cLists.UpdateEmployee();
 
                         return Ok(new ApiResponse<object>
                         {
@@ -258,7 +271,7 @@ namespace IntugentBackend.Controllers
                     }
                     else
                     {
-                        _objectsService.RNDHome.IdSet = iOldSet;
+                        _rndHome.IdSet = iOldSet;
                         return Ok(new ApiResponse<object>
                         {
                             Success = false,
@@ -291,16 +304,16 @@ namespace IntugentBackend.Controllers
         {
             try
             {
-                int idOld = _objectsService.RNDHome.IdSet;
+                int idOld = _rndHome.IdSet;
 
-                if (_objectsService.RNDHome.GetNewDataset())
+                if (_rndHome.GetNewDataset())
                 {
-                    _objectsService.RNDHome.dr = _objectsService.RNDHome.dt.NewRow();
-                    _objectsService.RNDHome.dr["ID"] = _objectsService.RNDHome.IdSet;
-                    _objectsService.RNDHome.dr["DateDSCreated"] = _objectsService.RNDHome.drS["DateDSCreated"];
-                    _objectsService.RNDHome.dt.Rows.InsertAt(_objectsService.RNDHome.dr, 0);
+                    _rndHome.dr = _rndHome.dt.NewRow();
+                    _rndHome.dr["ID"] = _rndHome.IdSet;
+                    _rndHome.dr["DateDSCreated"] = _rndHome.drS["DateDSCreated"];
+                    _rndHome.dt.Rows.InsertAt(_rndHome.dr, 0);
 
-                    var data = _objectsService.RNDHome.dt.AsEnumerable()
+                    var data = _rndHome.dt.AsEnumerable()
                         .Select(row => row.ItemArray.Select(item => item.ToString() ?? "").ToArray())
                         .ToList();
 
@@ -311,7 +324,7 @@ namespace IntugentBackend.Controllers
                         {
                             Rows = data,
                             SelectedIndex = 0,
-                            DatasetId = _objectsService.RNDHome.IdSet
+                            DatasetId = _rndHome.IdSet
                         }
                     });
                 }
@@ -356,9 +369,9 @@ namespace IntugentBackend.Controllers
 
                 try
                 {
-                    _objectsService.RNDHome.da = new SqlDataAdapter(sql, _objectsService.Cbfile.conAZ);
+                    _rndHome.da = new SqlDataAdapter(sql, _cbfile.conAZ);
                     dt2.Clear();
-                    int itmp = _objectsService.RNDHome.da.Fill(dt2);
+                    int itmp = _rndHome.da.Fill(dt2);
                     if (itmp < 1)
                     {
                         return Ok(new ApiResponse<string>
@@ -413,62 +426,62 @@ namespace IntugentBackend.Controllers
         {
             int idTemp;
 
-            if (_objectsService.CLists.drEmployee["RndDate1"] == DBNull.Value)
-                _objectsService.CLists.drEmployee["RndDate1"] = DBNull.Value;
+            if (_cLists.drEmployee["RndDate1"] == DBNull.Value)
+                _cLists.drEmployee["RndDate1"] = DBNull.Value;
             else
-                _objectsService.CLists.drEmployee["RndDate1"] = (DateTime)_objectsService.CLists.drEmployee["RndDate1"];
+                _cLists.drEmployee["RndDate1"] = (DateTime)_cLists.drEmployee["RndDate1"];
 
-            if (_objectsService.CLists.drEmployee["RndDate2"] == DBNull.Value)
-                _objectsService.CLists.drEmployee["RndDate2"] = DBNull.Value;
+            if (_cLists.drEmployee["RndDate2"] == DBNull.Value)
+                _cLists.drEmployee["RndDate2"] = DBNull.Value;
             else
-                _objectsService.CLists.drEmployee["RndDate2"] = (DateTime)_objectsService.CLists.drEmployee["RndDate2"];
+                _cLists.drEmployee["RndDate2"] = (DateTime)_cLists.drEmployee["RndDate2"];
 
-            if (_objectsService.CLists.drEmployee["RNDNameSearch"] == DBNull.Value)
-                _objectsService.CLists.drEmployee["RNDNameSearch"] = DBNull.Value;
+            if (_cLists.drEmployee["RNDNameSearch"] == DBNull.Value)
+                _cLists.drEmployee["RNDNameSearch"] = DBNull.Value;
             else
-                _objectsService.CLists.drEmployee["RNDNameSearch"] = (string)_objectsService.CLists.drEmployee["RNDNameSearch"];
+                _cLists.drEmployee["RNDNameSearch"] = (string)_cLists.drEmployee["RNDNameSearch"];
 
-            if (_objectsService.CLists.drEmployee["Rnd Product Code"] == DBNull.Value)
-                _objectsService.CLists.drEmployee["Rnd Product Code"] = _objectsService.CDefualts.sProdRNDAll;
+            if (_cLists.drEmployee["Rnd Product Code"] == DBNull.Value)
+                _cLists.drEmployee["Rnd Product Code"] = _cDefualts.sProdRNDAll;
             else
-                _objectsService.CLists.drEmployee["Rnd Product Code"] = (string)_objectsService.CLists.drEmployee["Rnd Product Code"];
+                _cLists.drEmployee["Rnd Product Code"] = (string)_cLists.drEmployee["Rnd Product Code"];
 
-            if (_objectsService.CLists.drEmployee["RndIDTestingStatus"] == DBNull.Value)
-                _objectsService.CLists.drEmployee["RndIDTestingStatus"] = _objectsService.CDefualts.iRNDTestingStat;
+            if (_cLists.drEmployee["RndIDTestingStatus"] == DBNull.Value)
+                _cLists.drEmployee["RndIDTestingStatus"] = _cDefualts.iRNDTestingStat;
             else
-                _objectsService.CLists.drEmployee["RndIDTestingStatus"] = (int)_objectsService.CLists.drEmployee["RndIDTestingStatus"];
+                _cLists.drEmployee["RndIDTestingStatus"] = (int)_cLists.drEmployee["RndIDTestingStatus"];
 
-            if (_objectsService.CLists.drEmployee["RndIDStudyType"] == DBNull.Value)
-                _objectsService.CLists.drEmployee["RndIDStudyType"] = _objectsService.CDefualts.iMfgRunType;
+            if (_cLists.drEmployee["RndIDStudyType"] == DBNull.Value)
+                _cLists.drEmployee["RndIDStudyType"] = _cDefualts.iMfgRunType;
             else
-                _objectsService.CLists.drEmployee["RndIDStudyType"] = (int)_objectsService.CLists.drEmployee["RndIDStudyType"];
+                _cLists.drEmployee["RndIDStudyType"] = (int)_cLists.drEmployee["RndIDStudyType"];
 
-            if (_objectsService.CLists.drEmployee["RndSql"] != DBNull.Value)
-                _objectsService.RNDHome.sqlSearchDS = (string)_objectsService.CLists.drEmployee["RndSql"];
+            if (_cLists.drEmployee["RndSql"] != DBNull.Value)
+                _rndHome.sqlSearchDS = (string)_cLists.drEmployee["RndSql"];
 
-            if (SearchRNDDB() && _objectsService.RNDHome.dt.Rows.Count > 0)
+            if (SearchRNDDB() && _rndHome.dt.Rows.Count > 0)
             {
-                _objectsService.RNDHome.indSet = 0;
-                _objectsService.RNDHome.IdSet = (int)_objectsService.RNDHome.dt.Rows[0]["ID"];
+                _rndHome.indSet = 0;
+                _rndHome.IdSet = (int)_rndHome.dt.Rows[0]["ID"];
 
-                if (_objectsService.CLists.drEmployee["RndIDSelected"] != DBNull.Value)
+                if (_cLists.drEmployee["RndIDSelected"] != DBNull.Value)
                 {
-                    idTemp = (int)_objectsService.CLists.drEmployee["RndIDSelected"];
-                    for (int i = 0; i < _objectsService.RNDHome.dt.Rows.Count; i++)
+                    idTemp = (int)_cLists.drEmployee["RndIDSelected"];
+                    for (int i = 0; i < _rndHome.dt.Rows.Count; i++)
                     {
-                        if ((int)_objectsService.RNDHome.dt.Rows[i]["ID"] == idTemp)
+                        if ((int)_rndHome.dt.Rows[i]["ID"] == idTemp)
                         {
-                            _objectsService.RNDHome.indSet = i;
-                            _objectsService.RNDHome.IdSet = (int)_objectsService.RNDHome.dt.Rows[i]["ID"];
+                            _rndHome.indSet = i;
+                            _rndHome.IdSet = (int)_rndHome.dt.Rows[i]["ID"];
                         }
                     }
                 }
 
-                _objectsService.RNDHome.EnableRNDPages(true);
+                _rndHome.EnableRNDPages(true);
             }
             else
             {
-                _objectsService.RNDHome.EnableRNDPages(false);
+                _rndHome.EnableRNDPages(false);
             }
         }
 
@@ -477,19 +490,19 @@ namespace IntugentBackend.Controllers
             string sql = GetSearchCriteria();
 
             if (!string.IsNullOrEmpty(sql))
-                sql = _objectsService.RNDHome.sqlSearchDS + " Where " + sql;
+                sql = _rndHome.sqlSearchDS + " Where " + sql;
             else
-                sql = _objectsService.RNDHome.sqlSearchDS;
+                sql = _rndHome.sqlSearchDS;
 
             sql = sql + " Order by DateDSCreated DESC";
 
             try
             {
-                _objectsService.RNDHome.da = new SqlDataAdapter(sql, _objectsService.Cbfile.conAZ);
-                _objectsService.RNDHome.da.SelectCommand.Parameters.AddWithValue("@sParam1", _objectsService.RNDHome.sParamValue1);
+                _rndHome.da = new SqlDataAdapter(sql, _cbfile.conAZ);
+                _rndHome.da.SelectCommand.Parameters.AddWithValue("@sParam1", _rndHome.sParamValue1);
 
-                _objectsService.RNDHome.dt.Clear();
-                int itmp = _objectsService.RNDHome.da.Fill(_objectsService.RNDHome.dt);
+                _rndHome.dt.Clear();
+                int itmp = _rndHome.da.Fill(_rndHome.dt);
                 if (itmp < 1) return false;
             }
             catch (SqlException ex)
@@ -505,56 +518,56 @@ namespace IntugentBackend.Controllers
             DateTime dateTime;
             string sql = string.Empty, sql1 = string.Empty;
 
-            _objectsService.RNDHome.sParamValue1 = string.Empty;
+            _rndHome.sParamValue1 = string.Empty;
 
-            if (_objectsService.CLists.drEmployee["RndDate1"] != DBNull.Value)
+            if (_cLists.drEmployee["RndDate1"] != DBNull.Value)
             {
-                dateTime = ((DateTime)_objectsService.CLists.drEmployee["RndDate1"]).AddDays(1);
+                dateTime = ((DateTime)_cLists.drEmployee["RndDate1"]).AddDays(1);
                 sql1 = "DateDSCreated < '" + dateTime.ToString() + "'";
                 if (sql == string.Empty) sql = sql1; else sql = sql + " And " + sql1;
             }
 
-            if (_objectsService.CLists.drEmployee["RndDate2"] != DBNull.Value)
+            if (_cLists.drEmployee["RndDate2"] != DBNull.Value)
             {
-                dateTime = ((DateTime)_objectsService.CLists.drEmployee["RndDate2"]);
+                dateTime = ((DateTime)_cLists.drEmployee["RndDate2"]);
                 sql1 = "DateDSCreated >= '" + dateTime.ToString() + "'";
                 if (sql == string.Empty) sql = sql1; else sql = sql + " And " + sql1;
             }
 
             sql1 = string.Empty;
-            if (_objectsService.CLists.drEmployee["RndIDStudyType"] != DBNull.Value)
-                if ((int)_objectsService.CLists.drEmployee["RndIDStudyType"] != 59)
-                    sql1 = " RN.[Study Type] = " + ((int)_objectsService.CLists.drEmployee["RndIDStudyType"]).ToString();
+            if (_cLists.drEmployee["RndIDStudyType"] != DBNull.Value)
+                if ((int)_cLists.drEmployee["RndIDStudyType"] != 59)
+                    sql1 = " RN.[Study Type] = " + ((int)_cLists.drEmployee["RndIDStudyType"]).ToString();
             if (sql1 != string.Empty) { if (sql == string.Empty) sql = sql1; else sql = sql + " And " + sql1; }
 
             sql1 = string.Empty;
-            if (_objectsService.CLists.drEmployee["RndIDTestingStatus"] != DBNull.Value)
+            if (_cLists.drEmployee["RndIDTestingStatus"] != DBNull.Value)
             {
-                if ((int)_objectsService.CLists.drEmployee["RndIDTestingStatus"] == 52)
+                if ((int)_cLists.drEmployee["RndIDTestingStatus"] == 52)
                     sql1 = " RN.[PropTestingComplete] = 'false' and (RN.[Abandoned] is null or RN.[Abandoned] ='false' ) ";
-                else if ((int)_objectsService.CLists.drEmployee["RndIDTestingStatus"] == 53)
+                else if ((int)_cLists.drEmployee["RndIDTestingStatus"] == 53)
                     sql1 = " RN.[PropTestingComplete] = 'true' and (RN.[Abandoned] is null or RN.[Abandoned] ='false' ) ";
-                else if ((int)_objectsService.CLists.drEmployee["RndIDTestingStatus"] == 54)
+                else if ((int)_cLists.drEmployee["RndIDTestingStatus"] == 54)
                     sql1 = " RN.[AgedTestingComplete] = 'true' and (RN.[Abandoned] is null or RN.[Abandoned] ='false' ) ";
-                else if ((int)_objectsService.CLists.drEmployee["RndIDTestingStatus"] == 56)
+                else if ((int)_cLists.drEmployee["RndIDTestingStatus"] == 56)
                     sql1 = " (RN.[Abandoned] is null or RN.[Abandoned] ='false' ) ";
-                else if ((int)_objectsService.CLists.drEmployee["RndIDTestingStatus"] == 64)
+                else if ((int)_cLists.drEmployee["RndIDTestingStatus"] == 64)
                     sql1 = " RN.[Abandoned]  ='true' ";
             }
             if (sql1 != string.Empty) { if (sql == string.Empty) sql = sql1; else sql = sql + " And " + sql1; }
 
             sql1 = string.Empty;
-            if (_objectsService.CLists.drEmployee["Rnd Product Code"] != DBNull.Value)
+            if (_cLists.drEmployee["Rnd Product Code"] != DBNull.Value)
             {
-                if ((string)_objectsService.CLists.drEmployee["Rnd Product Code"] != "All Products")
-                    sql1 = " RN.[Product ID] = '" + (string)_objectsService.CLists.drEmployee["Rnd Product Code"] + "' ";
+                if ((string)_cLists.drEmployee["Rnd Product Code"] != "All Products")
+                    sql1 = " RN.[Product ID] = '" + (string)_cLists.drEmployee["Rnd Product Code"] + "' ";
             }
             if (sql1 != string.Empty) { if (sql == string.Empty) sql = sql1; else sql = sql + " And " + sql1; }
 
-            sql1 = _objectsService.RNDHome.sParamValue1 = string.Empty;
-            if (_objectsService.CLists.drEmployee["RNDNameSearch"] != DBNull.Value)
+            sql1 = _rndHome.sParamValue1 = string.Empty;
+            if (_cLists.drEmployee["RNDNameSearch"] != DBNull.Value)
             {
-                _objectsService.RNDHome.sParamValue1 = "%" + _objectsService.CLists.drEmployee["RNDNameSearch"].ToString() + "%";
+                _rndHome.sParamValue1 = "%" + _cLists.drEmployee["RNDNameSearch"].ToString() + "%";
                 sql1 = "RN.[Study Name] Like @sParam1";
             }
             if (sql1 != string.Empty) { if (sql == string.Empty) sql = sql1; else sql = sql + " And " + sql1; }
@@ -566,21 +579,21 @@ namespace IntugentBackend.Controllers
         {
             var result = new RndSearchResultDto
             {
-                SelectedIndex = _objectsService.RNDHome.indSet,
-                CurrentDatasetId = _objectsService.RNDHome.IdSet
+                SelectedIndex = _rndHome.indSet,
+                CurrentDatasetId = _rndHome.IdSet
             };
 
-            if (_objectsService.RNDHome.dt == null) return result;
+            if (_rndHome.dt == null) return result;
 
-            foreach (DataColumn col in _objectsService.RNDHome.dt.Columns)
+            foreach (DataColumn col in _rndHome.dt.Columns)
             {
                 result.Columns.Add(col.ColumnName);
             }
 
-            foreach (DataRow row in _objectsService.RNDHome.dt.Rows)
+            foreach (DataRow row in _rndHome.dt.Rows)
             {
                 var dict = new Dictionary<string, object?>();
-                foreach (DataColumn col in _objectsService.RNDHome.dt.Columns)
+                foreach (DataColumn col in _rndHome.dt.Columns)
                 {
                     dict[col.ColumnName] = row[col] == DBNull.Value ? null : row[col];
                 }

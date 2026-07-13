@@ -1,5 +1,7 @@
 ﻿using IntugentBackend.Models;
 using IntugentBackend.Services;
+using IntugentBackend.Services.Core;
+using IntugentBackend.Services.Mfg;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Text.Json;
@@ -10,12 +12,38 @@ namespace IntugentBackend.Controllers
     [Route("api/[controller]")]
     public class MfgHomeController : ControllerBase
     {
-        private readonly ObjectsService _objectsService;
+        private readonly CDefualts _cDefualts;
+        private readonly CLists _cLists;
+        private readonly MfgHome _mfgHome;
+        private readonly Cbfile _cbfile;
+        private readonly MfgInProcess _mfgInProcess;
+        private readonly MfgFinishedGoods _mfgFinishedGoods;
+        private readonly MfgDimStability _mfgDimStability;
+        private readonly MfgPlantData _mfgPlantData;
+        private readonly MfgJetMixing _mfgJetMixing;
         private readonly ILogger<MfgHomeController> _logger;
 
-        public MfgHomeController(ObjectsService objectsService, ILogger<MfgHomeController> logger)
+        public MfgHomeController(
+            CDefualts cDefualts,
+            CLists cLists,
+            MfgHome mfgHome,
+            Cbfile cbfile,
+            MfgInProcess mfgInProcess,
+            MfgFinishedGoods mfgFinishedGoods,
+            MfgDimStability mfgDimStability,
+            MfgPlantData mfgPlantData,
+            MfgJetMixing mfgJetMixing,
+            ILogger<MfgHomeController> logger)
         {
-            _objectsService = objectsService;
+            _cDefualts = cDefualts;
+            _cLists = cLists;
+            _mfgHome = mfgHome;
+            _cbfile = cbfile;
+            _mfgInProcess = mfgInProcess;
+            _mfgFinishedGoods = mfgFinishedGoods;
+            _mfgDimStability = mfgDimStability;
+            _mfgPlantData = mfgPlantData;
+            _mfgJetMixing = mfgJetMixing;
             _logger = logger;
         }
 
@@ -24,7 +52,7 @@ namespace IntugentBackend.Controllers
         {
             try
             {
-                if (_objectsService.CDefualts == null || _objectsService.CLists == null)
+                if (_cDefualts == null || _cLists == null)
                 {
                     return BadRequest(new ApiResponse<MfgFiltersDto>
                     {
@@ -33,13 +61,13 @@ namespace IntugentBackend.Controllers
                     });
                 }
 
-                string location = _objectsService.CDefualts.IDLocation != 3
-                    ? _objectsService.CDefualts.sLocation : string.Empty;
+                string location = _cDefualts.IDLocation != 3
+                    ? _cDefualts.sLocation : string.Empty;
 
                 var products = new List<FilterOptionDto>();
-                if (_objectsService.CLists.dvComProdAll != null)
+                if (_cLists.dvComProdAll != null)
                 {
-                    foreach (DataRowView row in _objectsService.CLists.dvComProdAll)
+                    foreach (DataRowView row in _cLists.dvComProdAll)
                     {
                         products.Add(new FilterOptionDto
                         {
@@ -52,8 +80,8 @@ namespace IntugentBackend.Controllers
                 List<FilterOptionDto> ExtractList(string listName)
                 {
                     var result = new List<FilterOptionDto>();
-                    if (_objectsService.CLists.dvLists == null) return result;
-                    var dv = _objectsService.CLists.dtLists.DefaultView;
+                    if (_cLists.dvLists == null) return result;
+                    var dv = _cLists.dtLists.DefaultView;
                     dv.RowFilter = $"sList = '{listName}'";
                     foreach (DataRowView row in dv)
                     {
@@ -74,25 +102,25 @@ namespace IntugentBackend.Controllers
                     DimStability = ExtractList("Dim Stability Mfg"),
                     RunTypes = ExtractList("Run Type Mfg"),
                     Location = location,
-                    DefaultProductCode = _objectsService.CLists.drEmployee?["Mfg Product Code"] == DBNull.Value
-                        ? _objectsService.CDefualts.sProdMfgAll
-                        : (_objectsService.CLists.drEmployee?["Mfg Product Code"]?.ToString() ?? string.Empty),
-                    DefaultTestingStatusId = _objectsService.CLists.drEmployee?["MfgIDTestingStatus"] == DBNull.Value
-                        ? _objectsService.CDefualts.iMfgTestingStat
-                        : Convert.ToInt32(_objectsService.CLists.drEmployee?["MfgIDTestingStatus"]),
-                    DefaultAgedRValueId = _objectsService.CLists.drEmployee?["MfgIDAgedTesting"] == DBNull.Value
-                        ? _objectsService.CDefualts.iMfgAgedRValue
-                        : Convert.ToInt32(_objectsService.CLists.drEmployee?["MfgIDAgedTesting"]),
-                    DefaultDimStabilityId = _objectsService.CLists.drEmployee?["MfgIDDimStability"] == DBNull.Value
-                        ? _objectsService.CDefualts.iMfgDimStability
-                        : Convert.ToInt32(_objectsService.CLists.drEmployee?["MfgIDDimStability"]),
-                    DefaultRunTypeId = _objectsService.CLists.drEmployee?["MfgIDRunType"] == DBNull.Value
-                        ? _objectsService.CDefualts.iMfgRunType
-                        : Convert.ToInt32(_objectsService.CLists.drEmployee?["MfgIDRunType"]),
-                    DefaultDateFrom = _objectsService.CLists.drEmployee?["MfgDate1"] == DBNull.Value
-                        ? null : Convert.ToDateTime(_objectsService.CLists.drEmployee?["MfgDate1"]),
-                    DefaultDateTo = _objectsService.CLists.drEmployee?["MfgDate2"] == DBNull.Value
-                        ? null : Convert.ToDateTime(_objectsService.CLists.drEmployee?["MfgDate2"])
+                    DefaultProductCode = _cLists.drEmployee?["Mfg Product Code"] == DBNull.Value
+                        ? _cDefualts.sProdMfgAll
+                        : (_cLists.drEmployee?["Mfg Product Code"]?.ToString() ?? string.Empty),
+                    DefaultTestingStatusId = _cLists.drEmployee?["MfgIDTestingStatus"] == DBNull.Value
+                        ? _cDefualts.iMfgTestingStat
+                        : Convert.ToInt32(_cLists.drEmployee?["MfgIDTestingStatus"]),
+                    DefaultAgedRValueId = _cLists.drEmployee?["MfgIDAgedTesting"] == DBNull.Value
+                        ? _cDefualts.iMfgAgedRValue
+                        : Convert.ToInt32(_cLists.drEmployee?["MfgIDAgedTesting"]),
+                    DefaultDimStabilityId = _cLists.drEmployee?["MfgIDDimStability"] == DBNull.Value
+                        ? _cDefualts.iMfgDimStability
+                        : Convert.ToInt32(_cLists.drEmployee?["MfgIDDimStability"]),
+                    DefaultRunTypeId = _cLists.drEmployee?["MfgIDRunType"] == DBNull.Value
+                        ? _cDefualts.iMfgRunType
+                        : Convert.ToInt32(_cLists.drEmployee?["MfgIDRunType"]),
+                    DefaultDateFrom = _cLists.drEmployee?["MfgDate1"] == DBNull.Value
+                        ? null : Convert.ToDateTime(_cLists.drEmployee?["MfgDate1"]),
+                    DefaultDateTo = _cLists.drEmployee?["MfgDate2"] == DBNull.Value
+                        ? null : Convert.ToDateTime(_cLists.drEmployee?["MfgDate2"])
                 };
 
                 return Ok(new ApiResponse<MfgFiltersDto> { Success = true, Data = filters });
@@ -110,33 +138,33 @@ namespace IntugentBackend.Controllers
         {
             try
             {
-                if (_objectsService.MfgHome == null || _objectsService.CLists?.drEmployee == null)
+                if (_mfgHome == null || _cLists?.drEmployee == null)
                 {
                     return BadRequest(new ApiResponse<MfgSearchResultDto>
                     { Success = false, Error = "MfgHome not initialized." });
                 }
 
-                _objectsService.CLists.drEmployee["Mfg Product Code"] =
+                _cLists.drEmployee["Mfg Product Code"] =
                     string.IsNullOrEmpty(request.ProductCode) ? DBNull.Value : request.ProductCode;
-                _objectsService.CLists.drEmployee["MfgDate1"] =
+                _cLists.drEmployee["MfgDate1"] =
                     request.DateFrom == null ? DBNull.Value : request.DateFrom;
-                _objectsService.CLists.drEmployee["MfgDate2"] =
+                _cLists.drEmployee["MfgDate2"] =
                     request.DateTo == null ? DBNull.Value : request.DateTo;
-                _objectsService.CLists.drEmployee["MfgIDTestingStatus"] =
+                _cLists.drEmployee["MfgIDTestingStatus"] =
                     request.TestingStatusId <= 0 ? DBNull.Value : request.TestingStatusId;
-                _objectsService.CLists.drEmployee["MfgIDAgedTesting"] =
+                _cLists.drEmployee["MfgIDAgedTesting"] =
                     request.AgedRValueId <= 0 ? DBNull.Value : request.AgedRValueId;
-                _objectsService.CLists.drEmployee["MfgIDDimStability"] =
+                _cLists.drEmployee["MfgIDDimStability"] =
                     request.DimStabilityId <= 0 ? DBNull.Value : request.DimStabilityId;
-                _objectsService.CLists.drEmployee["MfgIDRunType"] =
+                _cLists.drEmployee["MfgIDRunType"] =
                     request.RunTypeId <= 0 ? DBNull.Value : request.RunTypeId;
 
-                bool found = _objectsService.MfgHome.SearchMfgDB();
+                bool found = _mfgHome.SearchMfgDB();
 
-                if (found && _objectsService.MfgHome.dt.Rows.Count > 0)
+                if (found && _mfgHome.dt.Rows.Count > 0)
                 {
-                    _objectsService.Cbfile.iIDMfgIndex = 0;
-                    _objectsService.Cbfile.iIDMfg = Convert.ToInt32(_objectsService.MfgHome.dt.Rows[0]["ID4ALL"]);
+                    _cbfile.iIDMfgIndex = 0;
+                    _cbfile.iIDMfg = Convert.ToInt32(_mfgHome.dt.Rows[0]["ID4ALL"]);
                 }
 
                 var result = BuildSearchResult();
@@ -155,7 +183,7 @@ namespace IntugentBackend.Controllers
         {
             try
             {
-                if (_objectsService.MfgHome?.dt == null)
+                if (_mfgHome?.dt == null)
                 {
                     return Ok(new ApiResponse<MfgSearchResultDto>
                     { Success = true, Data = new MfgSearchResultDto() });
@@ -177,10 +205,10 @@ namespace IntugentBackend.Controllers
         {
             try
             {
-                if (!_objectsService.Cbfile.bCanSwitchRecord)
+                if (!_cbfile.bCanSwitchRecord)
                 {
                     return Ok(new ApiResponse<object>
-                    { Success = false, Error = "Cannot switch record: " + _objectsService.Cbfile.sNoRecSwitchMsg });
+                    { Success = false, Error = "Cannot switch record: " + _cbfile.sNoRecSwitchMsg });
                 }
 
                 if (request.SelectedIndex < 0 || request.SelectedIndex >= request.RowCount)
@@ -189,21 +217,19 @@ namespace IntugentBackend.Controllers
                     { Success = false, Error = "Invalid selection index." });
                 }
 
-                if (_objectsService.MfgHome.dt.Rows[request.SelectedIndex]["ID4ALL"] == DBNull.Value)
+                if (_mfgHome.dt.Rows[request.SelectedIndex]["ID4ALL"] == DBNull.Value)
                 {
                     return BadRequest(new ApiResponse<object>
                     { Success = false, Error = "Selected dataset does not have a valid ID." });
                 }
 
-                _objectsService.Cbfile.iIDMfgIndex = request.SelectedIndex;
-                _objectsService.Cbfile.iIDMfg = request.DatasetId;
+                _cbfile.iIDMfgIndex = request.SelectedIndex;
+                _cbfile.iIDMfg = request.DatasetId;
 
-                (_objectsService.MfgInProcess, _objectsService.MfgFinishedGoods,
-                 _objectsService.MfgDimStability, _objectsService.MfgPlantData,
-                 _objectsService.MfgJetMixing) = _objectsService.MfgHome.GetAllMfgData(
-                     _objectsService.MfgInProcess, _objectsService.MfgFinishedGoods,
-                     _objectsService.MfgDimStability, _objectsService.MfgPlantData,
-                     _objectsService.MfgJetMixing);
+                _mfgHome.GetAllMfgData(
+                    _mfgInProcess, _mfgFinishedGoods,
+                    _mfgDimStability, _mfgPlantData,
+                    _mfgJetMixing);
 
                 return Ok(new ApiResponse<object>
                 { Success = true, Data = new { message = $"Dataset {request.DatasetId} selected." } });
@@ -220,19 +246,19 @@ namespace IntugentBackend.Controllers
         {
             var result = new MfgSearchResultDto
             {
-                SelectedIndex = _objectsService.Cbfile.iIDMfgIndex,
-                CurrentDatasetId = _objectsService.Cbfile.iIDMfg
+                SelectedIndex = _cbfile.iIDMfgIndex,
+                CurrentDatasetId = _cbfile.iIDMfg
             };
 
-            if (_objectsService.MfgHome.dt == null) return result;
+            if (_mfgHome.dt == null) return result;
 
-            foreach (DataColumn col in _objectsService.MfgHome.dt.Columns)
+            foreach (DataColumn col in _mfgHome.dt.Columns)
                 result.Columns.Add(col.ColumnName);
 
-            foreach (DataRow row in _objectsService.MfgHome.dt.Rows)
+            foreach (DataRow row in _mfgHome.dt.Rows)
             {
                 var dict = new Dictionary<string, JsonValue>();
-                foreach (DataColumn col in _objectsService.MfgHome.dt.Columns)
+                foreach (DataColumn col in _mfgHome.dt.Columns)
                 {
                     dict[col.ColumnName] = new JsonValue(row[col] == DBNull.Value ? null : row[col]);
                 }

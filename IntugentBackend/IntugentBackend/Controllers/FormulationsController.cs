@@ -9,17 +9,22 @@ namespace IntugentBackend.Controllers
     [Route("api/[controller]")]
     public class FormulationsController : ControllerBase
     {
-        private readonly ObjectsService _objectsService;
-        public FormulationsController(ObjectsService objectsService) => _objectsService = objectsService;
+        private readonly RNDHome _rndHome;
+        private readonly RNDFormulations _rndFormulations;
+        public FormulationsController(RNDHome rndHome, RNDFormulations rndFormulations)
+        {
+            _rndHome = rndHome;
+            _rndFormulations = rndFormulations;
+        }
 
         [HttpGet("data/{id}")]
         public IActionResult GetFormulationData(int id)
         {
-            if (!_objectsService.RNDHome.GetDataSet(id)) return NotFound();
-            _objectsService.RNDFormulations.ReadDataset();
-            _objectsService.RNDFormulations.FormDescriptors();
+            if (!_rndHome.GetDataSet(id)) return NotFound();
+            _rndFormulations.ReadDataset();
+            _rndFormulations.FormDescriptors();
 
-            var table = _objectsService.RNDFormulations.dtFormProp;
+            var table = _rndFormulations.dtFormProp;
             var list = table.AsEnumerable().Select(row =>
                 table.Columns.Cast<DataColumn>().ToDictionary(col => col.ColumnName, col => row[col] == DBNull.Value ? 0 : row[col])
             ).ToList();
@@ -30,10 +35,10 @@ namespace IntugentBackend.Controllers
         [HttpPost("update-nco/{id}")]
         public IActionResult UpdateNcoIndex(int id, [FromBody] NcoUpdateRequest request)
         {
-            if (!_objectsService.RNDHome.GetDataSet(id)) return NotFound();
-            _objectsService.RNDFormulations.Forms.FormAr[request.ColIndex].NcoIndex = request.Value;
-            _objectsService.RNDHome.dtF.Rows[request.ColIndex]["NCOIndex"] = request.Value;
-            _objectsService.RNDHome.UpdateFormulatiions();
+            if (!_rndHome.GetDataSet(id)) return NotFound();
+            _rndFormulations.Forms.FormAr[request.ColIndex].NcoIndex = request.Value;
+            _rndHome.dtF.Rows[request.ColIndex]["NCOIndex"] = request.Value;
+            _rndHome.UpdateFormulatiions();
             return Ok(new { success = true });
         }
     }
