@@ -1,67 +1,141 @@
-﻿using IntugentBackend;
-using IntugentBackend.Controllers.Rnd;
-using IntugentBackend.Services.Rnd;
 using Microsoft.AspNetCore.Mvc;
+using IntugentBackend.Models;
+using IntugentBackend.Services.Core;
 using IntugentBackend.Services.Rnd;
-[ApiController]
-[Route("api/[controller]")]
-public class RndPropertiesController : ControllerBase
+using System.Data;
+
+namespace IntugentBackend.Controllers
 {
-    private readonly RNDHome _rndHome;
-    private readonly RndPropertiesService _svc;
-
-    public RndPropertiesController(RNDHome rndHome, RndPropertiesService svc)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class RndPropertiesController : ControllerBase
     {
-        _rndHome = rndHome;
-        _svc = svc;
+        private readonly RNDHome _rndHome;
+        private readonly RNDProperties _rndProperties;
+        private readonly RndPropertiesService _svc;
+        private readonly ILogger<RndPropertiesController> _logger;
+
+        public RndPropertiesController(RNDHome rndHome, RNDProperties rndProperties, RndPropertiesService svc, ILogger<RndPropertiesController> logger)
+        {
+            _rndHome = rndHome;
+            _rndProperties = rndProperties;
+            _svc = svc;
+            _logger = logger;
+        }
+
+        /// <summary>
+        /// Load the Properties &amp; Data Files page for the currently selected R&amp;D dataset (mirrors the old page's OnGet).
+        /// </summary>
+        [HttpGet("load")]
+        public IActionResult Load()
+        {
+            try
+            {
+                bool ok = _svc.Initialize();
+                if (!ok)
+                {
+                    return Ok(new ApiResponse<RndPropertiesDto>
+                    {
+                        Success = false,
+                        Error = "No R&D dataset is selected. Select a dataset on the R&D Home page first."
+                    });
+                }
+
+                return Ok(new ApiResponse<RndPropertiesDto> { Success = true, Data = BuildDto() });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading R&D properties data");
+                return StatusCode(500, new ApiResponse<RndPropertiesDto> { Success = false, Error = ex.Message });
+            }
+        }
+
+        [HttpPost("update-reaction")]
+        public IActionResult UpdateReaction([FromBody] GridCellUpdateRequest request)
+            => HandleUpdate(() => _svc.UpdateReactionData(request.Row, request.Col, request.Text));
+
+        [HttpPost("update-photo")]
+        public IActionResult UpdatePhoto([FromBody] GridCellUpdateRequest request)
+            => HandleUpdate(() => _svc.UpdatePhotoData(request.Row, request.Col, request.Text));
+
+        [HttpPost("update-datafile")]
+        public IActionResult UpdateDataFile([FromBody] GridCellUpdateRequest request)
+            => HandleUpdate(() => _svc.UpdateDataFile(request.Row, request.Col, request.Text));
+
+        [HttpPost("update-product")]
+        public IActionResult UpdateProduct([FromBody] GridCellUpdateRequest request)
+            => HandleUpdate(() => _svc.UpdateProductCode(request.Row, request.Text));
+
+        [HttpPost("update-notes")]
+        public IActionResult UpdateNotes([FromBody] GridCellUpdateRequest request)
+            => HandleUpdate(() => _svc.UpdateNote(request.Row, request.Text));
+
+        [HttpPost("update-prop-testing-complete")]
+        public IActionResult UpdatePropTestingComplete([FromBody] BoolValueRequest request)
+            => HandleUpdate(() => _svc.UpdatePropTestingComplete(request.Value));
+
+        private IActionResult HandleUpdate(Action apply)
+        {
+            try
+            {
+                apply();
+                return Ok(new ApiResponse<RndPropertiesDto> { Success = true, Data = BuildDto() });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating R&D properties data");
+                return StatusCode(500, new ApiResponse<RndPropertiesDto> { Success = false, Error = ex.Message });
+            }
+        }
+
+        private RndPropertiesDto BuildDto() => new()
+        {
+            ReacE = ToGrid(_rndProperties.dtReacE),
+            ReacC = ToGrid(_rndProperties.dtReacC),
+            PhotoE = ToGrid(_rndProperties.dtPhotoE),
+            PhotoC = ToGrid(_rndProperties.dtPhotoC),
+            PropsE = ToGrid(_rndProperties.dtPropsE),
+            PropsC = ToGrid(_rndProperties.dtPropsC),
+            DataFiles = ToGrid(_rndProperties.dtDataFiles),
+            Prod = ToGrid(_rndProperties.dtComProd),
+            Notes = ToGrid(_rndProperties.dtNotes),
+            ProdList = _svc.GetProductList(),
+            PropTestingComplete = _svc.GetPropTestingComplete()
+        };
+
+        private static GridDto ToGrid(DataTable dt)
+        {
+            var grid = new GridDto();
+            foreach (DataColumn col in dt.Columns) grid.Columns.Add(col.ColumnName);
+            foreach (DataRow row in dt.Rows)
+            {
+                var cells = new List<string>();
+                foreach (DataColumn col in dt.Columns) cells.Add(row[col]?.ToString() ?? string.Empty);
+                grid.Rows.Add(cells);
+            }
+            return grid;
+        }
     }
 
-    [HttpPost("update-reaction")]
-    public IActionResult UpdateReaction([FromBody] TdrvUpdateModel model)
+    // ========== DTOs ==========
+
+    public class RndPropertiesDto
     {
-        // 1. Always initialize
-        _rndHome.GetDataSet(1);
-
-        // 2. Validate inputs (Path A)
-        if (!int.TryParse(model.RowId, out int irow) || !int.TryParse(model.ColId, out int icol))
-        {
-            return BadRequest("Invalid numeric format.");
-        }
-
-        // 3. Logic and Bounds Checking (Path B)
-        if (icol <= 0 || irow > 9)
-        {
-            return BadRequest("Out of range.");
-        }
-
-        // ... your logic here ...
-
-        // 4. Final Success Path (Path C)
-        _rndHome.UpdateFormulatiions();
-        return Ok(new { success = true });
+        public GridDto ReacE { get; set; } = new();
+        public GridDto ReacC { get; set; } = new();
+        public GridDto PhotoE { get; set; } = new();
+        public GridDto PhotoC { get; set; } = new();
+        public GridDto PropsE { get; set; } = new();
+        public GridDto PropsC { get; set; } = new();
+        public GridDto DataFiles { get; set; } = new();
+        public GridDto Prod { get; set; } = new();
+        public GridDto Notes { get; set; } = new();
+        public List<string> ProdList { get; set; } = new();
+        public bool PropTestingComplete { get; set; }
     }
-    [HttpPost("update-notes")]
-    public IActionResult UpdateNotes([FromBody] TdrvUpdateModel model)
+
+    public class BoolValueRequest
     {
-        // 1. INITIALIZATION: Always ensure data is loaded for the current user
-        _rndHome.GetDataSet(1);
-
-        // 2. DEFENSIVE VALIDATION: Check numeric format FIRST
-        if (!int.TryParse(model.RowId, out int irow))
-        {
-            return BadRequest("RowId must be a valid number.");
-        }
-
-        // 3. BOUNDS CHECK: Ensure the row actually exists before trying to access it
-        if (irow < 0 || irow >= _rndHome.dtF.Rows.Count)
-        {
-            return BadRequest($"Invalid row index. Rows available: {_rndHome.dtF.Rows.Count}");
-        }
-
-        // 4. LOGIC: Now it is safe to proceed
-        _rndHome.dtF.Rows[irow]["sNote"] = model.Text;
-        _rndHome.UpdateFormulatiions();
-
-        return Ok(new { success = true });
+        public bool Value { get; set; }
     }
 }

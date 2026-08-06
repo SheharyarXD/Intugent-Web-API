@@ -1,0 +1,349 @@
+@page "/rnd-r-values"
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject IJSRuntime JS
+
+<PageTitle>R&D R Values Tool</PageTitle>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+    </div>
+}
+
+@if (noDatasetSelected)
+{
+    <div class="alert alert-warning" role="alert">
+        No R&amp;D dataset is selected. Please select a dataset on the R&amp;D Home page first.
+    </div>
+}
+else if (data != null)
+{
+    <div class="row">
+        <div class="col-4">
+            <!-- Key Calculation Parameter Card -->
+            <div class="card card-default">
+                <div class="card-header align-items-center"><h2>Key Calculation Parameter</h2></div>
+                <div class="card-body">
+                    <div class="form-floating mb-2">
+                        <input type="number" class="form-control text-center" id="gMeasureTemp"
+                               value="@data.GMeasureTemp" disabled="@isBusy"
+                               @onchange='e => OnFieldChanged("gMeasureTemp", e.Value?.ToString())' />
+                        <label for="gMeasureTemp">Measuring Temperature (°F)</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input type="number" class="form-control text-center" id="gCellSize"
+                               value="@data.GCellSize" disabled="@isBusy"
+                               @onchange='e => OnFieldChanged("gCellSize", e.Value?.ToString())' />
+                        <label for="gCellSize">Average Cell Size (microns)</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input type="number" class="form-control text-center" id="gCellPress"
+                               value="@data.GCellPress" disabled="@isBusy"
+                               @onchange='e => OnFieldChanged("gCellPress", e.Value?.ToString())' />
+                        <label for="gCellPress">Initial Cell Pressure (atm)</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input type="number" class="form-control text-center" id="gPolDen"
+                               value="@data.GPolDen" disabled="@isBusy"
+                               @onchange='e => OnFieldChanged("gPolDen", e.Value?.ToString())' />
+                        <label for="gPolDen">Polymer Density (lb/ft3³)</label>
+                    </div>
+                    <div class="form-floating col-12">
+                        <button type="button" class="btn btn-primary btn-sm" disabled="@isBusy" @onclick="OnResetDefaults">
+                            Set Default Values
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-8">
+            <!-- R Values and Cell Gas Composition -->
+            <div class="card card-default">
+                <div class="card-header align-items-center"><h2>R Values and Cell Gas Composition</h2></div>
+                <div class="card-body" style="height:300px; overflow:scroll;">
+                    <table class="table table-sm table-bordered table-hover table-striped table-responsive-md">
+                        <thead class="thead-light" style="position:sticky; top:0;">
+                            <tr>
+                                <th scope="col">Property</th>
+                                <th scope="col">#1</th>
+                                <th scope="col">#2</th>
+                                <th scope="col">#3</th>
+                                <th scope="col">#4</th>
+                                <th scope="col">#5</th>
+                                <th scope="col">#6</th>
+                                <th scope="col">#7</th>
+                                <th scope="col">#8</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var row in data.GasComp)
+                            {
+                                <tr>
+                                    <td>@row.GasName</td>
+                                    @for (int i = 0; i < 8; i++)
+                                    {
+                                        <td>@(i < row.Values.Count ? row.Values[i] : "")</td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-4">
+            <!-- Initial R Value Analyses -->
+            <div class="card card-default">
+                <div class="card-header align-items-center"><h2>Initial R Value Analyses</h2></div>
+                <div class="card-body">
+                    <div class="form-floating mb-2">
+                        <select class="form-select" id="XAxis" disabled="@isBusy"
+                                @bind:get="data.XAxisSelectedValue" @bind:set='value => OnAxisChanged("gXAxis", value)'>
+                            <option value="CS">Cell Size (Microns)</option>
+                            <option value="DE">Density (kg/m&#x00B3;)</option>
+                            <option value="TE">Temperature (°F)</option>
+                        </select>
+                        <label for="XAxis">X Axis</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <select class="form-select" id="YAxis" disabled="@isBusy"
+                                @bind:get="data.YAxisSelectedValue" @bind:set='value => OnAxisChanged("gYAxis", value)'>
+                            <option value="KV">K-Value, Conductivity (mW/m-K)</option>
+                            <option value="RV">R-Value, Resistance (ft&#x00B2;-°F-hr/Btu)</option>
+                        </select>
+                        <label for="YAxis">Y Axis</label>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-5">
+                <h2 class="my-2">Chart Navigation</h2>
+                <p class="my-1">- left-click-drag to pan</p>
+                <p class="my-1">- left-click-drag on an axis to pan just that axis</p>
+                <p class="my-1">- Scroll-wheel to zoom</p>
+                <p class="my-1">- double-click to fit axis limits to data (may be a few times)</p>
+            </div>
+        </div>
+        <div class="col-8">
+            <canvas id="charts"></canvas>
+        </div>
+    </div>
+}
+
+@code {
+    private RValuesDto? data;
+    private string? errorMessage;
+    private bool isBusy;
+    private bool noDatasetSelected;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && data != null)
+        {
+            await RenderChart();
+        }
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.GetFromJsonAsync<ApiResponse<RValuesDto>>("RndValues/load");
+            if (response?.Success == true && response.Data != null)
+            {
+                data = response.Data;
+                noDatasetSelected = false;
+            }
+            else if (response?.Error?.Contains("No R&D dataset is selected") == true)
+            {
+                noDatasetSelected = true;
+            }
+            else
+            {
+                errorMessage = response?.Error ?? "Failed to load R Values tool.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading R Values tool: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task OnFieldChanged(string name, string? value)
+    {
+        if (isBusy) return;
+        try
+        {
+            isBusy = true;
+            var response = await Http.PostAsJsonAsync("RndValues/lost-focus", new FieldChangeRequest { Name = name, Value = value ?? string.Empty });
+            var result = await response.Content.ReadFromJsonAsync<ApiResponse<RValuesDto>>();
+            if (result?.Success == true && result.Data != null)
+            {
+                data = result.Data;
+                await RenderChart();
+            }
+            else
+            {
+                errorMessage = result?.Error ?? "Failed to update field.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Update error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task OnAxisChanged(string name, string? value)
+    {
+        if (isBusy || string.IsNullOrEmpty(value)) return;
+        try
+        {
+            isBusy = true;
+            string item = name == "gXAxis"
+                ? value switch { "CS" => "Cell Size (Microns)", "DE" => "Density (kg/m³)", _ => "Temperature (°F)" }
+                : value switch { "KV" => "K-Value, Conductivity (mW/m-K)", _ => "R-Value, Resistance (ft²-°F-hr/Btu)" };
+
+            var response = await Http.PostAsJsonAsync("RndValues/axis-changed", new AxisChangeRequest { Name = name, Value = value, Item = item });
+            var result = await response.Content.ReadFromJsonAsync<ApiResponse<RValuesDto>>();
+            if (result?.Success == true && result.Data != null)
+            {
+                data = result.Data;
+                await RenderChart();
+            }
+            else
+            {
+                errorMessage = result?.Error ?? "Failed to update axis selection.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Axis update error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task OnResetDefaults()
+    {
+        if (isBusy) return;
+        try
+        {
+            isBusy = true;
+            var response = await Http.PostAsJsonAsync<object>("RndValues/reset-defaults", new { });
+            var result = await response.Content.ReadFromJsonAsync<ApiResponse<RValuesDto>>();
+            if (result?.Success == true && result.Data != null)
+            {
+                data = result.Data;
+                await RenderChart();
+            }
+            else
+            {
+                errorMessage = result?.Error ?? "Failed to reset to default values.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Reset error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task RenderChart()
+    {
+        if (data == null) return;
+
+        var datasets = new List<object>();
+        AddSeries(datasets, "Form 1", data.Ar0, "rgba(255, 0, 0, 0.6)", "rgba(255, 0, 0, 1)");
+        AddSeries(datasets, "Form 2", data.Ar1, "rgba(0, 0, 255, 0.6)", "rgba(0, 0, 255, 1)");
+        AddSeries(datasets, "Form 3", data.Ar2, "rgba(0, 255, 0, 0.6)", "rgba(0, 255, 0, 1)");
+        AddSeries(datasets, "Form 4", data.Ar3, "rgba(255, 255, 0, 0.6)", "rgba(255, 255, 0, 1)");
+        AddSeries(datasets, "Form 5", data.Ar4, "DarkMagenta", "DarkMagenta");
+
+        await JS.InvokeVoidAsync("renderRValuesChart", "charts", datasets, "Temperature (F)", "R / n value");
+    }
+
+    private void AddSeries(List<object> datasets, string label, double[] yValues, string bg, string border)
+    {
+        if (data?.ArX == null || yValues == null || data.ArX.Length == 0 || yValues.Length == 0) return;
+
+        var points = data.ArX.Zip(yValues, (x, y) => new { x, y }).ToArray();
+        datasets.Add(new
+        {
+            label,
+            data = points,
+            backgroundColor = bg,
+            borderColor = border,
+            borderWidth = 3,
+            pointRadius = 0
+        });
+    }
+
+    public class RValuesDto
+    {
+        public string GMeasureTemp { get; set; } = string.Empty;
+        public string GCellSize { get; set; } = string.Empty;
+        public string GCellPress { get; set; } = string.Empty;
+        public string GPolDen { get; set; } = string.Empty;
+        public string GPolCond { get; set; } = string.Empty;
+        public string GFracStruts { get; set; } = string.Empty;
+        public string XAxisSelectedValue { get; set; } = "TE";
+        public string YAxisSelectedValue { get; set; } = "RV";
+        public List<GasCompRowDto> GasComp { get; set; } = new();
+        public double[] ArX { get; set; } = Array.Empty<double>();
+        public double[] Ar0 { get; set; } = Array.Empty<double>();
+        public double[] Ar1 { get; set; } = Array.Empty<double>();
+        public double[] Ar2 { get; set; } = Array.Empty<double>();
+        public double[] Ar3 { get; set; } = Array.Empty<double>();
+        public double[] Ar4 { get; set; } = Array.Empty<double>();
+    }
+
+    public class GasCompRowDto
+    {
+        public string GasName { get; set; } = string.Empty;
+        public List<string> Values { get; set; } = new();
+    }
+
+    public class FieldChangeRequest
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Value { get; set; } = string.Empty;
+    }
+
+    public class AxisChangeRequest
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Value { get; set; } = string.Empty;
+        public string Item { get; set; } = string.Empty;
+    }
+
+    public class ApiResponse<T>
+    {
+        public bool Success { get; set; }
+        public T? Data { get; set; }
+        public string? Error { get; set; }
+    }
+}

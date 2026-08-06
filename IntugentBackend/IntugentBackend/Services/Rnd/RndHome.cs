@@ -155,32 +155,46 @@ namespace IntugentBackend.Services.Rnd
         public bool GetDataSet(int idToLoad)
         {
             IdSet = idToLoad;
-
-            // Add these lines to see exactly what is happening
-            System.Diagnostics.Debug.WriteLine($"DEBUG: Attempting to load data for ID: {idToLoad}");
-            System.Diagnostics.Debug.WriteLine($"DEBUG: Connection string: {CBfiles?.conAZ?.ConnectionString}");
+            string sMsg = "Could not get the selected R&D dataset from the server.";
 
             try
             {
-                // ... (existing opening logic) ...
-
-                string sSqlQuery = "Select * from [RNDFormulations] where IDDataset = " + IdSet;
-                using (SqlDataAdapter daF = new SqlDataAdapter(sSqlQuery, CBfiles.conAZ))
+                string sSqlQuery = "Select * from [RNDDatasets] where ID =" + IdSet;
+                daS = new SqlDataAdapter(sSqlQuery, CBfiles.conAZ);
+                dtS.Clear();
+                int itmp = daS.Fill(dtS);
+                if (itmp < 1)
                 {
-                    dtF.Clear();
-                    int count = daF.Fill(dtF);
+                    System.Diagnostics.Trace.TraceError(sMsg + "\n\n");
+                    EnableRNDPages(false);
+                    return false;
+                }
 
-                    // This is the most important log
-                    System.Diagnostics.Debug.WriteLine($"DEBUG: Successfully loaded {count} rows.");
-
-                    return count > 0;
+                // Get Formulations
+                sSqlQuery = "Select * from [RNDFormulations] where IDDataset =" + IdSet;
+                daF = new SqlDataAdapter(sSqlQuery, CBfiles.conAZ);
+                dtF.Clear();
+                itmp = daF.Fill(dtF);
+                if (itmp != 8)
+                {
+                    sMsg = "Could not get the formulations for the selected R&D dataset";
+                    System.Diagnostics.Trace.TraceError(sMsg + "\n\n");
+                    EnableRNDPages(false);
+                    return false;
                 }
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
-                System.Diagnostics.Debug.WriteLine($"ERROR: {ex.Message}");
+                sMsg = "Could not get the data for the RND Dataset " + IdSet;
+                System.Diagnostics.Trace.TraceError(sMsg + "\n\n" + ex.Message);
+                EnableRNDPages(false);
                 return false;
             }
+
+            drS = dtS.Rows[0];
+            EnableRNDPages(true);
+
+            return true;
         }
 
         public void UpdateDataSet()

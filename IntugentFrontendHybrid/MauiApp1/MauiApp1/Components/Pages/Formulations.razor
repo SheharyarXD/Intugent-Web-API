@@ -1,0 +1,449 @@
+@page "/rnd-formulations"
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject IJSRuntime JS
+
+<PageTitle>Formulations</PageTitle>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+    </div>
+}
+
+@if (noDatasetSelected)
+{
+    <div class="alert alert-warning" role="alert">
+        No R&amp;D dataset is selected. Please select a dataset on the R&amp;D Home page first.
+    </div>
+}
+else if (data != null)
+{
+    <div class="row">
+        <div class="card card-default">
+            <div class="card-header align-items-center"><h2>General Info</h2></div>
+            <div class="card-body">
+                <div class="row mb-2">
+                    <div class="col-lg-3">
+                        <div class="mb-2 row">
+                            <label class="col-md-3 col-form-label">Project ID</label>
+                            <div class="col-md-7"><input type="text" class="form-control" value="@data.Id" readonly></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-9">
+                        <div class="mb-2 row">
+                            <label class="col-md-2 col-form-label">Project/Study Name</label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" disabled="@isBusy" value="@data.StudyName"
+                                       @onchange='e => OnGenInfoChanged("gStudyName", e.Value?.ToString())' />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-lg-3">
+                        <div class="form-floating mb-2">
+                            <select class="form-select" disabled="@isBusy"
+                                    @bind:get="data.StudyTypeId" @bind:set='value => OnGenInfoChanged("gStudyType", value.ToString())'>
+                                @foreach (var opt in data.StudyTypes)
+                                {
+                                    <option value="@opt.Id">@opt.Name</option>
+                                }
+                            </select>
+                            <label>Study Type</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-floating mb-2">
+                            <select class="form-select" disabled="@isBusy"
+                                    @bind:get="data.ProductId" @bind:set='value => OnGenInfoChanged("gProductID", value)'>
+                                @foreach (var opt in data.Products)
+                                {
+                                    <option value="@opt.Code">@opt.Name</option>
+                                }
+                            </select>
+                            <label>Related Product</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-floating mb-2">
+                            <select class="form-select" disabled="@isBusy"
+                                    @bind:get="data.ChemistId" @bind:set='value => OnGenInfoChanged("gChemist", value.ToString())'>
+                                @foreach (var opt in data.Employees)
+                                {
+                                    <option value="@opt.Id">@opt.Name</option>
+                                }
+                            </select>
+                            <label>Designed By</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-floating mb-2">
+                            <select class="form-select" disabled="@isBusy"
+                                    @bind:get="data.OperatorId" @bind:set='value => OnGenInfoChanged("gOperator", value.ToString())'>
+                                @foreach (var opt in data.Employees)
+                                {
+                                    <option value="@opt.Id">@opt.Name</option>
+                                }
+                            </select>
+                            <label>Conducted By</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="date" class="form-control" disabled="@isBusy" value="@(data.DateCreated?.ToString("yyyy-MM-dd"))"
+                                   @onchange='e => OnGenInfoChanged("gDateDSCreated", e.Value?.ToString())' />
+                            <label>Date of Experiments</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6 d-flex justify-content-end align-items-center">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" disabled="@isBusy" checked="@data.Abandoned"
+                                   @onchange='e => OnGenInfoChanged("gAbandoned", (e.Value is bool ab && ab).ToString())' />
+                            <label class="form-check-label">Abandoned</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-6">
+            <div class="card card-default">
+                <div class="card-header align-items-center"><h2>Formulation Details</h2></div>
+                <div class="card-body">
+                    <h3 class="fs-6">NCO Index (NCO equivs per 100 Equivalents of Active-H)</h3>
+                    <table class="table table-sm mb-4">
+                        <thead class="thead-light"><tr><th></th>@for (int i = 1; i <= 8; i++){<th>#@i</th>}</tr></thead>
+                        <tbody>
+                            @if (data.Nco.Count > 0)
+                            {
+                                <tr>
+                                    <td>@data.Nco[0].MatName</td>
+                                    @for (int c = 0; c < 8; c++)
+                                    {
+                                        int col = c;
+                                        <td class="p-0">
+                                            <input class="form-control form-control-sm border-0" disabled="@isBusy"
+                                                   value="@data.Nco[0].Pbws[col]"
+                                                   @onchange="e => OnNcoChanged(col + 1, e.Value?.ToString())" />
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <h3 class="fs-6">Side A (ISO Side) Material</h3>
+                    <table class="table table-sm mb-4">
+                        <thead class="thead-light">
+                            <tr><th>Material</th><th>Type</th><th>%NCO</th><th>Func.</th>@for (int i = 1; i <= 8; i++){<th>#@i</th>}</tr>
+                        </thead>
+                        <tbody>
+                            @for (int r = 0; r < data.Iso.Count; r++)
+                            {
+                                int row = r;
+                                var m = data.Iso[row];
+                                <tr>
+                                    <td>
+                                        <select class="form-select form-select-sm" disabled="@isBusy"
+                                                @bind:get="data.IsoList.IndexOf(m.MatName ?? string.Empty)" @bind:set="value => OnIsoMaterialChanged(row, value.ToString())">
+                                            @for (int i = 0; i < data.IsoList.Count; i++)
+                                            {
+                                                <option value="@i">@data.IsoList[i]</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td>@m.MatType</td>
+                                    <td class="p-0">
+                                        <input class="form-control form-control-sm border-0" disabled="@isBusy" value="@m.MatNco"
+                                               @onchange="e => OnIsoCellChanged(row, 2, e.Value?.ToString())" />
+                                    </td>
+                                    <td>@m.MatFunc</td>
+                                    @for (int c = 0; c < 8; c++)
+                                    {
+                                        int col = c;
+                                        <td class="p-0">
+                                            <input class="form-control form-control-sm border-0" disabled="@isBusy" value="@m.Pbws[col]"
+                                                   @onchange="e => OnIsoCellChanged(row, col + 4, e.Value?.ToString())" />
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <h3 class="fs-6">Side B (Polyol Side) Material</h3>
+                    <div style="max-height:300px; overflow:scroll;">
+                        <table class="table table-sm table-striped mb-4">
+                            <thead class="thead-light" style="position:sticky; top:0;">
+                                <tr><th>Material</th><th>Type</th><th>OH#</th><th>Func.</th>@for (int i = 1; i <= 8; i++){<th>#@i</th>}</tr>
+                            </thead>
+                            <tbody>
+                                @for (int r = 0; r < data.Po.Count; r++)
+                                {
+                                    int row = r;
+                                    var m = data.Po[row];
+                                    <tr>
+                                        <td>
+                                            <select class="form-select form-select-sm" disabled="@isBusy"
+                                                    @bind:get="data.PolyolList.IndexOf(m.MatName ?? string.Empty)" @bind:set="value => OnPoMaterialChanged(row, value.ToString())">
+                                                @for (int i = 0; i < data.PolyolList.Count; i++)
+                                                {
+                                                    <option value="@i">@data.PolyolList[i]</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td>@m.MatType</td>
+                                        <td class="p-0">
+                                            <input class="form-control form-control-sm border-0" disabled="@isBusy" value="@m.MatOHNum"
+                                                   @onchange="e => OnPoCellChanged(row, 2, e.Value?.ToString())" />
+                                        </td>
+                                        <td>@m.MatFunc</td>
+                                        @for (int c = 0; c < 8; c++)
+                                        {
+                                            int col = c;
+                                            <td class="p-0">
+                                                <input class="form-control form-control-sm border-0" disabled="@isBusy" value="@m.Pbws[col]"
+                                                       @onchange="e => OnPoCellChanged(row, col + 4, e.Value?.ToString())" />
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="card card-default">
+                <div class="card-header align-items-center"><h2>Preliminary Material Science Analysis of the Formulations</h2></div>
+                <div class="card-body" style="max-height:500px; overflow:scroll;">
+                    <table class="table table-sm">
+                        <thead class="thead-light" style="position:sticky; top:0;">
+                            <tr><th>Descriptors</th>@for (int i = 1; i <= 8; i++){<th>#@i</th>}</tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var row in data.FormProps.Rows)
+                            {
+                                <tr>@foreach (var v in row){<td>@v</td>}</tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-md-6">
+            <button type="button" class="btn btn-primary m-1" disabled="@isBusy" @onclick="OnAddRow">Add A Row</button>
+            <button type="button" class="btn btn-primary m-1" disabled="@isBusy" @onclick="OnPasteClicked">Paste Formulations pbw</button>
+        </div>
+        <div class="col-md-6">
+            <div class="row align-items-center justify-content-between">
+                <label class="col-md-9 col-form-label">Total Sample Mass needed for Foamat Experiment (gm)</label>
+                <div class="col-md-3">
+                    <input type="number" class="form-control" disabled="@isBusy" value="@data.FoamatGm"
+                           @onchange="e => OnFoamatGmChanged(e.Value?.ToString())" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private FormulationsDto? data;
+    private string? errorMessage;
+    private bool isBusy;
+    private bool noDatasetSelected;
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.GetFromJsonAsync<ApiResponse<FormulationsDto>>("Formulations/load");
+            if (response?.Success == true && response.Data != null)
+            {
+                data = response.Data;
+                noDatasetSelected = false;
+            }
+            else if (response?.Error?.Contains("No R&D dataset is selected") == true)
+            {
+                noDatasetSelected = true;
+            }
+            else
+            {
+                errorMessage = response?.Error ?? "Failed to load formulation data.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading formulation data: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task OnGenInfoChanged(string name, string? value)
+        => await Post("Formulations/gen-info", new NameValueRequest { Name = name, Value = value ?? string.Empty });
+
+    private async Task OnNcoChanged(int col, string? value)
+        => await Post("Formulations/update-nco", new GridCellUpdateRequest { Row = 0, Col = col, Text = value ?? string.Empty });
+
+    private async Task OnIsoMaterialChanged(int row, string? index)
+        => await Post("Formulations/update-iso", new GridCellUpdateRequest { Row = row, Col = 0, Text = index ?? string.Empty });
+
+    private async Task OnIsoCellChanged(int row, int col, string? value)
+        => await Post("Formulations/update-iso", new GridCellUpdateRequest { Row = row, Col = col, Text = value ?? string.Empty });
+
+    private async Task OnPoMaterialChanged(int row, string? index)
+        => await Post("Formulations/update-po", new GridCellUpdateRequest { Row = row, Col = 0, Text = index ?? string.Empty });
+
+    private async Task OnPoCellChanged(int row, int col, string? value)
+        => await Post("Formulations/update-po", new GridCellUpdateRequest { Row = row, Col = col, Text = value ?? string.Empty });
+
+    private async Task OnFoamatGmChanged(string? value)
+        => await Post("Formulations/foamat-gm", new StringValueRequest { Value = value ?? string.Empty });
+
+    private async Task OnAddRow()
+        => await Post<object>("Formulations/add-po-row", new { });
+
+    private async Task OnPasteClicked()
+    {
+        if (isBusy) return;
+        try
+        {
+            isBusy = true;
+            string? text = await JS.InvokeAsync<string>("navigator.clipboard.readText");
+            if (string.IsNullOrEmpty(text)) { errorMessage = "Clipboard is empty or unavailable."; return; }
+
+            var rows = text.Split('\n')
+                .Where(l => l.Trim().Length > 0)
+                .Select(l => l.TrimEnd('\r').Split(','))
+                .ToList();
+
+            var response = await Http.PostAsJsonAsync("Formulations/paste-po", rows);
+            var result = await response.Content.ReadFromJsonAsync<ApiResponse<FormulationsDto>>();
+            if (result?.Success == true && result.Data != null) data = result.Data;
+            else errorMessage = result?.Error ?? "Failed to paste data.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Paste error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task Post<TReq>(string endpoint, TReq body)
+    {
+        if (isBusy) return;
+        try
+        {
+            isBusy = true;
+            var response = await Http.PostAsJsonAsync(endpoint, body);
+            var result = await response.Content.ReadFromJsonAsync<ApiResponse<FormulationsDto>>();
+            if (result?.Success == true && result.Data != null) data = result.Data;
+            else errorMessage = result?.Error ?? "Failed to update value.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Update error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    public class GridDto
+    {
+        public List<string> Columns { get; set; } = new();
+        public List<List<string>> Rows { get; set; } = new();
+    }
+
+    public class FilterOptionDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string? Code { get; set; }
+    }
+
+    public class MaterialRowDto
+    {
+        public string? MatName { get; set; }
+        public string? MatType { get; set; }
+        public double MatOHNum { get; set; }
+        public double MatNco { get; set; }
+        public double MatFunc { get; set; }
+        public List<string?> Pbws { get; set; } = new();
+    }
+
+    public class FormulationsDto
+    {
+        public string Id { get; set; } = string.Empty;
+        public string StudyName { get; set; } = string.Empty;
+        public int ChemistId { get; set; }
+        public int OperatorId { get; set; }
+        public string ProductId { get; set; } = string.Empty;
+        public int StudyTypeId { get; set; }
+        public DateTime? DateCreated { get; set; }
+        public bool Abandoned { get; set; }
+        public string FoamatGm { get; set; } = string.Empty;
+
+        public List<FilterOptionDto> StudyTypes { get; set; } = new();
+        public List<FilterOptionDto> Products { get; set; } = new();
+        public List<FilterOptionDto> Employees { get; set; } = new();
+
+        public List<MaterialRowDto> Nco { get; set; } = new();
+        public List<MaterialRowDto> Iso { get; set; } = new();
+        public List<MaterialRowDto> Po { get; set; } = new();
+
+        public List<string> PolyolList { get; set; } = new();
+        public List<string> IsoList { get; set; } = new();
+
+        public GridDto FormProps { get; set; } = new();
+    }
+
+    public class GridCellUpdateRequest
+    {
+        public int Row { get; set; }
+        public int Col { get; set; }
+        public string Text { get; set; } = string.Empty;
+    }
+
+    public class NameValueRequest
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Value { get; set; } = string.Empty;
+    }
+
+    public class StringValueRequest
+    {
+        public string Value { get; set; } = string.Empty;
+    }
+
+    public class ApiResponse<T>
+    {
+        public bool Success { get; set; }
+        public T? Data { get; set; }
+        public string? Error { get; set; }
+    }
+}

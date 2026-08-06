@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj": {}
+    "E:\\Intugent Migration\\IntugentBackend\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj": {}
   },
   "projects": {
-    "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj": {
+    "E:\\Intugent Migration\\IntugentBackend\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj",
+        "projectUniqueName": "E:\\Intugent Migration\\IntugentBackend\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj",
         "projectName": "IntugentBackend",
-        "projectPath": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj",
+        "projectPath": "E:\\Intugent Migration\\IntugentBackend\\IntugentBackend\\IntugentBackend\\IntugentBackend.csproj",
         "packagesPath": "C:\\Users\\XD GAMING\\.nuget\\packages\\",
-        "outputPath": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\obj\\",
+        "outputPath": "E:\\Intugent Migration\\IntugentBackend\\IntugentBackend\\IntugentBackend\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

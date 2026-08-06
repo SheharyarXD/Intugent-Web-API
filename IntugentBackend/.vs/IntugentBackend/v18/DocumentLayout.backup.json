@@ -23,8 +23,8 @@
       "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\services\\core\\cbfile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|e:\\intugentbackend\\intugentbackend\\intugentbackend\\objectsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9B4C278-7D8D-4BC7-9E27-51B81CAE35D6}|IntugentBackend\\IntugentBackend.csproj|solutionrelative:intugentbackend\\objectsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\ObjectsService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:IntugentBackend\\ObjectsService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -44,7 +44,7 @@
               "RelativeDocumentMoniker": "IntugentBackend\\Program.cs",
               "ToolTip": "E:\\IntugentBackend\\IntugentBackend\\IntugentBackend\\Program.cs",
               "RelativeToolTip": "IntugentBackend\\Program.cs",
-              "ViewState": "AgIAAC8AAAAAAAAAAAAAAD4AAAAKAAAAAAAAAA==",
+              "ViewState": "AgIAAC8AAAAAAAAAAAAAAD4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-06-29T20:38:50.107Z",
               "EditorCaption": ""

@@ -1,0 +1,387 @@
+@page "/rnd-properties-datafile"
+@using System.Net.Http.Json
+@inject HttpClient Http
+
+<PageTitle>Properties &amp; Data Files</PageTitle>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+    </div>
+}
+
+@if (noDatasetSelected)
+{
+    <div class="alert alert-warning" role="alert">
+        No R&amp;D dataset is selected. Please select a dataset on the R&amp;D Home page first.
+    </div>
+}
+else if (data != null)
+{
+    <div class="row">
+        <div class="col-8">
+            <div class="row">
+                <div class="card card-default col-8">
+                    <div class="card-header align-items-center"><h2>Reactivity Data</h2><small>Enter Measured Values</small></div>
+                    <div class="card-body" style="max-height:200px; overflow:scroll;">
+                        @EditableGrid(data.ReacE, "reaction")
+                    </div>
+                </div>
+                <div class="card card-default col-4">
+                    <div class="card-header align-items-center"><h2>Predicted Values</h2></div>
+                    <div class="card-body" style="max-height:200px; overflow:scroll;">
+                        @ReadonlyGrid(data.ReacC, includeFirstCol: false)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-2">
+                <div class="card card-default col-8">
+                    <div class="card-header align-items-center"><h2>FTIR, and Photoacoustic Data</h2><small>Enter Measured Values</small></div>
+                    <div class="card-body" style="max-height:150px; overflow:scroll;">
+                        @EditableGrid(data.PhotoE, "photo")
+                    </div>
+                </div>
+                <div class="card card-default col-4">
+                    <div class="card-header align-items-center"><h2>Predicted Values</h2></div>
+                    <div class="card-body" style="max-height:150px; overflow:scroll;">
+                        @ReadonlyGrid(data.PhotoC, includeFirstCol: false)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-2">
+                <div class="card card-default col-8">
+                    <div class="card-header align-items-center"><h2>Calculated Physical &amp; Hot Plate Properties</h2></div>
+                    <div class="card-body" style="max-height:200px; overflow:scroll;">
+                        @ReadonlyGrid(data.PropsE, includeFirstCol: true)
+                    </div>
+                </div>
+                <div class="card card-default col-4">
+                    <div class="card-header align-items-center"><h2>Predicted Values</h2></div>
+                    <div class="card-body" style="max-height:200px; overflow:scroll;">
+                        @ReadonlyGrid(data.PropsC, includeFirstCol: false)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-4">
+            <div class="form-check px-2 py-2">
+                <input type="checkbox" class="form-check-input" id="PropertiesTestingComplete" disabled="@isBusy"
+                       checked="@data.PropTestingComplete" @onchange="e => OnPropTestingCompleteChanged(e)" />
+                <label class="form-check-label" for="PropertiesTestingComplete">Properties Testing Complete</label>
+            </div>
+
+            <div class="card card-default">
+                <div class="card-header align-items-center"><h2>Commercial / Experimental Designation</h2></div>
+                <div class="card-body" style="max-height:200px; overflow:scroll;">
+                    <table class="table table-sm table-bordered table-hover table-striped table-responsive-md">
+                        <thead class="thead-light" style="position:sticky; top:0;">
+                            <tr><th>Formulation #</th><th>Commercial Product Name</th></tr>
+                        </thead>
+                        <tbody>
+                            @for (int r = 0; r < data.Prod.Rows.Count; r++)
+                            {
+                                int row = r;
+                                <tr>
+                                    <td>@data.Prod.Rows[row][0]</td>
+                                    <td>
+                                        <select class="form-select form-select-sm" disabled="@isBusy"
+                                                @bind:get="data.Prod.Rows[row][1]" @bind:set="value => OnProductChanged(row, value)">
+                                            @foreach (var prodCode in data.ProdList)
+                                            {
+                                                <option value="@prodCode">@prodCode</option>
+                                            }
+                                        </select>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card card-default mt-2">
+                <div class="card-header align-items-center"><h2>Formulation Specific Notes (255 characters max)</h2></div>
+                <div class="card-body" style="max-height:200px; overflow:scroll;">
+                    <table class="table table-sm table-bordered table-hover table-striped table-responsive-md">
+                        <thead class="thead-light" style="position:sticky; top:0;">
+                            <tr><th>Form #</th><th>Note</th></tr>
+                        </thead>
+                        <tbody>
+                            @for (int r = 0; r < data.Notes.Rows.Count; r++)
+                            {
+                                int row = r;
+                                <tr>
+                                    <td>@data.Notes.Rows[row][0]</td>
+                                    <td class="p-0">
+                                        <input class="form-control form-control-sm border-0" maxlength="255" disabled="@isBusy"
+                                               value="@data.Notes.Rows[row][1]"
+                                               @onchange="e => OnNoteChanged(row, e.Value?.ToString())" />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="card card-default col-12">
+            <div class="card-header align-items-center"><h2>Foamat &amp; Other Data Files (*** Enter or paste the file path in the cell ***)</h2></div>
+            <div class="card-body" style="max-height:150px; overflow:scroll;">
+                <table class="table table-sm table-bordered table-hover table-striped table-responsive-md">
+                    <thead class="thead-light" style="position:sticky; top:0;">
+                        <tr>
+                            <th>Data / File Type</th>
+                            @for (int i = 1; i <= 8; i++){ <th>#@i</th> }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int r = 0; r < data.DataFiles.Rows.Count; r++)
+                        {
+                            int row = r;
+                            <tr>
+                                <td>@data.DataFiles.Rows[row][0]</td>
+                                @for (int c = 1; c <= 8; c++)
+                                {
+                                    int col = c;
+                                    <td class="p-0">
+                                        <input class="form-control form-control-sm border-0" disabled="@isBusy"
+                                               value="@data.DataFiles.Rows[row][col]"
+                                               @onchange="e => OnDataFileChanged(row, col, e.Value?.ToString())" />
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private RndPropertiesDto? data;
+    private string? errorMessage;
+    private bool isBusy;
+    private bool noDatasetSelected;
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    private RenderFragment EditableGrid(GridDto grid, string kind) => builder =>
+    {
+        var seq = 0;
+        builder.OpenElement(seq++, "table");
+        builder.AddAttribute(seq++, "class", "table table-sm table-bordered table-hover table-striped table-responsive-md");
+        builder.OpenElement(seq++, "thead");
+        builder.AddAttribute(seq++, "class", "thead-light");
+        builder.AddAttribute(seq++, "style", "position:sticky; top:0;");
+        builder.OpenElement(seq++, "tr");
+        builder.OpenElement(seq++, "th"); builder.AddContent(seq++, "Property"); builder.CloseElement();
+        for (int i = 1; i <= 8; i++)
+        {
+            builder.OpenElement(seq++, "th");
+            builder.AddContent(seq++, "#" + i);
+            builder.CloseElement();
+        }
+        builder.CloseElement();
+        builder.CloseElement();
+        builder.OpenElement(seq++, "tbody");
+        for (int r = 0; r < grid.Rows.Count; r++)
+        {
+            int row = r;
+            builder.OpenElement(seq++, "tr");
+            builder.OpenElement(seq++, "td"); builder.AddContent(seq++, grid.Rows[row][0]); builder.CloseElement();
+            for (int c = 1; c <= 8; c++)
+            {
+                int col = c;
+                builder.OpenElement(seq++, "td");
+                builder.AddAttribute(seq++, "class", "p-0");
+                builder.OpenElement(seq++, "input");
+                builder.AddAttribute(seq++, "class", "form-control form-control-sm border-0");
+                builder.AddAttribute(seq++, "disabled", isBusy);
+                builder.AddAttribute(seq++, "value", grid.Rows[row][col]);
+                builder.AddAttribute(seq++, "onchange", Microsoft.AspNetCore.Components.EventCallback.Factory.Create<Microsoft.AspNetCore.Components.ChangeEventArgs>(this, e => OnGridCellChanged(kind, row, col, e.Value?.ToString())));
+                builder.CloseElement();
+                builder.CloseElement();
+            }
+            builder.CloseElement();
+        }
+        builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private RenderFragment ReadonlyGrid(GridDto grid, bool includeFirstCol) => builder =>
+    {
+        var seq = 0;
+        builder.OpenElement(seq++, "table");
+        builder.AddAttribute(seq++, "class", "table table-sm table-bordered table-hover table-striped table-responsive-md");
+        builder.OpenElement(seq++, "thead");
+        builder.AddAttribute(seq++, "class", "thead-light");
+        builder.AddAttribute(seq++, "style", "position:sticky; top:0;");
+        builder.OpenElement(seq++, "tr");
+        if (includeFirstCol) { builder.OpenElement(seq++, "th"); builder.AddContent(seq++, "Property"); builder.CloseElement(); }
+        for (int i = 1; i <= 8; i++)
+        {
+            builder.OpenElement(seq++, "th");
+            builder.AddContent(seq++, "#" + i);
+            builder.CloseElement();
+        }
+        builder.CloseElement();
+        builder.CloseElement();
+        builder.OpenElement(seq++, "tbody");
+        foreach (var row in grid.Rows)
+        {
+            builder.OpenElement(seq++, "tr");
+            int startCol = includeFirstCol ? 0 : 1;
+            for (int c = startCol; c < row.Count; c++)
+            {
+                builder.OpenElement(seq++, "td");
+                builder.AddContent(seq++, row[c]);
+                builder.CloseElement();
+            }
+            builder.CloseElement();
+        }
+        builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.GetFromJsonAsync<ApiResponse<RndPropertiesDto>>("RndProperties/load");
+            if (response?.Success == true && response.Data != null)
+            {
+                data = response.Data;
+                noDatasetSelected = false;
+            }
+            else if (response?.Error?.Contains("No R&D dataset is selected") == true)
+            {
+                noDatasetSelected = true;
+            }
+            else
+            {
+                errorMessage = response?.Error ?? "Failed to load properties data.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading properties data: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task OnGridCellChanged(string kind, int row, int col, string? value)
+    {
+        var endpoint = kind switch
+        {
+            "reaction" => "RndProperties/update-reaction",
+            "photo" => "RndProperties/update-photo",
+            _ => throw new ArgumentOutOfRangeException(nameof(kind))
+        };
+        await PostUpdate(endpoint, new GridCellUpdateRequest { Row = row, Col = col, Text = value ?? string.Empty });
+    }
+
+    private async Task OnDataFileChanged(int row, int col, string? value)
+        => await PostUpdate("RndProperties/update-datafile", new GridCellUpdateRequest { Row = row, Col = col, Text = value ?? string.Empty });
+
+    private async Task OnNoteChanged(int row, string? value)
+        => await PostUpdate("RndProperties/update-notes", new GridCellUpdateRequest { Row = row, Col = 1, Text = value ?? string.Empty });
+
+    private async Task OnProductChanged(int row, string? value)
+        => await PostUpdate("RndProperties/update-product", new GridCellUpdateRequest { Row = row, Col = 1, Text = value ?? string.Empty });
+
+    private async Task OnPropTestingCompleteChanged(Microsoft.AspNetCore.Components.ChangeEventArgs e)
+    {
+        bool value = e.Value is bool b && b;
+        if (isBusy) return;
+        try
+        {
+            isBusy = true;
+            var response = await Http.PostAsJsonAsync("RndProperties/update-prop-testing-complete", new BoolValueRequest { Value = value });
+            var result = await response.Content.ReadFromJsonAsync<ApiResponse<RndPropertiesDto>>();
+            if (result?.Success == true && result.Data != null) data = result.Data;
+            else errorMessage = result?.Error ?? "Failed to update.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Update error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task PostUpdate(string endpoint, GridCellUpdateRequest request)
+    {
+        if (isBusy) return;
+        try
+        {
+            isBusy = true;
+            var response = await Http.PostAsJsonAsync(endpoint, request);
+            var result = await response.Content.ReadFromJsonAsync<ApiResponse<RndPropertiesDto>>();
+            if (result?.Success == true && result.Data != null) data = result.Data;
+            else errorMessage = result?.Error ?? "Failed to update value.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Update error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    public class GridDto
+    {
+        public List<string> Columns { get; set; } = new();
+        public List<List<string>> Rows { get; set; } = new();
+    }
+
+    public class RndPropertiesDto
+    {
+        public GridDto ReacE { get; set; } = new();
+        public GridDto ReacC { get; set; } = new();
+        public GridDto PhotoE { get; set; } = new();
+        public GridDto PhotoC { get; set; } = new();
+        public GridDto PropsE { get; set; } = new();
+        public GridDto PropsC { get; set; } = new();
+        public GridDto DataFiles { get; set; } = new();
+        public GridDto Prod { get; set; } = new();
+        public GridDto Notes { get; set; } = new();
+        public List<string> ProdList { get; set; } = new();
+        public bool PropTestingComplete { get; set; }
+    }
+
+    public class GridCellUpdateRequest
+    {
+        public int Row { get; set; }
+        public int Col { get; set; }
+        public string Text { get; set; } = string.Empty;
+    }
+
+    public class BoolValueRequest
+    {
+        public bool Value { get; set; }
+    }
+
+    public class ApiResponse<T>
+    {
+        public bool Success { get; set; }
+        public T? Data { get; set; }
+        public string? Error { get; set; }
+    }
+}

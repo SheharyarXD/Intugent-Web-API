@@ -1,0 +1,217 @@
+@page "/rnd-tdrv"
+@using System.Net.Http.Json
+@inject HttpClient Http
+
+<PageTitle>R&D TDRV</PageTitle>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+    </div>
+}
+
+@if (noDatasetSelected)
+{
+    <div class="alert alert-warning" role="alert">
+        No R&amp;D dataset is selected. Please select a dataset on the R&amp;D Home page first.
+    </div>
+}
+else if (data != null)
+{
+    <div class="row">
+        <div class="form-check px-2 py-2">
+            <input type="checkbox" class="form-check-input" id="AgedTestingComplete" disabled="@isBusy"
+                   checked="@data.AgedTestingComplete" @onchange="OnAgedTestingCompleteChanged" />
+            <label class="form-check-label" for="AgedTestingComplete">Aged Properties (TDRV) Testing Complete</label>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-5">
+            <div class="card card-default">
+                <div class="card-header align-items-center"><h2>Experimental K Values</h2></div>
+                <div class="card-body" style="height:750px; overflow:scroll;">
+                    <table class="table table-sm table-bordered table-hover table-striped table-responsive-md">
+                        <thead class="thead-light" style="position:sticky; top:0;">
+                            <tr>
+                                <th>Description</th>
+                                @for (int i = 1; i <= 8; i++){ <th>#@i</th> }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int r = 0; r < data.ExpPropsE.Rows.Count; r++)
+                            {
+                                int row = r;
+                                <tr>
+                                    <td style="white-space:pre;">@data.ExpPropsE.Rows[row][0]</td>
+                                    @for (int c = 1; c <= 8; c++)
+                                    {
+                                        int col = c;
+                                        <td class="p-0">
+                                            <input class="form-control form-control-sm border-0" disabled="@isBusy"
+                                                   value="@data.ExpPropsE.Rows[row][col]"
+                                                   @onchange="e => OnExpPropChanged(row, col, e.Value?.ToString())" />
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card card-default">
+                <div class="card-header align-items-center"><h2>Calculated R Values</h2></div>
+                <div class="card-body" style="height:750px; overflow:scroll;">
+                    <table class="table table-sm table-bordered table-hover table-striped table-responsive-md">
+                        <thead class="thead-light" style="position:sticky; top:0;">
+                            <tr>@for (int i = 1; i <= 8; i++){ <th>#@i</th> }</tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var row in data.ExpPropsC.Rows)
+                            {
+                                <tr>@foreach (var v in row){<td>@v</td>}</tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card card-default">
+                <div class="card-header align-items-center"><h2>Predicted Values</h2></div>
+                <div class="card-body" style="height:750px; overflow:scroll;">
+                    <table class="table table-sm table-bordered table-hover table-striped table-responsive-md">
+                        <thead class="thead-light" style="position:sticky; top:0;">
+                            <tr>@for (int i = 1; i <= 8; i++){ <th>#@i</th> }</tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var row in data.ExpPropsP.Rows)
+                            {
+                                <tr>@foreach (var v in row){<td>@v</td>}</tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private TdrvDto? data;
+    private string? errorMessage;
+    private bool isBusy;
+    private bool noDatasetSelected;
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.GetFromJsonAsync<ApiResponse<TdrvDto>>("RndTdrv/load");
+            if (response?.Success == true && response.Data != null)
+            {
+                data = response.Data;
+                noDatasetSelected = false;
+            }
+            else if (response?.Error?.Contains("No R&D dataset is selected") == true)
+            {
+                noDatasetSelected = true;
+            }
+            else
+            {
+                errorMessage = response?.Error ?? "Failed to load TDRV data.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading TDRV data: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task OnExpPropChanged(int row, int col, string? value)
+    {
+        if (isBusy) return;
+        try
+        {
+            isBusy = true;
+            var response = await Http.PostAsJsonAsync("RndTdrv/update", new GridCellUpdateRequest { Row = row, Col = col, Text = value ?? string.Empty });
+            var result = await response.Content.ReadFromJsonAsync<ApiResponse<TdrvDto>>();
+            if (result?.Success == true && result.Data != null) data = result.Data;
+            else errorMessage = result?.Error ?? "Failed to update value.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Update error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task OnAgedTestingCompleteChanged(Microsoft.AspNetCore.Components.ChangeEventArgs e)
+    {
+        bool value = e.Value is bool b && b;
+        if (isBusy) return;
+        try
+        {
+            isBusy = true;
+            var response = await Http.PostAsJsonAsync("RndTdrv/update-aged-testing-complete", new BoolValueRequest { Value = value });
+            var result = await response.Content.ReadFromJsonAsync<ApiResponse<TdrvDto>>();
+            if (result?.Success == true && result.Data != null) data = result.Data;
+            else errorMessage = result?.Error ?? "Failed to update.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Update error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    public class GridDto
+    {
+        public List<string> Columns { get; set; } = new();
+        public List<List<string>> Rows { get; set; } = new();
+    }
+
+    public class TdrvDto
+    {
+        public GridDto ExpPropsE { get; set; } = new();
+        public GridDto ExpPropsC { get; set; } = new();
+        public GridDto ExpPropsP { get; set; } = new();
+        public bool AgedTestingComplete { get; set; }
+    }
+
+    public class GridCellUpdateRequest
+    {
+        public int Row { get; set; }
+        public int Col { get; set; }
+        public string Text { get; set; } = string.Empty;
+    }
+
+    public class BoolValueRequest
+    {
+        public bool Value { get; set; }
+    }
+
+    public class ApiResponse<T>
+    {
+        public bool Success { get; set; }
+        public T? Data { get; set; }
+        public string? Error { get; set; }
+    }
+}

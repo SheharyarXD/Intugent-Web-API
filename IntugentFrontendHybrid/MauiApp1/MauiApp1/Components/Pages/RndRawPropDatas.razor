@@ -1,0 +1,335 @@
+@page "/rnd-raw-prop-datas"
+@using System.Net.Http.Json
+@inject HttpClient Http
+
+<PageTitle>R&D Raw Prop. Data</PageTitle>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+    </div>
+}
+
+@if (noDatasetSelected)
+{
+    <div class="alert alert-warning" role="alert">
+        No R&amp;D dataset is selected. Please select a dataset on the R&amp;D Home page first.
+    </div>
+}
+else if (data != null)
+{
+    <div class="row">
+        <div class="col-4">
+            <div class="card card-default">
+                <div class="card-header align-items-center"><h2>Experimental Density Data</h2></div>
+                <div class="card-body" style="height:300px; overflow:scroll;">
+                    @RenderGridHeader()
+                    <table class="table table-sm table-bordered table-hover table-striped table-responsive-md">
+                        @GridHeaderRow()
+                        <tbody>
+                            @for (int r = 0; r < data.DensityE.Rows.Count; r++)
+                            {
+                                int row = r;
+                                <tr>
+                                    <td>@data.DensityE.Rows[row][0]</td>
+                                    @for (int c = 1; c <= 8; c++)
+                                    {
+                                        int col = c;
+                                        <td class="p-0">
+                                            <input class="form-control form-control-sm border-0" disabled="@isBusy"
+                                                   value="@data.DensityE.Rows[row][col]"
+                                                   @onchange='e => OnCellChanged("density", row, col, e.Value?.ToString())' />
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                            @foreach (var row in data.DensityC.Rows)
+                            {
+                                <tr>@foreach (var v in row){<td>@v</td>}</tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-8">
+            <div class="card card-default">
+                <div class="card-header align-items-center"><h2>Experimental Pore Scan Data</h2></div>
+                <div class="card-body" style="height:300px; overflow:scroll;">
+                    <table class="table table-sm table-bordered table-hover table-striped table-responsive-md">
+                        @GridHeaderRow()
+                        <tbody>
+                            @for (int r = 0; r < data.PoreScanE.Rows.Count; r++)
+                            {
+                                int row = r;
+                                <tr>
+                                    <td>@data.PoreScanE.Rows[row][0]</td>
+                                    @for (int c = 1; c <= 8; c++)
+                                    {
+                                        int col = c;
+                                        <td class="p-0">
+                                            <input class="form-control form-control-sm border-0" disabled="@isBusy"
+                                                   value="@data.PoreScanE.Rows[row][col]"
+                                                   @onchange='e => OnCellChanged("porescan", row, col, e.Value?.ToString())' />
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                            @foreach (var row in data.PoreScanC.Rows)
+                            {
+                                <tr>@foreach (var v in row){<td>@v</td>}</tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-6">
+            <div class="card card-default">
+                <div class="card-header align-items-center"><h2>Experimental Compressive Strength Data</h2></div>
+                <div class="card-body" style="height:180px; overflow:scroll;">
+                    <table class="table table-sm table-bordered table-hover table-striped table-responsive-md">
+                        @GridHeaderRow()
+                        <tbody>
+                            @for (int r = 0; r < data.CompStrE.Rows.Count; r++)
+                            {
+                                int row = r;
+                                <tr>
+                                    <td>@data.CompStrE.Rows[row][0]</td>
+                                    @for (int c = 1; c <= 8; c++)
+                                    {
+                                        int col = c;
+                                        <td class="p-0">
+                                            <input class="form-control form-control-sm border-0" disabled="@isBusy"
+                                                   value="@data.CompStrE.Rows[row][col]"
+                                                   @onchange='e => OnCellChanged("compstr", row, col, e.Value?.ToString())' />
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                            @foreach (var row in data.CompStrC.Rows)
+                            {
+                                <tr>@foreach (var v in row){<td>@v</td>}</tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="card card-default">
+                <div class="card-header align-items-center"><h2>Percent Closed Cell (%CC) Data</h2></div>
+                <div class="card-body" style="height:180px; overflow:scroll;">
+                    <table class="table table-sm table-bordered table-hover table-striped table-responsive-md">
+                        @GridHeaderRow()
+                        <tbody>
+                            @for (int r = 0; r < data.ClosedCellE.Rows.Count; r++)
+                            {
+                                int row = r;
+                                <tr>
+                                    <td>@data.ClosedCellE.Rows[row][0]</td>
+                                    @for (int c = 1; c <= 8; c++)
+                                    {
+                                        int col = c;
+                                        <td class="p-0">
+                                            <input class="form-control form-control-sm border-0" disabled="@isBusy"
+                                                   value="@data.ClosedCellE.Rows[row][col]"
+                                                   @onchange='e => OnCellChanged("closedcell", row, col, e.Value?.ToString())' />
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                            @foreach (var row in data.ClosedCellC.Rows)
+                            {
+                                <tr>@foreach (var v in row){<td>@v</td>}</tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card card-default">
+                <div class="card-header align-items-center"><h2>Experimental Hot Plates' Data</h2></div>
+                <div class="card-body" style="height:300px; overflow:scroll;">
+                    <table class="table table-sm table-bordered table-hover table-striped table-responsive-md">
+                        <thead class="thead-light" style="position:sticky; top:0;">
+                            <tr>
+                                <th>Property</th>
+                                @for (int i = 1; i <= 8; i++)
+                                {
+                                    <th>#@i-Init</th>
+                                    <th>#@i-Final</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int r = 0; r < data.HotPlatesE.Rows.Count; r++)
+                            {
+                                int row = r;
+                                <tr>
+                                    <td>@data.HotPlatesE.Rows[row][0]</td>
+                                    @for (int c = 1; c <= 16; c++)
+                                    {
+                                        int col = c;
+                                        <td class="p-0">
+                                            <input class="form-control form-control-sm border-0" disabled="@isBusy"
+                                                   value="@data.HotPlatesE.Rows[row][col]"
+                                                   @onchange='e => OnCellChanged("hotplates", row, col, e.Value?.ToString())' />
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                            @foreach (var row in data.HotPlatesC1.Rows)
+                            {
+                                <tr>@foreach (var v in row){<td>@v</td>}</tr>
+                            }
+                            @foreach (var row in data.HotPlatesC.Rows)
+                            {
+                                <tr>@foreach (var v in row){<td>@v</td>}</tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private RawPropsDto? data;
+    private string? errorMessage;
+    private bool isBusy;
+    private bool noDatasetSelected;
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    private RenderFragment GridHeaderRow() => builder =>
+    {
+        builder.OpenElement(0, "thead");
+        builder.AddAttribute(1, "class", "thead-light");
+        builder.AddAttribute(2, "style", "position:sticky; top:0;");
+        builder.OpenElement(3, "tr");
+        builder.OpenElement(4, "th"); builder.AddContent(5, "Property"); builder.CloseElement();
+        for (int i = 1; i <= 8; i++)
+        {
+            builder.OpenElement(6, "th");
+            builder.AddContent(7, "#" + i);
+            builder.CloseElement();
+        }
+        builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private RenderFragment RenderGridHeader() => builder => { };
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.GetFromJsonAsync<ApiResponse<RawPropsDto>>("RndRawProps/load");
+            if (response?.Success == true && response.Data != null)
+            {
+                data = response.Data;
+                noDatasetSelected = false;
+            }
+            else if (response?.Error?.Contains("No R&D dataset is selected") == true)
+            {
+                noDatasetSelected = true;
+            }
+            else
+            {
+                errorMessage = response?.Error ?? "Failed to load raw property data.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading raw property data: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task OnCellChanged(string grid, int row, int col, string? value)
+    {
+        if (isBusy) return;
+        try
+        {
+            isBusy = true;
+            var endpoint = grid switch
+            {
+                "density" => "RndRawProps/update-density",
+                "compstr" => "RndRawProps/update-compstr",
+                "closedcell" => "RndRawProps/update-closedcell",
+                "porescan" => "RndRawProps/update-porescan",
+                "hotplates" => "RndRawProps/update-hotplates",
+                _ => throw new ArgumentOutOfRangeException(nameof(grid))
+            };
+
+            var response = await Http.PostAsJsonAsync(endpoint, new GridCellUpdateRequest { Row = row, Col = col, Text = value ?? string.Empty });
+            var result = await response.Content.ReadFromJsonAsync<ApiResponse<RawPropsDto>>();
+            if (result?.Success == true && result.Data != null)
+            {
+                data = result.Data;
+            }
+            else
+            {
+                errorMessage = result?.Error ?? "Failed to update value.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Update error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    public class GridDto
+    {
+        public List<string> Columns { get; set; } = new();
+        public List<List<string>> Rows { get; set; } = new();
+    }
+
+    public class RawPropsDto
+    {
+        public GridDto DensityE { get; set; } = new();
+        public GridDto DensityC { get; set; } = new();
+        public GridDto CompStrE { get; set; } = new();
+        public GridDto CompStrC { get; set; } = new();
+        public GridDto PoreScanE { get; set; } = new();
+        public GridDto PoreScanC { get; set; } = new();
+        public GridDto ClosedCellE { get; set; } = new();
+        public GridDto ClosedCellC { get; set; } = new();
+        public GridDto HotPlatesE { get; set; } = new();
+        public GridDto HotPlatesC { get; set; } = new();
+        public GridDto HotPlatesC1 { get; set; } = new();
+    }
+
+    public class GridCellUpdateRequest
+    {
+        public int Row { get; set; }
+        public int Col { get; set; }
+        public string Text { get; set; } = string.Empty;
+    }
+
+    public class ApiResponse<T>
+    {
+        public bool Success { get; set; }
+        public T? Data { get; set; }
+        public string? Error { get; set; }
+    }
+}
