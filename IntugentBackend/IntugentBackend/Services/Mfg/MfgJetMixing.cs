@@ -191,5 +191,13 @@ namespace IntugentBackend.Services.Mfg
                 System.Diagnostics.Debug.WriteLine($"SetDefaultValues error: {ex.Message}");
             }
         }
+
+        public void UpdateDataset()
+        {
+            if (cLists?.drEmployee == null) return;
+            string js1 = System.Text.Json.JsonSerializer.Serialize(JetMix1);
+            cLists.drEmployee["sJetMix"] = js1;
+            cLists.UpdateEmployee();
+        }
     }
 }

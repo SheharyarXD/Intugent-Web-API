@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using MauiApp1.Services;
 
 namespace MauiApp1
 {
@@ -15,6 +16,7 @@ namespace MauiApp1
                 });
 
             builder.Services.AddMauiBlazorWebView();
+            builder.Services.AddSingleton<AppSessionState>();
 
             builder.Services.AddSingleton(sp =>
             {

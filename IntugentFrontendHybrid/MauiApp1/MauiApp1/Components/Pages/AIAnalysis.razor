@@ -1,0 +1,306 @@
+@page "/ai-analysis"
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject IJSRuntime JS
+
+<PageTitle>AI Data Analysis</PageTitle>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+    </div>
+}
+
+@if (data == null)
+{
+    <p class="text-muted">Loading...</p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>General Info</h2></div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">@TextField("gStudyName", "Data/Model Name", data.GStudyName, "gen-info")</div>
+                        <div class="col-6">@DisabledField("Database ID", data.GID)</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-floating mb-2">
+                                <select class="form-select" disabled="@isBusy" @bind:get="data.GGroup" @bind:set='v => OnFieldChanged("gGroup", v, "gen-info")'>
+                                    <option value="RND">RND</option>
+                                    <option value="MFG">MFG</option>
+                                </select>
+                                <label>Group</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-floating mb-2">
+                                <select class="form-select" disabled="@isBusy" @bind:get="data.GProperty" @bind:set='v => OnFieldChanged("gProperty", v, "gen-info")'>
+                                    <option value="SQL Query">SQL Query</option>
+                                </select>
+                                <label>Predicted Property</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-floating mb-2">
+                                <select class="form-select" disabled="@isBusy" @bind:get="data.GSource" @bind:set='v => OnFieldChanged("gSource", v, "gen-info")'>
+                                    <option value="">--</option>
+                                    <option value="SQL">SQL Query</option>
+                                    <option value="FILE">Text file (tab-delimited)</option>
+                                </select>
+                                <label>Data Source</label>
+                            </div>
+                        </div>
+                        <div class="col-6 d-flex align-items-center">
+                            <button type="button" class="btn btn-primary w-100" disabled="@isBusy" @onclick="OnUploadData">Upload Data</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>Data Source</h2></div>
+                <div class="card-body">
+                    @TextField("gDataFile", "Browse for File (local path)", data.GDataFile, "browse-file")
+                    <div class="form-floating mb-2">
+                        <textarea class="form-control" style="height:120px" disabled="@isBusy"
+                                  @onchange='e => OnFieldChanged("gSQL", e.Value?.ToString(), "gen-info")'>@data.GSQL</textarea>
+                        <label>SQL Query</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-md-7">
+            <div class="card card-default">
+                <div class="card-header"><h2>Chart</h2></div>
+                <div class="card-body">
+                    <canvas id="aiAnalysisChart"></canvas>
+                    <div class="form-floating mt-2" style="max-width:300px;">
+                        <select class="form-select" disabled="@isBusy" @bind:get="data.InputVarSelectedIndex" @bind:set="OnInputVarChanged">
+                            @for (int i = 0; i < data.InputVars.Count; i++)
+                            {
+                                <option value="@i">@data.InputVars[i]</option>
+                            }
+                        </select>
+                        <label>Input Variable (X Axis)</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="card card-default mb-2">
+                <div class="card-header"><h2>Data</h2></div>
+                <div class="card-body" style="max-height:250px; overflow:auto;">
+                    <table class="table table-sm table-striped">
+                        <thead>
+                            <tr>
+                                @foreach (var col in data.DataColumns)
+                                {
+                                    <th>@col</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var row in data.DataRows)
+                            {
+                                <tr>
+                                    @foreach (var cell in row)
+                                    {
+                                        <td>@cell</td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card card-default">
+                <div class="card-header"><h2>Correlation Stats</h2></div>
+                <div class="card-body" style="max-height:250px; overflow:auto;">
+                    <table class="table table-sm table-striped">
+                        <thead>
+                            <tr>
+                                @foreach (var col in data.StatColumns)
+                                {
+                                    <th>@col</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var row in data.StatRows)
+                            {
+                                <tr>
+                                    @foreach (var cell in row)
+                                    {
+                                        <td>@cell</td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private AiAnalysisDto? data;
+    private string? errorMessage;
+    private bool isBusy;
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && data != null) await RenderChart();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.GetFromJsonAsync<ApiResp<AiAnalysisDto>>("AIAnalysis/data");
+            if (response?.Success == true && response.Data != null)
+                data = response.Data;
+            else
+                errorMessage = response?.Error ?? "Failed to load AI Analysis data.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading data: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task OnFieldChanged(string name, string? value, string endpoint)
+    {
+        if (isBusy) return;
+        await Post($"AIAnalysis/{endpoint}", new FieldRequest { Name = name, Value = value });
+    }
+
+    private async Task OnUploadData()
+    {
+        if (isBusy) return;
+        await Post<object>("AIAnalysis/upload-data", new { });
+    }
+
+    private async Task OnInputVarChanged(int index)
+    {
+        if (isBusy) return;
+        await Post("AIAnalysis/input-var-change", new InputVarRequest { Index = index });
+    }
+
+    private async Task Post<TReq>(string url, TReq body)
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.PostAsJsonAsync(url, body);
+            var result = await response.Content.ReadFromJsonAsync<ApiResp<AiAnalysisDto>>();
+            if (result?.Success == true && result.Data != null)
+            {
+                data = result.Data;
+                await RenderChart();
+            }
+            else
+            {
+                errorMessage = result?.Error ?? "Update failed.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Update error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task RenderChart()
+    {
+        if (data == null) return;
+        await JS.InvokeVoidAsync("renderScatterChart", "aiAnalysisChart", data.XX, data.YY, data.ChartBottomTitle, data.ChartLeftTitle);
+    }
+
+    private RenderFragment TextField(string name, string label, string value, string endpoint) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "form-floating mb-2");
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "text");
+        builder.AddAttribute(seq++, "class", "form-control");
+        builder.AddAttribute(seq++, "id", name);
+        builder.AddAttribute(seq++, "value", value);
+        builder.AddAttribute(seq++, "disabled", isBusy);
+        builder.AddAttribute(seq++, "onchange", Microsoft.AspNetCore.Components.EventCallback.Factory.Create<Microsoft.AspNetCore.Components.ChangeEventArgs>(this, e => OnFieldChanged(name, e.Value?.ToString(), endpoint)));
+        builder.CloseElement();
+        builder.OpenElement(seq++, "label"); builder.AddAttribute(seq++, "for", name); builder.AddContent(seq++, label); builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private RenderFragment DisabledField(string label, string value) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "form-floating mb-2");
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "text");
+        builder.AddAttribute(seq++, "class", "form-control");
+        builder.AddAttribute(seq++, "value", value);
+        builder.AddAttribute(seq++, "disabled", true);
+        builder.CloseElement();
+        builder.OpenElement(seq++, "label"); builder.AddContent(seq++, label); builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    public class ApiResp<T>
+    {
+        public bool Success { get; set; }
+        public T? Data { get; set; }
+        public string? Error { get; set; }
+    }
+
+    public class FieldRequest { public string Name { get; set; } = string.Empty; public string? Value { get; set; } }
+    public class InputVarRequest { public int Index { get; set; } }
+
+    public class AiAnalysisDto
+    {
+        public string GStudyName { get; set; } = string.Empty;
+        public string GDataFile { get; set; } = string.Empty;
+        public string GSQL { get; set; } = string.Empty;
+        public string GGroup { get; set; } = string.Empty;
+        public string GProperty { get; set; } = string.Empty;
+        public string GSource { get; set; } = string.Empty;
+        public string GID { get; set; } = string.Empty;
+
+        public List<string> DataColumns { get; set; } = new();
+        public List<List<string>> DataRows { get; set; } = new();
+
+        public List<string> StatColumns { get; set; } = new();
+        public List<List<string>> StatRows { get; set; } = new();
+
+        public List<string> InputVars { get; set; } = new();
+        public int InputVarSelectedIndex { get; set; }
+        public string ChartLeftTitle { get; set; } = string.Empty;
+        public string ChartBottomTitle { get; set; } = string.Empty;
+
+        public double[] XX { get; set; } = Array.Empty<double>();
+        public double[] YY { get; set; } = Array.Empty<double>();
+    }
+}

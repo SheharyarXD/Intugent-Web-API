@@ -70,6 +70,7 @@ builder.Services.AddScoped<RndPropertiesService>();
 builder.Services.AddScoped<RNDTDRVService>();
 builder.Services.AddScoped<RndRawPropsService>();
 builder.Services.AddScoped<MfgAnalysisService>();
+builder.Services.AddScoped<MfgAnalysis2Service>();
 builder.Services.AddScoped<FormulationsPageService>();
 
 // Essential Framework Services

@@ -1,0 +1,206 @@
+@page "/ai-home"
+@using System.Net.Http.Json
+@inject HttpClient Http
+
+<PageTitle>AI Home Page</PageTitle>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+    </div>
+}
+
+<div class="row">
+    <div class="card card-default">
+        <div class="card-header align-items-center"><h2>Search Historical Data</h2></div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="form-floating mb-2">
+                        <select class="form-select" disabled><option>--</option></select>
+                        <label>Functional Group</label>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-floating mb-2">
+                        <select class="form-select" disabled><option>--</option></select>
+                        <label>Property</label>
+                    </div>
+                </div>
+            </div>
+            <h1 class="text-center my-3">Search is Not Implemented Yet</h1>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="card card-default">
+        <div class="card-header align-items-center">
+            <h2>Select any Model in the List Below to see Detailed Data and Train it</h2>
+        </div>
+        <div class="card-body">
+            @if (isBusy)
+            {
+                <p class="text-muted">Loading...</p>
+            }
+            else if (models.Count == 0)
+            {
+                <p class="text-muted text-center">No AI Models found.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-product dataTable" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>Date Last Trained</th><th>Model Description</th>
+                                <th>Model Property</th><th>Data Source</th><th>RMS Error</th><th>Select</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var m in models)
+                            {
+                                <tr class="@(m.Id == selectedId ? "table-primary" : "")">
+                                    <td>@m.Id</td>
+                                    <td>@m.DateModel</td>
+                                    <td>@m.Note</td>
+                                    <td>@m.Property</td>
+                                    <td>@m.DataSource</td>
+                                    <td></td>
+                                    <td>
+                                        <div class="form-check">
+                                            <input type="radio" class="form-check-input" name="modelSelect"
+                                                   checked="@(m.Id == selectedId)" disabled="@isBusy"
+                                                   @onchange="() => OnSelect(m.Id)" />
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="text-end mt-3">
+    <button type="button" class="btn btn-primary" disabled="@isBusy" @onclick="OnNewModel">Create A New Dataset</button>
+</div>
+
+@code {
+    private List<AiModelRowDto> models = new();
+    private int selectedId;
+    private string? errorMessage;
+    private bool isBusy;
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.GetFromJsonAsync<ApiResp<AiModelListDto>>("AIHome/search");
+            if (response?.Success == true && response.Data != null)
+            {
+                models = response.Data.Rows;
+                selectedId = response.Data.SelectedId;
+            }
+            else
+            {
+                errorMessage = response?.Error ?? "Failed to load AI models.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading data: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task OnSelect(int id)
+    {
+        if (isBusy) return;
+        try
+        {
+            isBusy = true;
+            var response = await Http.PostAsJsonAsync("AIHome/select-model", new SelectRequest { Id = id });
+            var result = await response.Content.ReadFromJsonAsync<ApiResp<AiModelListDto>>();
+            if (result?.Success == true && result.Data != null)
+            {
+                models = result.Data.Rows;
+                selectedId = result.Data.SelectedId;
+            }
+            else
+            {
+                errorMessage = result?.Error ?? "Failed to select model.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Selection error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task OnNewModel()
+    {
+        if (isBusy) return;
+        try
+        {
+            isBusy = true;
+            var response = await Http.PostAsJsonAsync<object>("AIHome/new-model", new { });
+            var result = await response.Content.ReadFromJsonAsync<ApiResp<AiModelListDto>>();
+            if (result?.Success == true && result.Data != null)
+            {
+                models = result.Data.Rows;
+                selectedId = result.Data.SelectedId;
+            }
+            else
+            {
+                errorMessage = result?.Error ?? "Failed to create a new model.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Create error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    public class ApiResp<T>
+    {
+        public bool Success { get; set; }
+        public T? Data { get; set; }
+        public string? Error { get; set; }
+    }
+
+    public class SelectRequest { public int Id { get; set; } }
+
+    public class AiModelListDto
+    {
+        public List<AiModelRowDto> Rows { get; set; } = new();
+        public int SelectedId { get; set; }
+    }
+
+    public class AiModelRowDto
+    {
+        public int Id { get; set; }
+        public string DateModel { get; set; } = string.Empty;
+        public string Note { get; set; } = string.Empty;
+        public string Property { get; set; } = string.Empty;
+        public string DataSource { get; set; } = string.Empty;
+    }
+}

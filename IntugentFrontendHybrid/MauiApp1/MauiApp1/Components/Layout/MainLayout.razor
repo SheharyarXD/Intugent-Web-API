@@ -1,4 +1,8 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
+@using MauiApp1.Services
+@inject AppSessionState AppSession
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
 
 <div class="page">
     <div class="sidebar">
@@ -6,8 +10,11 @@
     </div>
 
     <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        <div class="top-row px-4 d-flex justify-content-end">
+            @if (AppSession.UserId > 0)
+            {
+                <button type="button" class="btn btn-link" @onclick="ChangeGroup">Change Group</button>
+            }
         </div>
 
         <article class="content px-4">
@@ -15,3 +22,32 @@
         </article>
     </main>
 </div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        // Restore the session role from localStorage so the sidebar stays correct across app restarts.
+        if (AppSession.UserId <= 0)
+        {
+            try
+            {
+                var stored = await JS.InvokeAsync<string?>("localStorage.getItem", "userId");
+                if (!string.IsNullOrEmpty(stored) && int.TryParse(stored, out var userId) && userId > 0)
+                {
+                    AppSession.SetUserId(userId);
+                }
+            }
+            catch
+            {
+                // JS interop may not be ready yet on first prerender pass; ignore and rely on Home.razor's login flow.
+            }
+        }
+    }
+
+    private async Task ChangeGroup()
+    {
+        await JS.InvokeVoidAsync("localStorage.removeItem", "userId");
+        AppSession.Clear();
+        Navigation.NavigateTo("/");
+    }
+}

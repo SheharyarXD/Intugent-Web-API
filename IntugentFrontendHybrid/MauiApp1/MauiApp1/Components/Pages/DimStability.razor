@@ -1,0 +1,453 @@
+@page "/dim-stability"
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Web
+@inject HttpClient Http
+
+<PageTitle>Dimension Stability</PageTitle>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+    </div>
+}
+
+@if (data == null)
+{
+    <p class="text-muted">Loading...</p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>General Info</h2></div>
+                <div class="card-body">
+                    <div class="row mb-2 align-items-center">
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" disabled="@(!data.GDataSetPrevIsEnabled || isBusy)" @onclick='() => OnNavigate("prev")'>&lt;</button>
+                        </div>
+                        <div class="col-4">
+                            <input type="text" class="form-control form-control-sm" value="@data.GID" disabled />
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" disabled="@(!data.GDataSetNextIsEnabled || isBusy)" @onclick='() => OnNavigate("next")'>&gt;</button>
+                        </div>
+                    </div>
+                    @BoolField("gDimStabilityDone", "DS Testing Complete", data.GDimStabilityDoneIsChecked)
+                    @DisabledField("Production Date", data.GProductionDate)
+                    @DisabledField("Production Time", data.GProductionTime)
+                    @DisabledField("Product Code", data.GProductCode)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>Edge Collapsed</h2></div>
+                <div class="card-body">
+                    @BoolField("gEdgeH1", "Edge H1", data.GEdgeH1IsChecked)
+                    @BoolField("gEdgeH2", "Edge H2", data.GEdgeH2IsChecked)
+                    @BoolField("gEdgeC1", "Edge C1", data.GEdgeC1IsChecked)
+                    @BoolField("gEdgeC2", "Edge C2", data.GEdgeC2IsChecked)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>% Change in Dimensions</h2></div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            @DisabledField("Oven Length", data.GChangeOvenLength, data.GChangeOvenLengthBackground)
+                            @DisabledField("Oven Width", data.GChangeOvenWidth, data.GChangeOvenWidthBackground)
+                            @DisabledField("Oven Thickness", data.GChangeOvenThickness, data.GChangeOvenThicknessBackground)
+                        </div>
+                        <div class="col-6">
+                            @DisabledField("Freezer Length", data.GChangeFreezerLength, data.GChangeFreezerLengthBackground)
+                            @DisabledField("Freezer Width", data.GChangeFreezerWidth, data.GChangeFreezerWidthBackground)
+                            @DisabledField("Freezer Thickness", data.GChangeFreezerThickness, data.GChangeFreezerThicknessBackground)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>WF Test Summary</h2></div>
+                <div class="card-body">
+                    @DisabledField("Change Length", data.GChangeWFLength)
+                    @DisabledField("Change Width", data.GChangeWFWidth)
+                    @DisabledField("Avg Depth", data.GAvgDepth)
+                    @DisabledField("Max Depth", data.GMaxDepth)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>WF Testing</h2></div>
+                <div class="card-body">
+                    @DateField("gTestDateTime", "Date Sample In", data.GTestDateTime)
+                    @TextField("gDeviation", "Deviation From Table", data.GDeviation, "update-wf-info")
+                    <div class="form-floating mb-2">
+                        <select class="form-select" disabled="@isBusy" @bind:get="data.GDevType" @bind:set='value => OnTextFieldChanged("gDevType", value, "update-wf-info")'>
+                            <option value="">--</option>
+                            <option value="Up">Up</option>
+                            <option value="Down">Down</option>
+                        </select>
+                        <label>Deviation Type</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-md-4">
+            <div class="card card-default">
+                <div class="card-header"><h2>Dimensional Stability Oven-1</h2></div>
+                <div class="card-body">@OvenFreezerGrid("H1")</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-default">
+                <div class="card-header"><h2>Dimensional Stability Oven-2</h2></div>
+                <div class="card-body">@OvenFreezerGrid("H2")</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-default">
+                <div class="card-header"><h2>WF Testing: Changes in Major Dimensions</h2></div>
+                <div class="card-body">@WfDimGrid()</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-md-4">
+            <div class="card card-default">
+                <div class="card-header"><h2>Dimensional Stability Freezer-1</h2></div>
+                <div class="card-body">@OvenFreezerGrid("C1")</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-default">
+                <div class="card-header"><h2>Dimensional Stability Freezer-2</h2></div>
+                <div class="card-body">@OvenFreezerGrid("C2")</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-default">
+                <div class="card-header"><h2>WF Testing: Depths on Each Side</h2></div>
+                <div class="card-body">@WfDepthGrid()</div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private DimStabilityDataDto? data;
+    private string? errorMessage;
+    private bool isBusy;
+    private static readonly string[] Dims = { "L1", "L2", "L3", "W1", "W2", "W3", "T1", "T2", "T3", "T4", "T5" };
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.GetFromJsonAsync<ApiResp<DimStabilityDataDto>>("DimStability/data");
+            if (response?.Success == true && response.Data != null)
+                data = response.Data;
+            else
+                errorMessage = response?.Error ?? "Failed to load Dimension Stability data.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading data: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task OnNavigate(string direction)
+    {
+        if (isBusy) return;
+        await Post("DimStability/navigate", new NavigateRequest { Direction = direction });
+    }
+
+    private async Task OnDimensionChanged(string name, string? value)
+    {
+        if (isBusy) return;
+        await Post("DimStability/update-dimension", new FieldUpdateRequest { Name = name, Value = value });
+    }
+
+    private async Task OnWfDimChanged(string name, string? value)
+    {
+        if (isBusy) return;
+        await Post("DimStability/update-wf-dim", new FieldUpdateRequest { Name = name, Value = value });
+    }
+
+    private async Task OnWfDepthChanged(string name, string? value)
+    {
+        if (isBusy) return;
+        await Post("DimStability/update-wf-depth", new FieldUpdateRequest { Name = name, Value = value });
+    }
+
+    private async Task OnBoolFieldChanged(string name, bool value)
+    {
+        if (isBusy) return;
+        await Post("DimStability/update-checkbox", new BoolUpdateRequest { Name = name, Value = value });
+    }
+
+    private async Task OnDateFieldChanged(string? value)
+    {
+        if (isBusy) return;
+        DateTime? dt = DateTime.TryParse(value, out var parsed) ? parsed : null;
+        await Post("DimStability/update-datetime", new DateTimeUpdateRequest { Value = dt });
+    }
+
+    private async Task OnTextFieldChanged(string name, string? value, string endpoint)
+    {
+        if (isBusy) return;
+        await Post($"DimStability/{endpoint}", new FieldUpdateRequest { Name = name, Value = value });
+    }
+
+    private async Task Post<TReq>(string url, TReq body)
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.PostAsJsonAsync(url, body);
+            var result = await response.Content.ReadFromJsonAsync<ApiResp<DimStabilityDataDto>>();
+            if (result?.Success == true && result.Data != null)
+                data = result.Data;
+            else
+                errorMessage = result?.Error ?? "Update failed.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Update error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    // ========== GRID RENDER HELPERS ==========
+
+    private RenderFragment OvenFreezerGrid(string loc) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "table"); builder.AddAttribute(seq++, "class", "table table-sm");
+        builder.OpenElement(seq++, "thead");
+        builder.OpenElement(seq++, "tr");
+        builder.OpenElement(seq++, "th"); builder.CloseElement();
+        builder.OpenElement(seq++, "th"); builder.AddContent(seq++, "Initial"); builder.CloseElement();
+        builder.OpenElement(seq++, "th"); builder.AddContent(seq++, "Final"); builder.CloseElement();
+        builder.CloseElement();
+        builder.CloseElement();
+        builder.OpenElement(seq++, "tbody");
+        foreach (var dim in Dims)
+        {
+            builder.OpenElement(seq++, "tr");
+            builder.OpenElement(seq++, "td"); builder.AddContent(seq++, dim); builder.CloseElement();
+            builder.OpenElement(seq++, "td"); builder.AddContent(seq++, GridCell($"Init_{loc}_{dim}", data!.Dims.GetValueOrDefault($"Init_{loc}_{dim}", string.Empty), OnDimensionChanged)); builder.CloseElement();
+            builder.OpenElement(seq++, "td"); builder.AddContent(seq++, GridCell($"Final_{loc}_{dim}", data!.Dims.GetValueOrDefault($"Final_{loc}_{dim}", string.Empty), OnDimensionChanged)); builder.CloseElement();
+            builder.CloseElement();
+        }
+        builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private RenderFragment WfDimGrid() => builder =>
+    {
+        int seq = 0;
+        string[] wfDims = { "L1", "L2", "L3", "W1", "W2", "W3" };
+        builder.OpenElement(seq++, "table"); builder.AddAttribute(seq++, "class", "table table-sm");
+        builder.OpenElement(seq++, "thead");
+        builder.OpenElement(seq++, "tr");
+        builder.OpenElement(seq++, "th"); builder.CloseElement();
+        builder.OpenElement(seq++, "th"); builder.AddContent(seq++, "Initial"); builder.CloseElement();
+        builder.OpenElement(seq++, "th"); builder.AddContent(seq++, "Final"); builder.CloseElement();
+        builder.CloseElement();
+        builder.CloseElement();
+        builder.OpenElement(seq++, "tbody");
+        foreach (var dim in wfDims)
+        {
+            builder.OpenElement(seq++, "tr");
+            builder.OpenElement(seq++, "td"); builder.AddContent(seq++, dim); builder.CloseElement();
+            builder.OpenElement(seq++, "td"); builder.AddContent(seq++, GridCell($"Init_WF_{dim}", data!.WFDims.GetValueOrDefault($"Init_WF_{dim}", string.Empty), OnWfDimChanged)); builder.CloseElement();
+            builder.OpenElement(seq++, "td"); builder.AddContent(seq++, GridCell($"Final_WF_{dim}", data!.WFDims.GetValueOrDefault($"Final_WF_{dim}", string.Empty), OnWfDimChanged)); builder.CloseElement();
+            builder.CloseElement();
+        }
+        builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private RenderFragment WfDepthGrid() => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "table"); builder.AddAttribute(seq++, "class", "table table-sm");
+        builder.OpenElement(seq++, "thead");
+        builder.OpenElement(seq++, "tr");
+        builder.OpenElement(seq++, "th"); builder.CloseElement();
+        builder.OpenElement(seq++, "th"); builder.AddContent(seq++, "Loc 1"); builder.CloseElement();
+        builder.OpenElement(seq++, "th"); builder.AddContent(seq++, "Loc 2"); builder.CloseElement();
+        builder.CloseElement();
+        builder.CloseElement();
+        builder.OpenElement(seq++, "tbody");
+        for (int i = 1; i <= 5; i++)
+        {
+            int idx = i;
+            builder.OpenElement(seq++, "tr");
+            builder.OpenElement(seq++, "td"); builder.AddContent(seq++, $"#{idx}"); builder.CloseElement();
+            builder.OpenElement(seq++, "td"); builder.AddContent(seq++, GridCell($"Side1_Depth{idx}", data!.Depths.GetValueOrDefault($"Side1_Depth{idx}", string.Empty), OnWfDepthChanged)); builder.CloseElement();
+            builder.OpenElement(seq++, "td"); builder.AddContent(seq++, GridCell($"Side2_Depth{idx}", data!.Depths.GetValueOrDefault($"Side2_Depth{idx}", string.Empty), OnWfDepthChanged)); builder.CloseElement();
+            builder.CloseElement();
+        }
+        builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private RenderFragment GridCell(string name, string value, Func<string, string?, Task> onChange) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "number");
+        builder.AddAttribute(seq++, "class", "form-control form-control-sm border-0");
+        builder.AddAttribute(seq++, "value", value);
+        builder.AddAttribute(seq++, "disabled", isBusy);
+        builder.AddAttribute(seq++, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, e => onChange(name, e.Value?.ToString())));
+        builder.CloseElement();
+    };
+
+    // ========== FIELD RENDER HELPERS ==========
+
+    private RenderFragment BoolField(string name, string label, bool value) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "form-check mb-2");
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "checkbox");
+        builder.AddAttribute(seq++, "class", "form-check-input");
+        builder.AddAttribute(seq++, "id", name);
+        builder.AddAttribute(seq++, "checked", value);
+        builder.AddAttribute(seq++, "disabled", isBusy);
+        builder.AddAttribute(seq++, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, e => OnBoolFieldChanged(name, e.Value is bool b && b)));
+        builder.CloseElement();
+        builder.OpenElement(seq++, "label"); builder.AddAttribute(seq++, "class", "form-check-label"); builder.AddAttribute(seq++, "for", name); builder.AddContent(seq++, label); builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private RenderFragment TextField(string name, string label, string value, string endpoint) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "form-floating mb-2");
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "text");
+        builder.AddAttribute(seq++, "class", "form-control");
+        builder.AddAttribute(seq++, "id", name);
+        builder.AddAttribute(seq++, "value", value);
+        builder.AddAttribute(seq++, "disabled", isBusy);
+        builder.AddAttribute(seq++, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, e => OnTextFieldChanged(name, e.Value?.ToString(), endpoint)));
+        builder.CloseElement();
+        builder.OpenElement(seq++, "label"); builder.AddAttribute(seq++, "for", name); builder.AddContent(seq++, label); builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private RenderFragment DateField(string name, string label, DateTime? value) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "form-floating mb-2");
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "datetime-local");
+        builder.AddAttribute(seq++, "class", "form-control");
+        builder.AddAttribute(seq++, "id", name);
+        builder.AddAttribute(seq++, "value", value?.ToString("yyyy-MM-ddTHH:mm:ss"));
+        builder.AddAttribute(seq++, "disabled", isBusy);
+        builder.AddAttribute(seq++, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, e => OnDateFieldChanged(e.Value?.ToString())));
+        builder.CloseElement();
+        builder.OpenElement(seq++, "label"); builder.AddAttribute(seq++, "for", name); builder.AddContent(seq++, label); builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private RenderFragment DisabledField(string label, string value, bool background = true) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "form-floating mb-2");
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "text");
+        builder.AddAttribute(seq++, "class", background ? "form-control" : "form-control illegal-value");
+        builder.AddAttribute(seq++, "value", value);
+        builder.AddAttribute(seq++, "disabled", true);
+        builder.CloseElement();
+        if (!string.IsNullOrEmpty(label))
+        {
+            builder.OpenElement(seq++, "label"); builder.AddContent(seq++, label); builder.CloseElement();
+        }
+        builder.CloseElement();
+    };
+
+    // ========== DTOs ==========
+
+    public class ApiResp<T>
+    {
+        public bool Success { get; set; }
+        public T? Data { get; set; }
+        public string? Error { get; set; }
+    }
+
+    public class NavigateRequest { public string Direction { get; set; } = string.Empty; }
+    public class FieldUpdateRequest { public string Name { get; set; } = string.Empty; public string? Value { get; set; } }
+    public class BoolUpdateRequest { public string Name { get; set; } = string.Empty; public bool Value { get; set; } }
+    public class DateTimeUpdateRequest { public DateTime? Value { get; set; } }
+
+    public class DimStabilityDataDto
+    {
+        public bool GDataSetNextIsEnabled { get; set; }
+        public bool GDataSetPrevIsEnabled { get; set; }
+        public string GID { get; set; } = string.Empty;
+        public bool GDimStabilityDoneIsChecked { get; set; }
+        public string GProductionDate { get; set; } = string.Empty;
+        public string GProductionTime { get; set; } = string.Empty;
+        public string GProductCode { get; set; } = string.Empty;
+        public bool GEdgeH1IsChecked { get; set; }
+        public bool GEdgeH2IsChecked { get; set; }
+        public bool GEdgeC1IsChecked { get; set; }
+        public bool GEdgeC2IsChecked { get; set; }
+
+        public Dictionary<string, string> Dims { get; set; } = new();
+
+        public string GChangeOvenLength { get; set; } = string.Empty;
+        public string GChangeOvenWidth { get; set; } = string.Empty;
+        public string GChangeOvenThickness { get; set; } = string.Empty;
+        public string GChangeFreezerLength { get; set; } = string.Empty;
+        public string GChangeFreezerWidth { get; set; } = string.Empty;
+        public string GChangeFreezerThickness { get; set; } = string.Empty;
+
+        public bool GChangeOvenLengthBackground { get; set; } = true;
+        public bool GChangeOvenWidthBackground { get; set; } = true;
+        public bool GChangeOvenThicknessBackground { get; set; } = true;
+        public bool GChangeFreezerLengthBackground { get; set; } = true;
+        public bool GChangeFreezerWidthBackground { get; set; } = true;
+        public bool GChangeFreezerThicknessBackground { get; set; } = true;
+
+        public Dictionary<string, string> WFDims { get; set; } = new();
+        public string GChangeWFLength { get; set; } = string.Empty;
+        public string GChangeWFWidth { get; set; } = string.Empty;
+
+        public Dictionary<string, string> Depths { get; set; } = new();
+        public string GAvgDepth { get; set; } = string.Empty;
+        public string GMaxDepth { get; set; } = string.Empty;
+
+        public DateTime? GTestDateTime { get; set; }
+        public string GDeviation { get; set; } = string.Empty;
+        public string GDevType { get; set; } = string.Empty;
+    }
+}

@@ -172,21 +172,10 @@
         }
       }
     },
-    "/api/Formulations/data/{id}": {
+    "/api/Formulations/load": {
       "get": {
         "tags": [
           "Formulations"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
         ],
         "responses": {
           "200": {
@@ -195,37 +184,211 @@
         }
       }
     },
-    "/api/Formulations/update-nco/{id}": {
+    "/api/Formulations/gen-info": {
       "post": {
         "tags": [
           "Formulations"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NcoUpdateRequest"
+                "$ref": "#/components/schemas/NameValueRequest"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/NcoUpdateRequest"
+                "$ref": "#/components/schemas/NameValueRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/NcoUpdateRequest"
+                "$ref": "#/components/schemas/NameValueRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Formulations/update-nco": {
+      "post": {
+        "tags": [
+          "Formulations"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Formulations/update-po": {
+      "post": {
+        "tags": [
+          "Formulations"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Formulations/update-iso": {
+      "post": {
+        "tags": [
+          "Formulations"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Formulations/add-po-row": {
+      "post": {
+        "tags": [
+          "Formulations"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Formulations/paste-po": {
+      "post": {
+        "tags": [
+          "Formulations"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Formulations/foamat-gm": {
+      "post": {
+        "tags": [
+          "Formulations"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StringValueRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StringValueRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StringValueRequest"
               }
             }
           }
@@ -445,6 +608,18 @@
         }
       }
     },
+    "/api/RndProperties/load": {
+      "get": {
+        "tags": [
+          "RndProperties"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/RndProperties/update-reaction": {
       "post": {
         "tags": [
@@ -454,17 +629,110 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TdrvUpdateModel"
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/TdrvUpdateModel"
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/TdrvUpdateModel"
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/RndProperties/update-photo": {
+      "post": {
+        "tags": [
+          "RndProperties"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/RndProperties/update-datafile": {
+      "post": {
+        "tags": [
+          "RndProperties"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/RndProperties/update-product": {
+      "post": {
+        "tags": [
+          "RndProperties"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
               }
             }
           }
@@ -485,17 +753,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TdrvUpdateModel"
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/TdrvUpdateModel"
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/TdrvUpdateModel"
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
               }
             }
           }
@@ -507,7 +775,38 @@
         }
       }
     },
-    "/api/RndRawProps/load-density": {
+    "/api/RndProperties/update-prop-testing-complete": {
+      "post": {
+        "tags": [
+          "RndProperties"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoolValueRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoolValueRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoolValueRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/RndRawProps/load": {
       "get": {
         "tags": [
           "RndRawProps"
@@ -528,21 +827,157 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TdrvUpdateModel"
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/TdrvUpdateModel"
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/TdrvUpdateModel"
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
               }
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/RndRawProps/update-compstr": {
+      "post": {
+        "tags": [
+          "RndRawProps"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/RndRawProps/update-closedcell": {
+      "post": {
+        "tags": [
+          "RndRawProps"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/RndRawProps/update-porescan": {
+      "post": {
+        "tags": [
+          "RndRawProps"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/RndRawProps/update-hotplates": {
+      "post": {
+        "tags": [
+          "RndRawProps"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/RndTdrv/load": {
+      "get": {
+        "tags": [
+          "RndTdrv"
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -559,17 +994,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TdrvUpdateModel"
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/TdrvUpdateModel"
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/TdrvUpdateModel"
+                "$ref": "#/components/schemas/GridCellUpdateRequest"
               }
             }
           }
@@ -581,8 +1016,39 @@
         }
       }
     },
-    "/api/RndValues/update": {
+    "/api/RndTdrv/update-aged-testing-complete": {
       "post": {
+        "tags": [
+          "RndTdrv"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoolValueRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoolValueRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoolValueRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/RndValues/load": {
+      "get": {
         "tags": [
           "RndValues"
         ],
@@ -593,8 +1059,70 @@
         }
       }
     },
-    "/api/RndValues/collect": {
-      "get": {
+    "/api/RndValues/lost-focus": {
+      "post": {
+        "tags": [
+          "RndValues"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FieldChangeRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FieldChangeRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/FieldChangeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/RndValues/axis-changed": {
+      "post": {
+        "tags": [
+          "RndValues"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AxisChangeRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AxisChangeRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AxisChangeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/RndValues/reset-defaults": {
+      "post": {
         "tags": [
           "RndValues"
         ],
@@ -717,6 +1245,24 @@
   },
   "components": {
     "schemas": {
+      "AxisChangeRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          },
+          "item": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "BeginSessionRequest": {
         "type": "object",
         "properties": {
@@ -754,6 +1300,15 @@
         },
         "additionalProperties": false
       },
+      "BoolValueRequest": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
       "DateTimeUpdateRequest": {
         "type": "object",
         "properties": {
@@ -764,6 +1319,20 @@
           "value": {
             "type": "string",
             "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FieldChangeRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
             "nullable": true
           }
         },
@@ -783,26 +1352,44 @@
         },
         "additionalProperties": false
       },
-      "NavigateRequest": {
+      "GridCellUpdateRequest": {
         "type": "object",
         "properties": {
-          "direction": {
+          "row": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "col": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "text": {
             "type": "string",
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "NcoUpdateRequest": {
+      "NameValueRequest": {
         "type": "object",
         "properties": {
-          "colIndex": {
-            "type": "integer",
-            "format": "int32"
+          "name": {
+            "type": "string",
+            "nullable": true
           },
           "value": {
-            "type": "number",
-            "format": "double"
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "NavigateRequest": {
+        "type": "object",
+        "properties": {
+          "direction": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -938,18 +1525,10 @@
         },
         "additionalProperties": false
       },
-      "TdrvUpdateModel": {
+      "StringValueRequest": {
         "type": "object",
         "properties": {
-          "rowId": {
-            "type": "string",
-            "nullable": true
-          },
-          "colId": {
-            "type": "string",
-            "nullable": true
-          },
-          "text": {
+          "value": {
             "type": "string",
             "nullable": true
           }

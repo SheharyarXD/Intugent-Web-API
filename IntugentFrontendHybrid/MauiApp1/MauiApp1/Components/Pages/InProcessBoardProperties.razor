@@ -1,0 +1,584 @@
+@page "/inprocess-board-properties"
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Web
+@inject HttpClient Http
+
+<PageTitle>In-Process Board Properties</PageTitle>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+    </div>
+}
+
+@if (data == null)
+{
+    <p class="text-muted">Loading...</p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-2">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>Thickness</h2></div>
+                <div class="card-body">
+                    <p class="text-center fw-bold text-primary">@data.GsLoc3F</p>
+                    @for (int i = 1; i <= 17; i++)
+                    {
+                        int idx = i;
+                        @NumField($"gThicknessIP_{idx}", $"#{idx}", GetThickness(idx), "update-thickness")
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-10">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card card-default mb-2">
+                        <div class="card-header"><h2>Average Values</h2></div>
+                        <div class="card-body">
+                            @DisabledField("Core Density", data.GCoreDensityIPText, data.GCoreDensityIPBackground)
+                            @DisabledField("Thickness Avg", data.GThicknessIPText, data.GThicknessIPBackground)
+                            @DisabledField("Thickness Valley", data.GThicknessValleyText)
+                            @DisabledField("Thickness Peak", data.GThicknessPeakText)
+                            @DisabledField("Board Profile", data.GFlatnessText, data.GFlatnessBackground)
+                            @DisabledField("Avg Comp Str (5)", data.GCompressiveIP5Text, data.GCompressiveIP5Background)
+                            @DisabledField("Avg Comp Str (6)", data.GCompressiveIPText, data.GCompressiveIPBackground)
+                        </div>
+                    </div>
+                    <div class="card card-default">
+                        <div class="card-header"><h2>Compressive Strength</h2></div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between"><small>Comp. Str</small><small>Knit</small></div>
+                            @for (int i = 1; i <= 6; i++)
+                            {
+                                int idx = i;
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <div class="flex-grow-1">@NumField($"gCompressiveIP_{idx}", $"#{idx}", GetCompStr(idx), "update-compressive")</div>
+                                    @BoolDisplayInline(GetCompStrKnit(idx))
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-9">
+                    <div class="card card-default mb-2">
+                        <div class="card-header"><h2>General Info</h2></div>
+                        <div class="card-body">
+                            <div class="row mb-2 align-items-center">
+                                <div class="col-auto">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled="@(!data.GDataSetPrevIsEnabled || isBusy)" @onclick='() => OnNavigate("prev")'>&lt;</button>
+                                </div>
+                                <div class="col-2">
+                                    <input type="text" class="form-control form-control-sm" value="@data.GID" disabled />
+                                </div>
+                                <div class="col-auto">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled="@(!data.GDataSetNextIsEnabled || isBusy)" @onclick='() => OnNavigate("next")'>&gt;</button>
+                                </div>
+                                <div class="col-2">@BoolDisplayField("IP Testing Complete", data.GInProcessDoneIsChecked)</div>
+                                <div class="col-2">@BoolDisplayField("Abandoned", data.GAbandonedIsChecked)</div>
+                                <div class="col-2">@BoolDisplayField("Time Stamp Not Legible", data.GTimeStampNotLegibleIsChecked)</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-2">@DisabledField("Product Code", data.GProdIDSelectedValue)</div>
+                                <div class="col-2">@DisabledField("Run Type", data.GRunTypeSelectedValue.ToString())</div>
+                                <div class="col-2">@DisabledField("Paper Mfr.", data.GPaperManufacturerSelectedValue.ToString())</div>
+                                <div class="col-2">@DisabledField("Shift", data.GShiftSelectedValue.ToString())</div>
+                                <div class="col-2">@DisabledField("Operator", data.GOperatorSelectedItem.ToString())</div>
+                                <div class="col-2">@DisabledDateField("Test Date/Time", data.GTestDateTime)</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">@DisabledField("Running Wet Density", data.GRunningWetDesnsity)</div>
+                                <div class="col-3">@DisabledField("Warehouse Temp", data.GWarehouseTemp)</div>
+                                <div class="col-3">@DisabledField("Warehouse Humidity", data.GWarehouseHumidity)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-default mb-2">
+                        <div class="card-header"><h2>Core Density</h2></div>
+                        <div class="card-body" style="overflow:auto;">
+                            <table class="table table-sm table-bordered coreDensityTable">
+                                <thead>
+                                    <tr><th></th><th>Mass</th><th>Length</th><th>Width</th><th colspan="5">Thickness</th><th>Knit</th><th>Density</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>@data.GsLoc3A</th>
+                                        <td>@data.GMass_3Text</td><td>@data.GL1_3Text</td><td>@data.GW1_3Text</td>
+                                        <td>@data.GT1_3Text</td><td>@data.GT2_3Text</td><td>@data.GT3_3Text</td><td>@data.GT4_3Text</td><td>@data.GT5_3Text</td>
+                                        <td>@BoolDisplayInline(data.GCoreKnitPresent_3IsChecked)</td>
+                                        <td>@DisabledField("", data.GCoreDensityIP_3Text, data.GCoreDensityIP_3Background)</td>
+                                    </tr>
+                                    <tr>
+                                        <th>@data.GsLoc2A</th>
+                                        <td>@data.GMass_2Text</td><td>@data.GL1_2Text</td><td>@data.GW1_2Text</td>
+                                        <td>@data.GT1_2Text</td><td>@data.GT2_2Text</td><td>@data.GT3_2Text</td><td>@data.GT4_2Text</td><td>@data.GT5_2Text</td>
+                                        <td>@BoolDisplayInline(data.GCoreKnitPresent_2IsChecked)</td>
+                                        <td>@DisabledField("", data.GCoreDensityIP_2Text, data.GCoreDensityIP_2Background)</td>
+                                    </tr>
+                                    <tr>
+                                        <th>@data.GsLoc1A</th>
+                                        <td>@data.GMass_1Text</td><td>@data.GL1_1Text</td><td>@data.GW1_1Text</td>
+                                        <td>@data.GT1_1Text</td><td>@data.GT2_1Text</td><td>@data.GT3_1Text</td><td>@data.GT4_1Text</td><td>@data.GT5_1Text</td>
+                                        <td>@BoolDisplayInline(data.GCoreKnitPresent_1IsChecked)</td>
+                                        <td>@DisabledField("", data.GCoreDensityIP_1Text, data.GCoreDensityIP_1Background)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card card-default mb-2">
+                        <div class="card-header"><h2>Pour Table - In Process Check</h2></div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-3">@DisabledField("Time of QC Check", data.GTimePourTableQCCheckValue?.ToString("MM/dd/yyyy - hh:mm tt") ?? data.GTimePourTableQCCheckCustomFormat)</div>
+                                <div class="col-3">@DisabledField("Surfactant Type", data.GSurfactantSelectedValue.ToString())</div>
+                                <div class="col-3">@DisabledField("Pour Head Layout", data.GLayoutSelectedValue.ToString())</div>
+                                <div class="col-3">@DisabledField("IR Facer Temp - Upper", data.GIRFacerTempUpperText)</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">@DisabledField("IR Facer Temp - Lower", data.GIRFacerTempLowerText)</div>
+                                <div class="col-3">@DisabledField("Splitter Age (min)", data.GSplitterAgeText)</div>
+                                <div class="col-3">@DisabledField("Head Plate Age (min)", data.GHeadPlateAgeText)</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">@DisabledField("IR Stream Temp - Pour Head " + data.GsLoc3B, data.GIRStreamTempPourHead_3Text)</div>
+                                <div class="col-4">@DisabledField("IR Stream Temp - Pour Head " + data.GsLoc2B, data.GIRStreamTempPourHead_2Text)</div>
+                                <div class="col-4">@DisabledField("IR Stream Temp - Pour Head " + data.GsLoc1B, data.GIRStreamTempPourHead_1Text)</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">@DisabledField("IR Nip Roll " + data.GsLoc3B, data.GIRNipRoll_3Text)</div>
+                                <div class="col-4">@DisabledField("IR Nip Roll " + data.GsLoc2B, data.GIRNipRoll_2Text)</div>
+                                <div class="col-4">@DisabledField("IR Nip Roll " + data.GsLoc1B, data.GIRNipRoll_1Text)</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">@DisabledField("Pour Head Position " + data.GsLoc3B, data.GPourHeadPosition_3Text)</div>
+                                <div class="col-4">@DisabledField("Pour Head Position " + data.GsLoc2B, data.GPourHeadPosition_2Text)</div>
+                                <div class="col-4">@DisabledField("Pour Head Position " + data.GsLoc1B, data.GPourHeadPosition_1Text)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="card card-default" style="height:100%;">
+                                <div class="card-header"><h2>Board Dimensions</h2></div>
+                                <div class="card-body">
+                                    @NumField("gLength", "Length", data.GLengthText, "update-board-dims", data.GLengthBackground)
+                                    @NumField("gWidth", "Width", data.GWidthText, "update-board-dims", data.GWidthBackground)
+                                    @NumField("gBundleHeightIP", "Bundle Height", data.GBundleHeightIPText, "update-board-dims", data.GBundleHeightIPBackground)
+                                    @NumField("gDiagoanl1", "Diagonal 1", data.GDiagoanl1Text, "update-board-dims")
+                                    @NumField("gDiagoanl2", "Diagonal 2", data.GDiagoanl2Text, "update-board-dims")
+                                    @DisabledField("Abs. Diagonal Diff", data.GDiagoanlDiffText, data.GDiagoanlDiffBackground)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card card-default" style="height:100%;">
+                                <div class="card-header"><h2>Avg Thickness Each Side</h2></div>
+                                <div class="card-body">
+                                    @DisabledField("Avg 1-8", data.GThicknessAvg1Text, data.GThicknessAvg1Background)
+                                    @DisabledField("Avg 10-17", data.GThicknessAvg2Text, data.GThicknessAvg2Background)
+                                    @DisabledField("Slope", data.GThicknessSlopeText, data.GThicknessSlopeBackground)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card card-default" style="height:100%;">
+                                <div class="card-header"><h2>Board Perforations</h2></div>
+                                <div class="card-body">
+                                    @BoolField("gTopBoardPerforated", "Top Board Perforated", data.GTopBoardPerforatedIsChecked)
+                                    @BoolField("gBottomBoardPerforated", "Bottom Board Perforated", data.GBottomBoardPerforatedIsChecked)
+                                    @BoolField("gTopBoardPrintOK", "Top Board Print OK", data.GTopBoardPrintOKIsChecked)
+                                    @BoolField("gBottomBoardPrintOK", "Bottom Board Print OK", data.GBottomBoardPrintOKIsChecked)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card card-default" style="height:100%;">
+                                <div class="card-header"><h2>Knit Line Locations</h2></div>
+                                <div class="card-body">
+                                    @for (int i = 1; i <= 7; i++)
+                                    {
+                                        int idx = i;
+                                        @NumField($"gKnitLineLoc_{idx}", $"#{idx}", GetKnitLine(idx), "update-knit-line")
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private InProcessBoardDataDto? data;
+    private string? errorMessage;
+    private bool isBusy;
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.GetFromJsonAsync<ApiResp<InProcessBoardDataDto>>("InProcessBoardProperties/data");
+            if (response?.Success == true && response.Data != null)
+                data = response.Data;
+            else
+                errorMessage = response?.Error ?? "Failed to load In-Process Board Properties.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading data: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task OnNavigate(string direction)
+    {
+        if (isBusy) return;
+        await Post("InProcessBoardProperties/navigate", new NavigateRequest { Direction = direction });
+    }
+
+    private async Task OnFieldChanged(string name, string? value, string endpoint)
+    {
+        if (isBusy) return;
+        await Post($"InProcessBoardProperties/{endpoint}", new FieldUpdateRequest { Name = name, Value = value });
+    }
+
+    private async Task OnBoolFieldChanged(string name, bool value)
+    {
+        if (isBusy) return;
+        await Post("InProcessBoardProperties/update-board-perf", new BoolUpdateRequest { Name = name, Value = value });
+    }
+
+    private async Task Post<TReq>(string url, TReq body)
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.PostAsJsonAsync(url, body);
+            var result = await response.Content.ReadFromJsonAsync<ApiResp<InProcessBoardDataDto>>();
+            if (result?.Success == true && result.Data != null)
+                data = result.Data;
+            else
+                errorMessage = result?.Error ?? "Update failed.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Update error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private string GetThickness(int i) => i switch
+    {
+        1 => data!.GThicknessIP_1Text, 2 => data!.GThicknessIP_2Text, 3 => data!.GThicknessIP_3Text, 4 => data!.GThicknessIP_4Text,
+        5 => data!.GThicknessIP_5Text, 6 => data!.GThicknessIP_6Text, 7 => data!.GThicknessIP_7Text, 8 => data!.GThicknessIP_8Text,
+        9 => data!.GThicknessIP_9Text, 10 => data!.GThicknessIP_10Text, 11 => data!.GThicknessIP_11Text, 12 => data!.GThicknessIP_12Text,
+        13 => data!.GThicknessIP_13Text, 14 => data!.GThicknessIP_14Text, 15 => data!.GThicknessIP_15Text, 16 => data!.GThicknessIP_16Text,
+        _ => data!.GThicknessIP_17Text
+    };
+
+    private string GetCompStr(int i) => i switch
+    {
+        1 => data!.GCompressiveIP_1Text, 2 => data!.GCompressiveIP_2Text, 3 => data!.GCompressiveIP_3Text,
+        4 => data!.GCompressiveIP_4Text, 5 => data!.GCompressiveIP_5Text, _ => data!.GCompressiveIP_6Text
+    };
+
+    private bool GetCompStrKnit(int i) => i switch
+    {
+        1 => data!.GCompStrKnitPresent_1IsChecked, 2 => data!.GCompStrKnitPresent_2IsChecked, 3 => data!.GCompStrKnitPresent_3IsChecked,
+        4 => data!.GCompStrKnitPresent_4IsChecked, 5 => data!.GCompStrKnitPresent_5IsChecked, _ => data!.GCompStrKnitPresent_6IsChecked
+    };
+
+    private string GetKnitLine(int i) => i switch
+    {
+        1 => data!.GKnitLineLoc_1Text, 2 => data!.GKnitLineLoc_2Text, 3 => data!.GKnitLineLoc_3Text, 4 => data!.GKnitLineLoc_4Text,
+        5 => data!.GKnitLineLoc_5Text, 6 => data!.GKnitLineLoc_6Text, _ => data!.GKnitLineLoc_7Text
+    };
+
+    // ========== FIELD RENDER HELPERS ==========
+
+    private RenderFragment NumField(string name, string label, string value, string endpoint, bool background = true) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "form-floating mb-2");
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "number");
+        builder.AddAttribute(seq++, "class", background ? "form-control" : "form-control illegal-value");
+        builder.AddAttribute(seq++, "id", name);
+        builder.AddAttribute(seq++, "value", value);
+        builder.AddAttribute(seq++, "disabled", isBusy);
+        builder.AddAttribute(seq++, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, e => OnFieldChanged(name, e.Value?.ToString(), endpoint)));
+        builder.CloseElement();
+        builder.OpenElement(seq++, "label"); builder.AddAttribute(seq++, "for", name); builder.AddContent(seq++, label); builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private RenderFragment BoolField(string name, string label, bool value) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "form-check");
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "checkbox");
+        builder.AddAttribute(seq++, "class", "form-check-input");
+        builder.AddAttribute(seq++, "id", name);
+        builder.AddAttribute(seq++, "checked", value);
+        builder.AddAttribute(seq++, "disabled", isBusy);
+        builder.AddAttribute(seq++, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, e => OnBoolFieldChanged(name, e.Value is bool b && b)));
+        builder.CloseElement();
+        builder.OpenElement(seq++, "label"); builder.AddAttribute(seq++, "class", "form-check-label"); builder.AddAttribute(seq++, "for", name); builder.AddContent(seq++, label); builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private RenderFragment BoolDisplayInline(bool value) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "checkbox");
+        builder.AddAttribute(seq++, "class", "form-check-input");
+        builder.AddAttribute(seq++, "checked", value);
+        builder.AddAttribute(seq++, "disabled", true);
+        builder.CloseElement();
+    };
+
+    private RenderFragment BoolDisplayField(string label, bool value) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "form-check mt-4");
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "checkbox");
+        builder.AddAttribute(seq++, "class", "form-check-input");
+        builder.AddAttribute(seq++, "checked", value);
+        builder.AddAttribute(seq++, "disabled", true);
+        builder.CloseElement();
+        builder.OpenElement(seq++, "label"); builder.AddAttribute(seq++, "class", "form-check-label"); builder.AddContent(seq++, label); builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private RenderFragment DisabledField(string label, string value, bool background = true) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "form-floating mb-2");
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "text");
+        builder.AddAttribute(seq++, "class", background ? "form-control" : "form-control illegal-value");
+        builder.AddAttribute(seq++, "value", value);
+        builder.AddAttribute(seq++, "disabled", true);
+        builder.CloseElement();
+        if (!string.IsNullOrEmpty(label))
+        {
+            builder.OpenElement(seq++, "label"); builder.AddContent(seq++, label); builder.CloseElement();
+        }
+        builder.CloseElement();
+    };
+
+    private RenderFragment DisabledDateField(string label, DateTime? value) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "form-floating mb-2");
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "text");
+        builder.AddAttribute(seq++, "class", "form-control");
+        builder.AddAttribute(seq++, "value", value?.ToString("MM/dd/yyyy - hh:mm tt") ?? string.Empty);
+        builder.AddAttribute(seq++, "disabled", true);
+        builder.CloseElement();
+        builder.OpenElement(seq++, "label"); builder.AddContent(seq++, label); builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    // ========== DTOs ==========
+
+    public class ApiResp<T>
+    {
+        public bool Success { get; set; }
+        public T? Data { get; set; }
+        public string? Error { get; set; }
+    }
+
+    public class NavigateRequest { public string Direction { get; set; } = string.Empty; }
+    public class FieldUpdateRequest { public string Name { get; set; } = string.Empty; public string? Value { get; set; } }
+    public class BoolUpdateRequest { public string Name { get; set; } = string.Empty; public bool Value { get; set; } }
+
+    public class InProcessBoardDataDto
+    {
+        public bool GDataSetNextIsEnabled { get; set; }
+        public bool GDataSetPrevIsEnabled { get; set; }
+        public string GID { get; set; } = string.Empty;
+
+        public string GsLoc1A { get; set; } = string.Empty;
+        public string GsLoc2A { get; set; } = string.Empty;
+        public string GsLoc3A { get; set; } = string.Empty;
+        public string GsLoc1E { get; set; } = string.Empty;
+        public string GsLoc3E { get; set; } = string.Empty;
+        public string GsLoc3F { get; set; } = string.Empty;
+        public string GsLoc1B { get; set; } = string.Empty;
+        public string GsLoc2B { get; set; } = string.Empty;
+        public string GsLoc3B { get; set; } = string.Empty;
+        public string GsLoc1C { get; set; } = string.Empty;
+        public string GsLoc2C { get; set; } = string.Empty;
+        public string GsLoc3C { get; set; } = string.Empty;
+        public string GsLoc1D { get; set; } = string.Empty;
+        public string GsLoc2D { get; set; } = string.Empty;
+        public string GsLoc3D { get; set; } = string.Empty;
+
+        public DateTime? GTestDateTime { get; set; }
+        public string GProdIDSelectedValue { get; set; } = string.Empty;
+        public int GRunTypeSelectedValue { get; set; }
+        public int GShiftSelectedValue { get; set; }
+        public int GOperatorSelectedItem { get; set; }
+        public int GPaperManufacturerSelectedValue { get; set; }
+        public string GRunningWetDesnsity { get; set; } = string.Empty;
+        public string GWarehouseTemp { get; set; } = string.Empty;
+        public string GWarehouseHumidity { get; set; } = string.Empty;
+        public bool GInProcessDoneIsChecked { get; set; }
+        public bool GAbandonedIsChecked { get; set; }
+        public bool GTimeStampNotLegibleIsChecked { get; set; }
+
+        public string GCoreDensityIPText { get; set; } = string.Empty;
+        public string GThicknessIPText { get; set; } = string.Empty;
+        public string GCompressiveIPText { get; set; } = string.Empty;
+        public string GCompressiveIP5Text { get; set; } = string.Empty;
+        public string GThicknessValleyText { get; set; } = string.Empty;
+        public string GThicknessPeakText { get; set; } = string.Empty;
+        public string GFlatnessText { get; set; } = string.Empty;
+
+        public string GLengthText { get; set; } = string.Empty;
+        public string GWidthText { get; set; } = string.Empty;
+        public string GBundleHeightIPText { get; set; } = string.Empty;
+        public string GDiagoanl1Text { get; set; } = string.Empty;
+        public string GDiagoanl2Text { get; set; } = string.Empty;
+        public string GDiagoanlDiffText { get; set; } = string.Empty;
+
+        public string GThicknessIP_1Text { get; set; } = string.Empty;
+        public string GThicknessIP_2Text { get; set; } = string.Empty;
+        public string GThicknessIP_3Text { get; set; } = string.Empty;
+        public string GThicknessIP_4Text { get; set; } = string.Empty;
+        public string GThicknessIP_5Text { get; set; } = string.Empty;
+        public string GThicknessIP_6Text { get; set; } = string.Empty;
+        public string GThicknessIP_7Text { get; set; } = string.Empty;
+        public string GThicknessIP_8Text { get; set; } = string.Empty;
+        public string GThicknessIP_9Text { get; set; } = string.Empty;
+        public string GThicknessIP_10Text { get; set; } = string.Empty;
+        public string GThicknessIP_11Text { get; set; } = string.Empty;
+        public string GThicknessIP_12Text { get; set; } = string.Empty;
+        public string GThicknessIP_13Text { get; set; } = string.Empty;
+        public string GThicknessIP_14Text { get; set; } = string.Empty;
+        public string GThicknessIP_15Text { get; set; } = string.Empty;
+        public string GThicknessIP_16Text { get; set; } = string.Empty;
+        public string GThicknessIP_17Text { get; set; } = string.Empty;
+        public string GThicknessAvg1Text { get; set; } = string.Empty;
+        public string GThicknessAvg2Text { get; set; } = string.Empty;
+        public string GThicknessSlopeText { get; set; } = string.Empty;
+
+        public bool GTopBoardPerforatedIsChecked { get; set; }
+        public bool GBottomBoardPerforatedIsChecked { get; set; }
+        public bool GTopBoardPrintOKIsChecked { get; set; }
+        public bool GBottomBoardPrintOKIsChecked { get; set; }
+
+        public string GCompressiveIP_1Text { get; set; } = string.Empty;
+        public string GCompressiveIP_2Text { get; set; } = string.Empty;
+        public string GCompressiveIP_3Text { get; set; } = string.Empty;
+        public string GCompressiveIP_4Text { get; set; } = string.Empty;
+        public string GCompressiveIP_5Text { get; set; } = string.Empty;
+        public string GCompressiveIP_6Text { get; set; } = string.Empty;
+        public bool GCompStrKnitPresent_1IsChecked { get; set; }
+        public bool GCompStrKnitPresent_2IsChecked { get; set; }
+        public bool GCompStrKnitPresent_3IsChecked { get; set; }
+        public bool GCompStrKnitPresent_4IsChecked { get; set; }
+        public bool GCompStrKnitPresent_5IsChecked { get; set; }
+        public bool GCompStrKnitPresent_6IsChecked { get; set; }
+
+        public string GMass_1Text { get; set; } = string.Empty;
+        public string GL1_1Text { get; set; } = string.Empty;
+        public string GW1_1Text { get; set; } = string.Empty;
+        public string GT1_1Text { get; set; } = string.Empty;
+        public string GT2_1Text { get; set; } = string.Empty;
+        public string GT3_1Text { get; set; } = string.Empty;
+        public string GT4_1Text { get; set; } = string.Empty;
+        public string GT5_1Text { get; set; } = string.Empty;
+        public bool GCoreKnitPresent_1IsChecked { get; set; }
+        public string GCoreDensityIP_1Text { get; set; } = string.Empty;
+
+        public string GMass_2Text { get; set; } = string.Empty;
+        public string GL1_2Text { get; set; } = string.Empty;
+        public string GW1_2Text { get; set; } = string.Empty;
+        public string GT1_2Text { get; set; } = string.Empty;
+        public string GT2_2Text { get; set; } = string.Empty;
+        public string GT3_2Text { get; set; } = string.Empty;
+        public string GT4_2Text { get; set; } = string.Empty;
+        public string GT5_2Text { get; set; } = string.Empty;
+        public bool GCoreKnitPresent_2IsChecked { get; set; }
+        public string GCoreDensityIP_2Text { get; set; } = string.Empty;
+
+        public string GMass_3Text { get; set; } = string.Empty;
+        public string GL1_3Text { get; set; } = string.Empty;
+        public string GW1_3Text { get; set; } = string.Empty;
+        public string GT1_3Text { get; set; } = string.Empty;
+        public string GT2_3Text { get; set; } = string.Empty;
+        public string GT3_3Text { get; set; } = string.Empty;
+        public string GT4_3Text { get; set; } = string.Empty;
+        public string GT5_3Text { get; set; } = string.Empty;
+        public bool GCoreKnitPresent_3IsChecked { get; set; }
+        public string GCoreDensityIP_3Text { get; set; } = string.Empty;
+
+        public string GTimePourTableQCCheckCustomFormat { get; set; } = string.Empty;
+        public DateTime? GTimePourTableQCCheckValue { get; set; }
+        public int GSurfactantSelectedValue { get; set; }
+        public int GLayoutSelectedValue { get; set; }
+        public string GSplitterAgeText { get; set; } = string.Empty;
+        public string GHeadPlateAgeText { get; set; } = string.Empty;
+        public string GPourHeadPosition_1Text { get; set; } = string.Empty;
+        public string GPourHeadPosition_2Text { get; set; } = string.Empty;
+        public string GPourHeadPosition_3Text { get; set; } = string.Empty;
+        public string GIRFacerTempLowerText { get; set; } = string.Empty;
+        public string GIRFacerTempUpperText { get; set; } = string.Empty;
+        public string GIRStreamTempPourHead_1Text { get; set; } = string.Empty;
+        public string GIRStreamTempPourHead_2Text { get; set; } = string.Empty;
+        public string GIRStreamTempPourHead_3Text { get; set; } = string.Empty;
+        public string GIRNipRoll_1Text { get; set; } = string.Empty;
+        public string GIRNipRoll_2Text { get; set; } = string.Empty;
+        public string GIRNipRoll_3Text { get; set; } = string.Empty;
+
+        public string GKnitLineLoc_1Text { get; set; } = string.Empty;
+        public string GKnitLineLoc_2Text { get; set; } = string.Empty;
+        public string GKnitLineLoc_3Text { get; set; } = string.Empty;
+        public string GKnitLineLoc_4Text { get; set; } = string.Empty;
+        public string GKnitLineLoc_5Text { get; set; } = string.Empty;
+        public string GKnitLineLoc_6Text { get; set; } = string.Empty;
+        public string GKnitLineLoc_7Text { get; set; } = string.Empty;
+
+        public bool GThicknessIPBackground { get; set; } = true;
+        public bool GThicknessAvg1Background { get; set; } = true;
+        public bool GThicknessAvg2Background { get; set; } = true;
+        public bool GThicknessSlopeBackground { get; set; } = true;
+        public bool GFlatnessBackground { get; set; } = true;
+        public bool GBundleHeightIPBackground { get; set; } = true;
+        public bool GLengthBackground { get; set; } = true;
+        public bool GWidthBackground { get; set; } = true;
+        public bool GDiagoanlDiffBackground { get; set; } = true;
+        public bool GCoreDensityIPBackground { get; set; } = true;
+        public bool GCoreDensityIP_1Background { get; set; } = true;
+        public bool GCoreDensityIP_2Background { get; set; } = true;
+        public bool GCoreDensityIP_3Background { get; set; } = true;
+        public bool GCompressiveIPBackground { get; set; } = true;
+        public bool GCompressiveIP5Background { get; set; } = true;
+    }
+}

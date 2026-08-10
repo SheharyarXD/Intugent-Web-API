@@ -1,0 +1,288 @@
+@page "/mfg-analysis-1"
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject IJSRuntime JS
+
+<PageTitle>Mfg. Analysis - 1</PageTitle>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+    </div>
+}
+
+@if (data == null)
+{
+    <p class="text-muted">Loading...</p>
+}
+else
+{
+    <div class="row">
+        <div class="card card-default">
+            <div class="card-header align-items-center"><h2>General Info</h2></div>
+            <div class="card-body">
+                <div class="row align-items-end">
+                    <div class="col-lg-2 d-flex align-items-center">
+                        <button type="button" class="btn btn-primary w-100" disabled="@isBusy" @onclick="OnSearch">
+                            @if (isBusy)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                            }
+                            Extract Data
+                        </button>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-floating mb-2">
+                            <select class="form-select" disabled="@isBusy" @bind="mfgSiteSelectedValue">
+                                @foreach (var opt in data.LocationOptions)
+                                {
+                                    <option value="@opt.Value">@opt.Name</option>
+                                }
+                            </select>
+                            <label>Mfg Site</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-floating mb-2">
+                            <select class="form-select" disabled="@isBusy" @bind="prod1SelectedValue">
+                                @foreach (var opt in data.ProductOptions)
+                                {
+                                    <option value="@opt.Value">@opt.Name</option>
+                                }
+                            </select>
+                            <label>Production Code</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-floating mb-2">
+                            <input type="date" class="form-control" disabled="@isBusy" @bind="mfgDate1" />
+                            <label>Manufactured - After or At</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-floating mb-2">
+                            <input type="date" class="form-control" disabled="@isBusy" @bind="mfgDate2" />
+                            <label>Manufactured - Before or At</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-lg-8">
+            <div class="card card-default">
+                <div class="card-header">
+                    <div class="form-floating" style="max-width:400px;">
+                        <select class="form-select" disabled="@isBusy" @bind:get="data.Prop1SelectedValue" @bind:set="OnPropertyChanged">
+                            @foreach (var opt in data.PropertyOptions)
+                            {
+                                <option value="@opt.Value">@opt.Name</option>
+                            }
+                        </select>
+                        <label>Choose the Field to Display</label>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="analysis1Chart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card card-default">
+                <div class="card-header"><h2>Property / Correlation</h2></div>
+                <div class="card-body" style="max-height:500px; overflow:auto;">
+                    <table class="table table-sm table-striped">
+                        <thead><tr><th>Property</th><th>Correlation</th></tr></thead>
+                        <tbody>
+                            @foreach (var row in data.Correlations)
+                            {
+                                <tr><td>@row.PropName</td><td>@row.CorrValue.ToString("0.000")</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private AnalysisDto? data;
+    private string? errorMessage;
+    private bool isBusy;
+
+    private string? prod1SelectedValue;
+    private string? mfgSiteSelectedValue;
+    private DateTime? mfgDate1;
+    private DateTime? mfgDate2;
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && data != null) await RenderChart();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.GetFromJsonAsync<ApiResp<AnalysisDto>>("MfgAnalysis/load");
+            if (response?.Success == true && response.Data != null)
+            {
+                data = response.Data;
+                SyncLocalFilters();
+            }
+            else
+            {
+                errorMessage = response?.Error ?? "Failed to load Mfg Analysis data.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading data: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private void SyncLocalFilters()
+    {
+        if (data == null) return;
+        prod1SelectedValue = data.Prod1SelectedValue;
+        mfgSiteSelectedValue = data.MfgSiteSelectedValue;
+        mfgDate1 = data.MfgDate1;
+        mfgDate2 = data.MfgDate2;
+    }
+
+    private async Task OnSearch()
+    {
+        if (isBusy) return;
+        try
+        {
+            isBusy = true;
+            var request = new SearchRequest
+            {
+                Prop1SelectedValue = data?.Prop1SelectedValue,
+                Prod1SelectedValue = prod1SelectedValue,
+                MfgSiteSelectedValue = mfgSiteSelectedValue,
+                MfgDate1 = mfgDate1,
+                MfgDate2 = mfgDate2
+            };
+            var response = await Http.PostAsJsonAsync("MfgAnalysis/search", request);
+            var result = await response.Content.ReadFromJsonAsync<ApiResp<AnalysisDto>>();
+            if (result?.Success == true && result.Data != null)
+            {
+                data = result.Data;
+                SyncLocalFilters();
+                await RenderChart();
+            }
+            else
+            {
+                errorMessage = result?.Error ?? "Search failed.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Search error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task OnPropertyChanged(string value)
+    {
+        if (isBusy) return;
+        try
+        {
+            isBusy = true;
+            var response = await Http.PostAsJsonAsync("MfgAnalysis/prop-change", new PropRequest { Value = value });
+            var result = await response.Content.ReadFromJsonAsync<ApiResp<AnalysisDto>>();
+            if (result?.Success == true && result.Data != null)
+            {
+                data = result.Data;
+                await RenderChart();
+            }
+            else
+            {
+                errorMessage = result?.Error ?? "Failed to change property.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Update error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task RenderChart()
+    {
+        if (data == null) return;
+        await JS.InvokeVoidAsync("renderSpcChart", "analysis1Chart", data.XA, data.YA, data.XAvg1, data.YAvg1, data.YUCL1, data.YLCL1,
+            "Green-Board Time Stamp", data.Prop1SelectedValue);
+    }
+
+    public class ApiResp<T>
+    {
+        public bool Success { get; set; }
+        public T? Data { get; set; }
+        public string? Error { get; set; }
+    }
+
+    public class SearchRequest
+    {
+        public string? Prop1SelectedValue { get; set; }
+        public string? Prod1SelectedValue { get; set; }
+        public string? MfgSiteSelectedValue { get; set; }
+        public DateTime? MfgDate1 { get; set; }
+        public DateTime? MfgDate2 { get; set; }
+    }
+
+    public class PropRequest { public string Value { get; set; } = string.Empty; }
+
+    public class AnalysisDto
+    {
+        public List<FilterOptionDto> ProductOptions { get; set; } = new();
+        public List<FilterOptionDto> LocationOptions { get; set; } = new();
+        public List<FilterOptionDto> PropertyOptions { get; set; } = new();
+
+        public string? Prod1SelectedValue { get; set; }
+        public string? MfgSiteSelectedValue { get; set; }
+        public string Prop1SelectedValue { get; set; } = string.Empty;
+        public DateTime? MfgDate1 { get; set; }
+        public DateTime? MfgDate2 { get; set; }
+
+        public List<double> XA { get; set; } = new();
+        public List<double> YA { get; set; } = new();
+        public List<double> XAvg1 { get; set; } = new();
+        public List<double> YAvg1 { get; set; } = new();
+        public List<double> YUCL1 { get; set; } = new();
+        public List<double> YLCL1 { get; set; } = new();
+
+        public List<CorrRowDto> Correlations { get; set; } = new();
+    }
+
+    public class FilterOptionDto
+    {
+        public string Value { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+    }
+
+    public class CorrRowDto
+    {
+        public string PropName { get; set; } = string.Empty;
+        public double CorrValue { get; set; }
+    }
+}

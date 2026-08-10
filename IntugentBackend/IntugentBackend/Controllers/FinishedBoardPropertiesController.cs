@@ -336,7 +336,15 @@ namespace IntugentBackend.Controllers
                 {
                     case "gFBTimeStamp":
                         _mfgFinishedGoods.dr["Finished Board Time Stamp FG"] = request.Value ?? (object)DBNull.Value;
-                        if (request.Value != null) CheckBoardTimeStamp();
+                        if (request.Value != null)
+                        {
+                            CheckBoardTimeStamp();
+                            if (_mfgHome.dt.Columns.Contains("sFGTestTime") && _cbfile.iIDMfgIndex < _mfgHome.dt.Rows.Count)
+                            {
+                                _mfgHome.dt.Rows[_cbfile.iIDMfgIndex]["sFGTestTime"] =
+                                    ((DateTime)request.Value).ToString("MM/dd/yy - hh:mm tt");
+                            }
+                        }
                         break;
                     case "gQCTimesDateTime":
                         _mfgFinishedGoods.dr["Next Day QC Collection Time FG"] = request.Value ?? (object)DBNull.Value;

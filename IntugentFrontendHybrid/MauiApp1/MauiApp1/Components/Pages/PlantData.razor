@@ -1,0 +1,236 @@
+@page "/plant-data"
+@using System.Net.Http.Json
+@inject HttpClient Http
+
+<PageTitle>Plant Data</PageTitle>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+    </div>
+}
+
+@if (data == null)
+{
+    <p class="text-muted">Loading...</p>
+}
+else
+{
+    <div class="row align-items-stretch">
+        <div class="col-md-2">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>Dataset</h2></div>
+                <div class="card-body d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled="@(!data.GDataSetPrevIsEnabled || isBusy)" @onclick='() => OnNavigate("prev")'>&lt;</button>
+                    <input type="text" class="form-control form-control-sm" value="@data.GID" disabled />
+                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled="@(!data.GDataSetNextIsEnabled || isBusy)" @onclick='() => OnNavigate("next")'>&gt;</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 d-flex align-items-center">
+            <button type="button" class="btn btn-primary w-100" disabled="@(!data.GGetPlantDataIsEnabled || isBusy)" @onclick="OnExtract">
+                Extract Relevant Process Data
+            </button>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>General Info</h2></div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-floating mb-2">
+                                <input type="text" class="form-control" value="@data.GProductionDate" disabled />
+                                <label>Mfg. Date</label>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-floating mb-2">
+                                <input type="text" class="form-control" value="@data.GProductCode" disabled />
+                                <label>Product Code</label>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-floating mb-2">
+                                <input type="text" class="form-control" value="@data.GQCCheckTime" disabled />
+                                <label>Pour Table QC Time Check</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>Board Time Stamp</h2></div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-floating mb-2">
+                                <input type="text" class="form-control" value="@data.GProductionTime" disabled />
+                                <label>Green/Fresh Props Board Time Stamp</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-floating mb-2">
+                                <input type="text" class="form-control" value="@data.GFBTime" disabled />
+                                <label>Finished Goods Props Board Time Stamp</label>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">@data.GDelTimeButton</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-md-3">
+            @ProcessParamCard("Chemical Delivery-A", data.GChemDel)
+        </div>
+        <div class="col-md-2">
+            @ProcessParamCard("Chemical Delivery-B", data.GChemDel1)
+        </div>
+        <div class="col-md-2">
+            @ProcessParamCard("Pour Table", data.GPTable)
+            <div class="mt-2">@ProcessParamCard("Unwinders and Others", data.GOthers)</div>
+        </div>
+        <div class="col-md-2">
+            @ProcessParamCard("Double Belt", data.GDBelt)
+        </div>
+        <div class="col-md-3">
+            @ProcessParamCard("New Instrument Data", data.GNewInsData)
+        </div>
+    </div>
+}
+
+@code {
+    private PlantDataDto? data;
+    private string? errorMessage;
+    private bool isBusy;
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.GetFromJsonAsync<ApiResp<PlantDataDto>>("PlantData/data");
+            if (response?.Success == true && response.Data != null)
+                data = response.Data;
+            else
+                errorMessage = response?.Error ?? "Failed to load Plant Data.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading data: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task OnNavigate(string direction)
+    {
+        if (isBusy) return;
+        await Post("PlantData/navigate", new NavigateRequest { Direction = direction });
+    }
+
+    private async Task OnExtract()
+    {
+        if (isBusy) return;
+        await Post<object>("PlantData/extract", new { });
+    }
+
+    private async Task Post<TReq>(string url, TReq body)
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.PostAsJsonAsync(url, body);
+            var result = await response.Content.ReadFromJsonAsync<ApiResp<PlantDataDto>>();
+            if (result?.Success == true && result.Data != null)
+                data = result.Data;
+            else
+                errorMessage = result?.Error ?? "Update failed.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Update error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private RenderFragment ProcessParamCard(string title, List<ProcessParamRow> rows) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "card card-default");
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "card-header");
+        builder.OpenElement(seq++, "h2"); builder.AddContent(seq++, title); builder.CloseElement();
+        builder.CloseElement();
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "card-body p-0"); builder.AddAttribute(seq++, "style", "max-height:320px; overflow:auto;");
+        builder.OpenElement(seq++, "table"); builder.AddAttribute(seq++, "class", "table table-sm table-striped table-hover mb-0");
+        builder.OpenElement(seq++, "thead");
+        builder.OpenElement(seq++, "tr");
+        builder.OpenElement(seq++, "th"); builder.AddContent(seq++, "Property"); builder.CloseElement();
+        builder.OpenElement(seq++, "th"); builder.AddContent(seq++, "Value"); builder.CloseElement();
+        builder.CloseElement();
+        builder.CloseElement();
+        builder.OpenElement(seq++, "tbody");
+        foreach (var row in rows)
+        {
+            builder.OpenElement(seq++, "tr");
+            builder.OpenElement(seq++, "td"); builder.AddContent(seq++, row.Name); builder.CloseElement();
+            builder.OpenElement(seq++, "td"); builder.AddContent(seq++, row.Value); builder.CloseElement();
+            builder.CloseElement();
+        }
+        builder.CloseElement();
+        builder.CloseElement();
+        builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    public class ApiResp<T>
+    {
+        public bool Success { get; set; }
+        public T? Data { get; set; }
+        public string? Error { get; set; }
+    }
+
+    public class NavigateRequest { public string Direction { get; set; } = string.Empty; }
+
+    public class PlantDataDto
+    {
+        public bool GDataSetNextIsEnabled { get; set; }
+        public bool GDataSetPrevIsEnabled { get; set; }
+        public string GID { get; set; } = string.Empty;
+        public string GProductionDate { get; set; } = string.Empty;
+        public string GProductionTime { get; set; } = string.Empty;
+        public string GQCCheckTime { get; set; } = string.Empty;
+        public string GFBTime { get; set; } = string.Empty;
+        public string GProductCode { get; set; } = string.Empty;
+        public string GDelTimeButton { get; set; } = string.Empty;
+        public bool GGetPlantDataIsEnabled { get; set; }
+
+        public List<ProcessParamRow> GChemDel { get; set; } = new();
+        public List<ProcessParamRow> GChemDel1 { get; set; } = new();
+        public List<ProcessParamRow> GPTable { get; set; } = new();
+        public List<ProcessParamRow> GDBelt { get; set; } = new();
+        public List<ProcessParamRow> GOthers { get; set; } = new();
+        public List<ProcessParamRow> GNewInsData { get; set; } = new();
+
+        public string? Message { get; set; }
+    }
+
+    public class ProcessParamRow
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Value { get; set; } = string.Empty;
+    }
+}

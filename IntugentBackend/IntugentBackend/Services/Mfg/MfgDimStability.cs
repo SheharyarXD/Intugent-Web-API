@@ -87,5 +87,25 @@ namespace IntugentBackend.Services.Mfg
 
             return s;
         }
+
+        public void SetDoubleFieldValue(string? value, string sField)
+        {
+            if (dr == null) return;
+
+            if (string.IsNullOrEmpty(value))
+            {
+                dr[sField] = DBNull.Value;
+            }
+            else if (double.TryParse(value, out double dtmp))
+            {
+                dr[sField] = dtmp;
+            }
+        }
+
+        public void SetStringFieldValue(string? value, string sField)
+        {
+            if (dr == null) return;
+            dr[sField] = string.IsNullOrEmpty(value) ? (object)DBNull.Value : value;
+        }
     }
-    }
+}

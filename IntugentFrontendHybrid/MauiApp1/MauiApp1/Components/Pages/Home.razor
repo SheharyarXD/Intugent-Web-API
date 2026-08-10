@@ -1,8 +1,10 @@
 ﻿@page "/"
 @using System.Net.Http.Json
+@using MauiApp1.Services
 @inject HttpClient Http
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
+@inject AppSessionState AppSession
 
 <PageTitle>Intugent PI - Session Selection</PageTitle>
 
@@ -153,11 +155,19 @@
             {
                 var result = await response.Content.ReadFromJsonAsync<BeginSessionResponse>();
 
-                // Store in local storage or state
+                // Store in local storage (survives reload) and in the in-memory session state (drives the sidebar)
                 await JS.InvokeVoidAsync("localStorage.setItem", "userId", selectedGroupIndex.ToString());
+                AppSession.SetUserId(selectedGroupIndex);
 
-                // Navigate to main app page
-                Navigation.NavigateTo("/dashboard");
+                // Navigate to the group's landing page (mirrors the old app's role-based redirect)
+                string landingPage = selectedGroupIndex switch
+                {
+                    1 => "/rnd-home",             // R&D Users
+                    2 or 3 or 4 or 5 => "/mfg-home", // Mfg Users (Gainesville/Statesboro/Cedar City/New Columbia)
+                    6 => "/admin-mfg",             // Admins
+                    _ => "/"
+                };
+                Navigation.NavigateTo(landingPage);
             }
             else
             {

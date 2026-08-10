@@ -91,15 +91,25 @@
   },
   {
     "ContainingType": "IntugentBackend.Controllers.FormulationsController",
-    "Method": "GetFormulationData",
-    "RelativePath": "api/Formulations/data/{id}",
-    "HttpMethod": "GET",
+    "Method": "AddPORow",
+    "RelativePath": "api/Formulations/add-po-row",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.FormulationsController",
+    "Method": "UpdateFoamatGm",
+    "RelativePath": "api/Formulations/foamat-gm",
+    "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "id",
-        "Type": "System.Int32",
+        "Name": "request",
+        "Type": "IntugentBackend.Controllers.StringValueRequest",
         "IsRequired": true
       }
     ],
@@ -107,20 +117,89 @@
   },
   {
     "ContainingType": "IntugentBackend.Controllers.FormulationsController",
-    "Method": "UpdateNcoIndex",
-    "RelativePath": "api/Formulations/update-nco/{id}",
+    "Method": "UpdateGenInfo",
+    "RelativePath": "api/Formulations/gen-info",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "id",
-        "Type": "System.Int32",
+        "Name": "request",
+        "Type": "IntugentBackend.Controllers.NameValueRequest",
         "IsRequired": true
-      },
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.FormulationsController",
+    "Method": "Load",
+    "RelativePath": "api/Formulations/load",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.FormulationsController",
+    "Method": "PastePO",
+    "RelativePath": "api/Formulations/paste-po",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "rows",
+        "Type": "System.Collections.Generic.List\u00601[[System.String[], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.FormulationsController",
+    "Method": "UpdateIso",
+    "RelativePath": "api/Formulations/update-iso",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
       {
         "Name": "request",
-        "Type": "IntugentBackend.Controllers.NcoUpdateRequest",
+        "Type": "IntugentBackend.Controllers.GridCellUpdateRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.FormulationsController",
+    "Method": "UpdateNco",
+    "RelativePath": "api/Formulations/update-nco",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "IntugentBackend.Controllers.GridCellUpdateRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.FormulationsController",
+    "Method": "UpdatePO",
+    "RelativePath": "api/Formulations/update-po",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "IntugentBackend.Controllers.GridCellUpdateRequest",
         "IsRequired": true
       }
     ],
@@ -261,7 +340,33 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "RndPropertiesController",
+    "ContainingType": "IntugentBackend.Controllers.RndPropertiesController",
+    "Method": "Load",
+    "RelativePath": "api/RndProperties/load",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.RndPropertiesController",
+    "Method": "UpdateDataFile",
+    "RelativePath": "api/RndProperties/update-datafile",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "IntugentBackend.Controllers.GridCellUpdateRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.RndPropertiesController",
     "Method": "UpdateNotes",
     "RelativePath": "api/RndProperties/update-notes",
     "HttpMethod": "POST",
@@ -269,15 +374,63 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "model",
-        "Type": "IntugentBackend.Controllers.Rnd.TdrvUpdateModel",
+        "Name": "request",
+        "Type": "IntugentBackend.Controllers.GridCellUpdateRequest",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "RndPropertiesController",
+    "ContainingType": "IntugentBackend.Controllers.RndPropertiesController",
+    "Method": "UpdatePhoto",
+    "RelativePath": "api/RndProperties/update-photo",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "IntugentBackend.Controllers.GridCellUpdateRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.RndPropertiesController",
+    "Method": "UpdateProduct",
+    "RelativePath": "api/RndProperties/update-product",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "IntugentBackend.Controllers.GridCellUpdateRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.RndPropertiesController",
+    "Method": "UpdatePropTestingComplete",
+    "RelativePath": "api/RndProperties/update-prop-testing-complete",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "IntugentBackend.Controllers.BoolValueRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.RndPropertiesController",
     "Method": "UpdateReaction",
     "RelativePath": "api/RndProperties/update-reaction",
     "HttpMethod": "POST",
@@ -285,17 +438,17 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "model",
-        "Type": "IntugentBackend.Controllers.Rnd.TdrvUpdateModel",
+        "Name": "request",
+        "Type": "IntugentBackend.Controllers.GridCellUpdateRequest",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "IntugentBackend.Controllers.Rnd.RndRawPropsController",
-    "Method": "LoadDensity",
-    "RelativePath": "api/RndRawProps/load-density",
+    "ContainingType": "IntugentBackend.Controllers.RndRawPropsController",
+    "Method": "Load",
+    "RelativePath": "api/RndRawProps/load",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -303,7 +456,39 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "IntugentBackend.Controllers.Rnd.RndRawPropsController",
+    "ContainingType": "IntugentBackend.Controllers.RndRawPropsController",
+    "Method": "UpdateClosedCell",
+    "RelativePath": "api/RndRawProps/update-closedcell",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "IntugentBackend.Controllers.GridCellUpdateRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.RndRawPropsController",
+    "Method": "UpdateCompStr",
+    "RelativePath": "api/RndRawProps/update-compstr",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "IntugentBackend.Controllers.GridCellUpdateRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.RndRawPropsController",
     "Method": "UpdateDensity",
     "RelativePath": "api/RndRawProps/update-density",
     "HttpMethod": "POST",
@@ -311,15 +496,57 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "model",
-        "Type": "IntugentBackend.Controllers.Rnd.TdrvUpdateModel",
+        "Name": "request",
+        "Type": "IntugentBackend.Controllers.GridCellUpdateRequest",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "IntugentBackend.Controllers.Rnd.RndTdrvController",
+    "ContainingType": "IntugentBackend.Controllers.RndRawPropsController",
+    "Method": "UpdateHotPlates",
+    "RelativePath": "api/RndRawProps/update-hotplates",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "IntugentBackend.Controllers.GridCellUpdateRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.RndRawPropsController",
+    "Method": "UpdatePoreScan",
+    "RelativePath": "api/RndRawProps/update-porescan",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "IntugentBackend.Controllers.GridCellUpdateRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.RndTdrvController",
+    "Method": "Load",
+    "RelativePath": "api/RndTdrv/load",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.RndTdrvController",
     "Method": "UpdateProps",
     "RelativePath": "api/RndTdrv/update",
     "HttpMethod": "POST",
@@ -327,8 +554,24 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "model",
-        "Type": "IntugentBackend.Controllers.Rnd.TdrvUpdateModel",
+        "Name": "request",
+        "Type": "IntugentBackend.Controllers.GridCellUpdateRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.RndTdrvController",
+    "Method": "UpdateAgedTestingComplete",
+    "RelativePath": "api/RndTdrv/update-aged-testing-complete",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "IntugentBackend.Controllers.BoolValueRequest",
         "IsRequired": true
       }
     ],
@@ -336,8 +579,24 @@
   },
   {
     "ContainingType": "IntugentBackend.Controllers.RndValuesController",
-    "Method": "Collect",
-    "RelativePath": "api/RndValues/collect",
+    "Method": "AxisChanged",
+    "RelativePath": "api/RndValues/axis-changed",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "IntugentBackend.Controllers.AxisChangeRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.RndValuesController",
+    "Method": "Load",
+    "RelativePath": "api/RndValues/load",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -346,8 +605,24 @@
   },
   {
     "ContainingType": "IntugentBackend.Controllers.RndValuesController",
-    "Method": "Update",
-    "RelativePath": "api/RndValues/update",
+    "Method": "LostFocus",
+    "RelativePath": "api/RndValues/lost-focus",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "IntugentBackend.Controllers.FieldChangeRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IntugentBackend.Controllers.RndValuesController",
+    "Method": "ResetDefaults",
+    "RelativePath": "api/RndValues/reset-defaults",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,

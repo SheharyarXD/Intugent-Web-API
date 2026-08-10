@@ -1,0 +1,203 @@
+@page "/mfg-analysis-2"
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject IJSRuntime JS
+
+<PageTitle>Mfg. Analysis - 2</PageTitle>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+    </div>
+}
+
+@if (data == null)
+{
+    <p class="text-muted">Loading...</p>
+}
+else
+{
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="card card-default">
+                <div class="card-header align-items-center"><h2>Choose the X and Y Axes</h2></div>
+                <div class="card-body">
+                    <div class="form-floating mb-2">
+                        <select class="form-select" disabled="@isBusy" @bind:get="data.X1SelectedValue" @bind:set='v => OnAxisChanged("x1", v)'>
+                            @foreach (var opt in data.PropertyOptions)
+                            {
+                                <option value="@opt.Value">@opt.Name</option>
+                            }
+                        </select>
+                        <label>X1</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <select class="form-select" disabled="@isBusy" @bind:get="data.X2SelectedValue" @bind:set='v => OnAxisChanged("x2", v)'>
+                            @foreach (var opt in data.PropertyOptions)
+                            {
+                                <option value="@opt.Value">@opt.Name</option>
+                            }
+                        </select>
+                        <label>X2</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <select class="form-select" disabled="@isBusy" @bind:get="data.Y1SelectedValue" @bind:set='v => OnAxisChanged("y1", v)'>
+                            @foreach (var opt in data.PropertyOptions)
+                            {
+                                <option value="@opt.Value">@opt.Name</option>
+                            }
+                        </select>
+                        <label>Y1</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <select class="form-select" disabled="@isBusy" @bind:get="data.Y2SelectedValue" @bind:set='v => OnAxisChanged("y2", v)'>
+                            @foreach (var opt in data.PropertyOptions)
+                            {
+                                <option value="@opt.Value">@opt.Name</option>
+                            }
+                        </select>
+                        <label>Y2</label>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-3">
+                <h2 class="my-2">Chart Navigation</h2>
+                <p class="my-1">- left-click-drag to pan</p>
+                <p class="my-1">- left-click-drag on an axis to pan just that axis</p>
+                <p class="my-1">- Scroll-wheel to zoom</p>
+                <p class="my-1">- double-click to fit axis limits to data</p>
+            </div>
+        </div>
+        <div class="col-lg-9">
+            <div class="row">
+                <div class="col-6"><canvas id="chartX1Y2"></canvas></div>
+                <div class="col-6"><canvas id="chartX2Y2"></canvas></div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-6"><canvas id="chartX1Y1"></canvas></div>
+                <div class="col-6"><canvas id="chartX2Y1"></canvas></div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private Analysis2Dto? data;
+    private string? errorMessage;
+    private bool isBusy;
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && data != null) await RenderCharts();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.GetFromJsonAsync<ApiResp<Analysis2Dto>>("MfgAnalysis2/load");
+            if (response?.Success == true && response.Data != null)
+                data = response.Data;
+            else
+                errorMessage = response?.Error ?? "Failed to load Mfg Analysis-2 data.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading data: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task OnAxisChanged(string axis, string value)
+    {
+        if (isBusy) return;
+        try
+        {
+            isBusy = true;
+            var request = new AxesRequest();
+            switch (axis)
+            {
+                case "x1": request.X1 = value; break;
+                case "x2": request.X2 = value; break;
+                case "y1": request.Y1 = value; break;
+                case "y2": request.Y2 = value; break;
+            }
+            var response = await Http.PostAsJsonAsync("MfgAnalysis2/update-charts", request);
+            var result = await response.Content.ReadFromJsonAsync<ApiResp<Analysis2Dto>>();
+            if (result?.Success == true && result.Data != null)
+            {
+                data = result.Data;
+                await RenderCharts();
+            }
+            else
+            {
+                errorMessage = result?.Error ?? "Failed to update charts.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Update error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task RenderCharts()
+    {
+        if (data == null) return;
+        await JS.InvokeVoidAsync("renderAnalysis2Chart", "chartX1Y1", data.X1Y1_X, data.X1Y1_Y, $"X1:- {data.X1SelectedValue}", $"Y1:- {data.Y1SelectedValue}", "rgba(255, 99, 132, 0.7)");
+        await JS.InvokeVoidAsync("renderAnalysis2Chart", "chartX2Y2", data.X2Y2_X, data.X2Y2_Y, $"X2:- {data.X2SelectedValue}", $"Y2:- {data.Y2SelectedValue}", "rgba(54, 162, 235, 0.7)");
+        await JS.InvokeVoidAsync("renderAnalysis2Chart", "chartX1Y2", data.X1Y2_X, data.X1Y2_Y, $"X1:- {data.X1SelectedValue}", $"Y2:- {data.Y2SelectedValue}", "rgba(75, 192, 92, 0.7)");
+        await JS.InvokeVoidAsync("renderAnalysis2Chart", "chartX2Y1", data.X2Y1_X, data.X2Y1_Y, $"X2:- {data.X2SelectedValue}", $"Y1:- {data.Y1SelectedValue}", "rgba(255, 205, 86, 0.7)");
+    }
+
+    public class ApiResp<T>
+    {
+        public bool Success { get; set; }
+        public T? Data { get; set; }
+        public string? Error { get; set; }
+    }
+
+    public class AxesRequest
+    {
+        public string? X1 { get; set; }
+        public string? X2 { get; set; }
+        public string? Y1 { get; set; }
+        public string? Y2 { get; set; }
+    }
+
+    public class FilterOptionDto
+    {
+        public string Value { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+    }
+
+    public class Analysis2Dto
+    {
+        public List<FilterOptionDto> PropertyOptions { get; set; } = new();
+
+        public string X1SelectedValue { get; set; } = string.Empty;
+        public string X2SelectedValue { get; set; } = string.Empty;
+        public string Y1SelectedValue { get; set; } = string.Empty;
+        public string Y2SelectedValue { get; set; } = string.Empty;
+
+        public List<double> X1Y1_X { get; set; } = new();
+        public List<double> X1Y1_Y { get; set; } = new();
+        public List<double> X1Y2_X { get; set; } = new();
+        public List<double> X1Y2_Y { get; set; } = new();
+        public List<double> X2Y1_X { get; set; } = new();
+        public List<double> X2Y1_Y { get; set; } = new();
+        public List<double> X2Y2_X { get; set; } = new();
+        public List<double> X2Y2_Y { get; set; } = new();
+    }
+}

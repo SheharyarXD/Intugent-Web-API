@@ -1,0 +1,128 @@
+@page "/admin-mfg"
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject IJSRuntime JS
+
+<PageTitle>Mfg Admin</PageTitle>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+    </div>
+}
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @successMessage
+        <button type="button" class="btn-close" @onclick="() => successMessage = null"></button>
+    </div>
+}
+
+<div class="row mb-3">
+    <div class="col-auto">
+        <button type="button" class="btn btn-primary" disabled="@isBusy" @onclick="OnUpload">
+            @if (isBusy)
+            {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+            }
+            Paste Green Product Targets from the IP Product Target file
+        </button>
+    </div>
+</div>
+
+@if (columns.Count > 0)
+{
+    <div class="table-responsive">
+        <table class="table table-hover table-product dataTable" style="width:100%">
+            <thead>
+                <tr>
+                    @foreach (var col in columns)
+                    {
+                        <th>@col</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in rows)
+                {
+                    <tr>
+                        @foreach (var col in columns)
+                        {
+                            <td>@(row.Values.TryGetValue(col, out var v) ? v : "")</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else if (!isBusy)
+{
+    <p class="text-muted">No data uploaded yet. Copy the IP Product Target grid (including the "Intugent PI - Green Product Targets" title row) and click the button above.</p>
+}
+
+@code {
+    private List<string> columns = new();
+    private List<RowDto> rows = new();
+    private string? errorMessage;
+    private string? successMessage;
+    private bool isBusy;
+
+    private async Task OnUpload()
+    {
+        try
+        {
+            isBusy = true;
+            errorMessage = null;
+            successMessage = null;
+
+            string? clipboardText = await JS.InvokeAsync<string?>("navigator.clipboard.readText");
+            if (string.IsNullOrEmpty(clipboardText))
+            {
+                errorMessage = "Clipboard is empty. Copy the target grid first.";
+                return;
+            }
+
+            var grid = clipboardText
+                .Replace("\r\n", "\n")
+                .Split('\n')
+                .Select(line => line.Split('\t').ToList())
+                .ToList();
+
+            var response = await Http.PostAsJsonAsync("AdminMfg/upload", new UploadRequest { Clipboard = grid });
+            var result = await response.Content.ReadFromJsonAsync<ApiResp<List<RowDto>>>();
+
+            if (result?.Success == true && result.Data != null)
+            {
+                rows = result.Data;
+                columns = rows.SelectMany(r => r.Values.Keys).Distinct().ToList();
+                successMessage = $"Uploaded {rows.Count} row(s) successfully.";
+            }
+            else
+            {
+                errorMessage = result?.Error ?? "Upload failed.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Upload error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    public class ApiResp<T>
+    {
+        public bool Success { get; set; }
+        public T? Data { get; set; }
+        public string? Error { get; set; }
+    }
+
+    public class UploadRequest { public List<List<string>> Clipboard { get; set; } = new(); }
+
+    public class RowDto { public Dictionary<string, string> Values { get; set; } = new(); }
+}

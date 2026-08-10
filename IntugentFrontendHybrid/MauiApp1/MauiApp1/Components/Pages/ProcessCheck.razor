@@ -1,0 +1,540 @@
+@page "/process-check"
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Web
+@inject HttpClient Http
+@inject IJSRuntime JS
+
+<PageTitle>Mfg. Process Check</PageTitle>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+    </div>
+}
+
+@if (data == null)
+{
+    <p class="text-muted">Loading...</p>
+}
+else if (!data.GHasData)
+{
+    <div class="alert alert-warning">No Process Check data found for this location.</div>
+    <button type="button" class="btn btn-primary" disabled="@isBusy" @onclick="OnNewCheckSheet">New In Process Check</button>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-2">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>Navigation</h2></div>
+                <div class="card-body d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled="@(!data.GDataSetPrevIsEnabled || isBusy)" @onclick='() => OnNavigate("prev")'>&lt;</button>
+                    <input type="text" class="form-control form-control-sm" value="@data.GID" disabled />
+                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled="@(!data.GDataSetNextIsEnabled || isBusy)" @onclick='() => OnNavigate("next")'>&gt;</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-10">
+            <div class="card card-default">
+                <div class="card-header"><h2>General Info</h2></div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-2">
+                            <div class="form-floating mb-2">
+                                <select class="form-select" disabled="@isBusy" @bind:get="data.GProdIDSelected" @bind:set='value => OnComboChanged("gProdID", value)'>
+                                    @foreach (var opt in data.GProdIDList)
+                                    {
+                                        <option value="@opt.Code">@opt.Name</option>
+                                    }
+                                </select>
+                                <label>Product Code</label>
+                            </div>
+                        </div>
+                        <div class="col-2">@DateField("gTestDate", "Sample Date", data.GTestDate)</div>
+                        <div class="col-2">@TimeField("Sample Time", data.GTestDate)</div>
+                        <div class="col-2">@NumField("gOperator", "Operator (ID)", data.GOperatorSelectedItem.ToString(), "update-combo")</div>
+                        <div class="col-2">@NumField("gType", "Check Type (ID)", data.GTypeSelectedValue.ToString(), "update-combo")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-md-2">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>New / Exclude</h2></div>
+                <div class="card-body">
+                    <button type="button" class="btn btn-primary btn-sm w-100 mb-2" disabled="@isBusy" @onclick="OnNewCheckSheet">New In Process Check</button>
+                    @BoolField("gExclude", "Exclude from SPC", data.GExcludeIsChecked)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>Print / Perforation / Flipper</h2></div>
+                <div class="card-body">
+                    @NumField("gTopBoardPrint", "Top Board Print (ID)", data.GTopBoardPrint.ToString(), "update-combo")
+                    @NumField("gBottomBoardPrint", "Bottom Board Print (ID)", data.GBottomBoardPrint.ToString(), "update-combo")
+                    @NumField("gPerferation", "Perforation (ID)", data.GPerferation.ToString(), "update-combo")
+                    @NumField("gFlipper", "Flipper Operating (ID)", data.GFlipper.ToString(), "update-combo")
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>Facer, Foam, and Hooder</h2></div>
+                <div class="card-body">
+                    @NumField("gAdhesion", "Facer Adhesion (ID)", data.GAdhesionSelected.ToString(), "update-combo")
+                    @NumField("gEdgeCut", "Edge Cut (ID)", data.GEdgeCutSelected.ToString(), "update-combo")
+                    @TextField("gExposedFoam", "Exposed Foam", data.GExposedFoam, "update-misc")
+                    @NumField("gHooder", "Hooder Quality (ID)", data.GHooderSelected.ToString(), "update-combo")
+                    @NumField("gBoardQuality", "Board Quality (ID)", data.GBoardQualitySelected.ToString(), "update-combo")
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>Cup Shot (Reactivity)</h2></div>
+                <div class="card-body">
+                    @NumField("gEmptyCupMassG", "Empty Cup Mass [g]", data.GEmptyCupMassG, "update-cup-reactivity")
+                    @NumField("gFullCupMassG", "Full Cup Mass [g]", data.GFullCupMassG, "update-cup-reactivity")
+                    @NumField("gCreamTimeS", "Cream Time [s]", data.GCreamTimeS, "update-cup-reactivity")
+                    @NumField("gGelTimeS", "Gel Time [s]", data.GGelTimeS, "update-cup-reactivity")
+                    @NumField("gTackFreeTimeS", "Tack Free Time [s]", data.GTackFreeTimeS, "update-cup-reactivity")
+                    @DisabledField("Foam Density [pcf]", data.GFoamDensityPCF)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>Comments</h2></div>
+                <div class="card-body">
+                    <textarea class="form-control" rows="8" disabled="@isBusy" @onchange='e => OnTextFieldChanged("gComment", e.Value?.ToString(), "update-misc")'>@data.GComment</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-md-3">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>First Bundle</h2></div>
+                <div class="card-body">
+                    @NumField("gQuantity", "Bundle Quantity", data.GQuantity, "update-bundle1")
+                    @NumField("gWidth", "Bundle Width", data.GWidth, "update-bundle1")
+                    @NumField("gTopLength", "Top Board Length", data.GTopLength, "update-bundle1")
+                    @NumField("gMiddleLength", "Middle Board Length", data.GMiddleLength, "update-bundle1")
+                    @NumField("gBottomLength", "Bottom Board Length", data.GBottomLength, "update-bundle1")
+                    @NumField("gDiagonal1", "Diagonal 1", data.GDiagonal1, "update-bundle1")
+                    @NumField("gDiagonal2", "Diagonal 2", data.GDiagonal2, "update-bundle1")
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>Second Bundle</h2></div>
+                <div class="card-body">
+                    @NumField("gQuantity_2", "Bundle Quantity", data.GQuantity_2, "update-bundle2")
+                    @NumField("gWidth_2", "Bundle Width", data.GWidth_2, "update-bundle2")
+                    @NumField("gTopLength_2", "Top Board Length", data.GTopLength_2, "update-bundle2")
+                    @NumField("gMiddleLength_2", "Middle Board Length", data.GMiddleLength_2, "update-bundle2")
+                    @NumField("gBottomLength_2", "Bottom Board Length", data.GBottomLength_2, "update-bundle2")
+                    @NumField("gDiagonal1_2", "Diagonal 1", data.GDiagonal1_2, "update-bundle2")
+                    @NumField("gDiagonal2_2", "Diagonal 2", data.GDiagonal2_2, "update-bundle2")
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>Board Deviation</h2></div>
+                <div class="card-body">
+                    @NumField("gDeviationAbs", "Deviation From Table", data.GDeviationAbs, "update-deviation")
+                    <div class="form-floating mb-2">
+                        <select class="form-select" disabled="@isBusy" @bind:get="data.GDeviationType" @bind:set='value => OnComboChanged("gDeviationType", value)'>
+                            <option value="">--</option>
+                            <option value="Up">Up</option>
+                            <option value="Down">Down</option>
+                        </select>
+                        <label>Deviation Type</label>
+                    </div>
+                    @DisabledField("Deviation (Directed)", data.GBoardDeviationRel)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>Export</h2></div>
+                <div class="card-body">
+                    <div class="form-floating mb-2">
+                        <select class="form-select" @bind="copyWindow">
+                            <option value="0">Today</option>
+                            <option value="1">Past 24 Hours</option>
+                            <option value="2">Past Week</option>
+                            <option value="3">Past Month</option>
+                            <option value="4">Past 6 Months</option>
+                            <option value="5">Past Year</option>
+                            <option value="6">All Data</option>
+                        </select>
+                        <label>Time Window</label>
+                    </div>
+                    <button type="button" class="btn btn-primary w-100" disabled="@isBusy" @onclick="OnCopyDataset">Copy to Clipboard</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-md-2">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>Board Thickness</h2></div>
+                <div class="card-body">
+                    @NumField("gThickness1", data.GLoc1, data.GThickness1, "update-thickness")
+                    @NumField("gThickness2", data.GLoc2, data.GThickness2, "update-thickness")
+                    @NumField("gThickness3", data.GLoc3, data.GThickness3, "update-thickness")
+                    @DisabledField("Average", data.GThicknessAvg)
+                    @DisabledField("Taper", data.GTaper)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-10">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>Bundle Averages</h2></div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <h6>Bundle 1</h6>
+                            @DisabledField("Length Average", data.GLengthAvg_1)
+                            @DisabledField("Width Average", data.GWidthAvg_1)
+                            @DisabledField("Squareness", data.GSquareness_1)
+                        </div>
+                        <div class="col-6">
+                            <h6>Bundle 2</h6>
+                            @DisabledField("Length Average", data.GLengthAvg_2)
+                            @DisabledField("Width Average", data.GWidthAvg_2)
+                            @DisabledField("Squareness", data.GSquareness_2)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private ProcessCheckDataDto? data;
+    private string? errorMessage;
+    private bool isBusy;
+    private int copyWindow = 0;
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.GetFromJsonAsync<ApiResp<ProcessCheckDataDto>>("ProcessCheck/data");
+            if (response?.Success == true && response.Data != null)
+                data = response.Data;
+            else
+                errorMessage = response?.Error ?? "Failed to load Process Check data.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading data: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task OnNavigate(string direction)
+    {
+        if (isBusy) return;
+        await Post("ProcessCheck/navigate", new NavigateRequest { Direction = direction });
+    }
+
+    private async Task OnNewCheckSheet()
+    {
+        if (isBusy) return;
+        await Post<object>("ProcessCheck/new-check-sheet", new { });
+    }
+
+    private async Task OnCopyDataset()
+    {
+        if (isBusy) return;
+        try
+        {
+            isBusy = true;
+            var response = await Http.PostAsJsonAsync("ProcessCheck/copy-dataset", new CopyRequest { CopyData = copyWindow });
+            var result = await response.Content.ReadFromJsonAsync<ApiResp<string>>();
+            if (result?.Success == true && result.Data != null)
+            {
+                await JS.InvokeVoidAsync("navigator.clipboard.writeText", result.Data);
+                await JS.InvokeVoidAsync("alert", "Data copied to clipboard!");
+            }
+            else
+            {
+                errorMessage = result?.Error ?? "Copy failed.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Copy error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task OnFieldChanged(string name, string? value, string endpoint)
+    {
+        if (isBusy) return;
+        await Post($"ProcessCheck/{endpoint}", new FieldUpdateRequest { Name = name, Value = value });
+    }
+
+    private async Task OnTextFieldChanged(string name, string? value, string endpoint) => await OnFieldChanged(name, value, endpoint);
+
+    private async Task OnComboChanged(string name, string? value)
+    {
+        if (isBusy) return;
+        string endpoint = name == "gDeviationType" ? "update-deviation" : "update-combo";
+        await Post($"ProcessCheck/{endpoint}", new FieldUpdateRequest { Name = name, Value = value });
+    }
+
+    private async Task OnBoolFieldChanged(string name, bool value)
+    {
+        if (isBusy) return;
+        await Post("ProcessCheck/update-misc", new FieldUpdateRequest { Name = name, Value = value ? "true" : "false" });
+    }
+
+    private async Task OnDateFieldChanged(string name, string? value)
+    {
+        if (isBusy) return;
+        await Post("ProcessCheck/update-misc", new FieldUpdateRequest { Name = name, Value = value });
+    }
+
+    private async Task OnTimeChanged(string? value)
+    {
+        if (isBusy || data?.GTestDate == null || string.IsNullOrEmpty(value)) return;
+        var datePart = data.GTestDate.Value.Date;
+        if (TimeSpan.TryParse(value, out var timeOfDay))
+        {
+            var combined = datePart + timeOfDay;
+            await Post("ProcessCheck/update-test-time", new DateTimeRequest { Name = "gTestTime", Value = combined });
+        }
+    }
+
+    private async Task Post<TReq>(string url, TReq body)
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.PostAsJsonAsync(url, body);
+            var result = await response.Content.ReadFromJsonAsync<ApiResp<ProcessCheckDataDto>>();
+            if (result?.Success == true && result.Data != null)
+                data = result.Data;
+            else
+                errorMessage = result?.Error ?? "Update failed.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Update error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    // ========== FIELD RENDER HELPERS ==========
+
+    private RenderFragment NumField(string name, string label, string value, string endpoint) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "form-floating mb-2");
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "number");
+        builder.AddAttribute(seq++, "class", "form-control");
+        builder.AddAttribute(seq++, "id", name);
+        builder.AddAttribute(seq++, "value", value);
+        builder.AddAttribute(seq++, "disabled", isBusy);
+        builder.AddAttribute(seq++, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, e => OnFieldChanged(name, e.Value?.ToString(), endpoint)));
+        builder.CloseElement();
+        builder.OpenElement(seq++, "label"); builder.AddAttribute(seq++, "for", name); builder.AddContent(seq++, label); builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private RenderFragment TextField(string name, string label, string value, string endpoint) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "form-floating mb-2");
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "text");
+        builder.AddAttribute(seq++, "class", "form-control");
+        builder.AddAttribute(seq++, "id", name);
+        builder.AddAttribute(seq++, "value", value);
+        builder.AddAttribute(seq++, "disabled", isBusy);
+        builder.AddAttribute(seq++, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, e => OnFieldChanged(name, e.Value?.ToString(), endpoint)));
+        builder.CloseElement();
+        builder.OpenElement(seq++, "label"); builder.AddAttribute(seq++, "for", name); builder.AddContent(seq++, label); builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private RenderFragment DateField(string name, string label, DateTime? value) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "form-floating mb-2");
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "date");
+        builder.AddAttribute(seq++, "class", "form-control");
+        builder.AddAttribute(seq++, "value", value?.ToString("yyyy-MM-dd"));
+        builder.AddAttribute(seq++, "disabled", isBusy);
+        builder.AddAttribute(seq++, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, e => OnDateFieldChanged(name, e.Value?.ToString())));
+        builder.CloseElement();
+        builder.OpenElement(seq++, "label"); builder.AddContent(seq++, label); builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private RenderFragment TimeField(string label, DateTime? value) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "form-floating mb-2");
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "time");
+        builder.AddAttribute(seq++, "class", "form-control");
+        builder.AddAttribute(seq++, "value", value?.ToString("HH:mm"));
+        builder.AddAttribute(seq++, "disabled", isBusy);
+        builder.AddAttribute(seq++, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, e => OnTimeChanged(e.Value?.ToString())));
+        builder.CloseElement();
+        builder.OpenElement(seq++, "label"); builder.AddContent(seq++, label); builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private RenderFragment BoolField(string name, string label, bool value) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "form-check");
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "checkbox");
+        builder.AddAttribute(seq++, "class", "form-check-input");
+        builder.AddAttribute(seq++, "id", name);
+        builder.AddAttribute(seq++, "checked", value);
+        builder.AddAttribute(seq++, "disabled", isBusy);
+        builder.AddAttribute(seq++, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, e => OnBoolFieldChanged(name, e.Value is bool b && b)));
+        builder.CloseElement();
+        builder.OpenElement(seq++, "label"); builder.AddAttribute(seq++, "class", "form-check-label"); builder.AddAttribute(seq++, "for", name); builder.AddContent(seq++, label); builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private RenderFragment DisabledField(string label, string value) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "form-floating mb-2");
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "text");
+        builder.AddAttribute(seq++, "class", "form-control");
+        builder.AddAttribute(seq++, "value", value);
+        builder.AddAttribute(seq++, "disabled", true);
+        builder.CloseElement();
+        builder.OpenElement(seq++, "label"); builder.AddContent(seq++, label); builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    // ========== DTOs ==========
+
+    public class ApiResp<T>
+    {
+        public bool Success { get; set; }
+        public T? Data { get; set; }
+        public string? Error { get; set; }
+    }
+
+    public class NavigateRequest { public string Direction { get; set; } = string.Empty; }
+    public class FieldUpdateRequest { public string Name { get; set; } = string.Empty; public string? Value { get; set; } }
+    public class DateTimeRequest { public string Name { get; set; } = string.Empty; public DateTime Value { get; set; } }
+    public class CopyRequest { public int CopyData { get; set; } }
+
+    public class FilterOptionDto
+    {
+        public string? Code { get; set; }
+        public string Name { get; set; } = string.Empty;
+    }
+
+    public class ProcessCheckDataDto
+    {
+        public string GID { get; set; } = string.Empty;
+        public bool GDataSetNextIsEnabled { get; set; }
+        public bool GDataSetPrevIsEnabled { get; set; }
+        public bool GHasData { get; set; }
+
+        public string GLoc1 { get; set; } = string.Empty;
+        public string GLoc2 { get; set; } = string.Empty;
+        public string GLoc3 { get; set; } = string.Empty;
+
+        public DateTime? GTestDate { get; set; }
+        public string GProdIDSelected { get; set; } = string.Empty;
+        public int GOperatorSelectedItem { get; set; }
+        public int GTypeSelectedValue { get; set; }
+        public int GTopBoardPrint { get; set; }
+        public int GBottomBoardPrint { get; set; }
+        public int GPerferation { get; set; }
+        public int GFlipper { get; set; }
+        public int GAdhesionSelected { get; set; }
+        public int GEdgeCutSelected { get; set; }
+        public int GHooderSelected { get; set; }
+        public int GBoardQualitySelected { get; set; }
+
+        public List<FilterOptionDto> GProdIDList { get; set; } = new();
+
+        public string GQuantity { get; set; } = string.Empty;
+        public string GWidth { get; set; } = string.Empty;
+        public string GTopLength { get; set; } = string.Empty;
+        public string GMiddleLength { get; set; } = string.Empty;
+        public string GBottomLength { get; set; } = string.Empty;
+        public string GDiagonal1 { get; set; } = string.Empty;
+        public string GDiagonal2 { get; set; } = string.Empty;
+        public string GLengthAvg_1 { get; set; } = string.Empty;
+        public string GSquareness_1 { get; set; } = string.Empty;
+        public string GWidthAvg_1 { get; set; } = string.Empty;
+
+        public string GQuantity_2 { get; set; } = string.Empty;
+        public string GWidth_2 { get; set; } = string.Empty;
+        public string GTopLength_2 { get; set; } = string.Empty;
+        public string GMiddleLength_2 { get; set; } = string.Empty;
+        public string GBottomLength_2 { get; set; } = string.Empty;
+        public string GDiagonal1_2 { get; set; } = string.Empty;
+        public string GDiagonal2_2 { get; set; } = string.Empty;
+        public string GLengthAvg_2 { get; set; } = string.Empty;
+        public string GSquareness_2 { get; set; } = string.Empty;
+        public string GWidthAvg_2 { get; set; } = string.Empty;
+
+        public string GThickness1 { get; set; } = string.Empty;
+        public string GThickness2 { get; set; } = string.Empty;
+        public string GThickness3 { get; set; } = string.Empty;
+        public string GThicknessAvg { get; set; } = string.Empty;
+        public string GTaper { get; set; } = string.Empty;
+
+        public string GEmptyCupMassG { get; set; } = string.Empty;
+        public string GCreamTimeS { get; set; } = string.Empty;
+        public string GGelTimeS { get; set; } = string.Empty;
+        public string GTackFreeTimeS { get; set; } = string.Empty;
+        public string GFullCupMassG { get; set; } = string.Empty;
+        public string GFoamDensityPCF { get; set; } = string.Empty;
+
+        public string GDeviationAbs { get; set; } = string.Empty;
+        public string GDeviationType { get; set; } = string.Empty;
+        public string GBoardDeviationRel { get; set; } = string.Empty;
+
+        public bool GExcludeIsChecked { get; set; }
+        public string GComment { get; set; } = string.Empty;
+        public string GExposedFoam { get; set; } = string.Empty;
+
+        public int GCopyData { get; set; }
+    }
+}

@@ -6,6 +6,12 @@ a, .btn-link {
     color: #006bb7;
 }
 
+.illegal-value {
+    border-color: #fc1f70 !important;
+    color: #fc1f70 !important;
+    background-color: #fc1f7012 !important;
+}
+
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;

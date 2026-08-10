@@ -1,6 +1,10 @@
+@using MauiApp1.Services
+@implements IDisposable
+@inject AppSessionState AppSession
+
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">MauiApp1</a>
+        <a class="navbar-brand" href="">Intugent PI</a>
     </div>
 </div>
 
@@ -13,45 +17,144 @@
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="mfg-home">
-                <span class="bi bi-gear-fill-nav-menu" aria-hidden="true"></span> Mfg. Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="finished-board-properties">
-                <span class="bi bi-clipboard-data-nav-menu" aria-hidden="true"></span> Finished Board
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="rnd-home">
-                <span class="bi bi-flask-nav-menu" aria-hidden="true"></span> R&D Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="rnd-formulations">
-                <span class="bi bi-flask-nav-menu" aria-hidden="true"></span> Formulations
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="rnd-r-values">
-                <span class="bi bi-flask-nav-menu" aria-hidden="true"></span> Initial R Values Tool
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="rnd-raw-prop-datas">
-                <span class="bi bi-flask-nav-menu" aria-hidden="true"></span> Raw Prop. Data
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="rnd-properties-datafile">
-                <span class="bi bi-flask-nav-menu" aria-hidden="true"></span> Properties &amp; Data Files
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="rnd-tdrv">
-                <span class="bi bi-flask-nav-menu" aria-hidden="true"></span> TDRV
-            </NavLink>
-        </div>
+
+        @if (IsMfg)
+        {
+            <div class="nav-item px-3 mt-2"><small class="text-uppercase text-muted">Mfg Pages</small></div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="mfg-home">
+                    <span class="bi bi-gear-fill-nav-menu" aria-hidden="true"></span> Mfg. Home
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="inprocess-board-properties">
+                    <span class="bi bi-clipboard-check-nav-menu" aria-hidden="true"></span> Green/Fresh Props
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="finished-board-properties">
+                    <span class="bi bi-clipboard-data-nav-menu" aria-hidden="true"></span> Finished Board
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="dim-stability">
+                    <span class="bi bi-rulers-nav-menu" aria-hidden="true"></span> Dimension Stability
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="plant-data">
+                    <span class="bi bi-diagram-3-nav-menu" aria-hidden="true"></span> Plant Data
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="jet-mixing">
+                    <span class="bi bi-tune-nav-menu" aria-hidden="true"></span> Jet Mixing
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="process-check">
+                    <span class="bi bi-clipboard-check-nav-menu" aria-hidden="true"></span> In Process Check
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="mfg-reports">
+                    <span class="bi bi-file-earmark-bar-graph-nav-menu" aria-hidden="true"></span> Mfg Reports
+                </NavLink>
+            </div>
+        }
+
+        @if (IsRnd)
+        {
+            <div class="nav-item px-3 mt-2"><small class="text-uppercase text-muted">R&amp;D Pages</small></div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="rnd-home">
+                    <span class="bi bi-flask-nav-menu" aria-hidden="true"></span> R&amp;D-Home
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="rnd-formulations">
+                    <span class="bi bi-flask-nav-menu" aria-hidden="true"></span> Formulations
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="rnd-r-values">
+                    <span class="bi bi-flask-nav-menu" aria-hidden="true"></span> Initial R Values Tool
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="rnd-raw-prop-datas">
+                    <span class="bi bi-flask-nav-menu" aria-hidden="true"></span> Raw Prop. Data
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="rnd-properties-datafile">
+                    <span class="bi bi-flask-nav-menu" aria-hidden="true"></span> Properties &amp; Data Files
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="rnd-tdrv">
+                    <span class="bi bi-flask-nav-menu" aria-hidden="true"></span> TDRV
+                </NavLink>
+            </div>
+        }
+
+        @if (IsAdmin)
+        {
+            <div class="nav-item px-3 mt-2"><small class="text-uppercase text-muted">Admin Pages</small></div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="admin-mfg">
+                    <span class="bi bi-person-gear-nav-menu" aria-hidden="true"></span> Mfg Admin
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="ai-home">
+                    <span class="bi bi-house-gear-nav-menu" aria-hidden="true"></span> AI Home Page
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="ai-analysis">
+                    <span class="bi bi-graph-up-nav-menu" aria-hidden="true"></span> AI Data Analysis
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="ai-model">
+                    <span class="bi bi-cpu-nav-menu" aria-hidden="true"></span> AI Model
+                </NavLink>
+            </div>
+        }
+
+        @if (IsMfg || IsRnd)
+        {
+            <div class="nav-item px-3 mt-2"><small class="text-uppercase text-muted">Shared Mfg. Pages</small></div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="mfg-analysis-1">
+                    <span class="bi bi-graph-up-nav-menu" aria-hidden="true"></span> Mfg. Analysis - 1
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="mfg-analysis-2">
+                    <span class="bi bi-bar-chart-line-nav-menu" aria-hidden="true"></span> Mfg. Analysis - 2
+                </NavLink>
+            </div>
+        }
     </nav>
 </div>
+
+@code {
+    // UserId convention (mirrors the old app's session Index): 1 = R&D, 2-5 = Mfg (per plant location), 6 = Admin.
+    private bool IsRnd => AppSession.UserId == 1;
+    private bool IsMfg => AppSession.UserId is >= 2 and <= 5;
+    private bool IsAdmin => AppSession.UserId == 6;
+
+    protected override void OnInitialized()
+    {
+        AppSession.Changed += OnSessionChanged;
+    }
+
+    private void OnSessionChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        AppSession.Changed -= OnSessionChanged;
+    }
+}

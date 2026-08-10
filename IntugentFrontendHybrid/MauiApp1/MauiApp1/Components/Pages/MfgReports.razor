@@ -1,0 +1,158 @@
+@page "/mfg-reports"
+@using System.Net.Http.Json
+@inject HttpClient Http
+
+<PageTitle>Mfg. Reports</PageTitle>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+    </div>
+}
+
+<div class="row align-items-end mb-2">
+    <div class="col-md-3">
+        <div class="form-floating">
+            <input type="date" class="form-control" value="@reportDate.ToString("yyyy-MM-dd")" disabled="@isBusy" @onchange="OnDateChanged" />
+            <label>Date</label>
+        </div>
+    </div>
+</div>
+<p class="text-muted small">*** A product is considered Pass if the user checked "QC Test Passed" checkbox in the Finished Goods page.</p>
+
+@if (isBusy)
+{
+    <p class="text-muted">Loading...</p>
+}
+else if (rows.Count == 0)
+{
+    <p class="text-muted text-center">No data available.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-sm table-bordered table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th><th>Mfg Time</th><th>QC Test Date</th><th>Product Type</th><th>Product</th>
+                    <th>Pass/Fail</th><th>Note</th>
+                    <th>Thickness</th><th>R-Value</th><th>Comp. Strength</th><th>Core Density</th>
+                    <th>Squareness</th><th>Length</th><th>Width</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in rows)
+                {
+                    <tr>
+                        <td style="color:Maroon">@row.Id</td>
+                        <td style="color:Maroon">@row.MfgTime</td>
+                        <td>@row.QcTestDate</td>
+                        <td>@row.ProductType</td>
+                        <td>@row.Product</td>
+                        <td style="@(row.PassFail == "Fail" ? "background-color:HotPink" : "")">@row.PassFail</td>
+                        <td>@row.Note</td>
+                        <td style="@FlagStyle(row.ThicknessFlag)">@row.Thickness</td>
+                        <td style="@FlagStyle(row.RValueFlag)">@row.RValue</td>
+                        <td style="@FlagStyle(row.CsFlag)">@row.CompStrength</td>
+                        <td style="@FlagStyle(row.CoreDensFlag)">@row.CoreDens</td>
+                        <td style="@FlagStyle(row.SquarenessFlag)">@row.Squareness</td>
+                        <td style="@FlagStyle(row.LengthFlag)">@row.Length</td>
+                        <td style="@FlagStyle(row.WidthFlag)">@row.Width</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    private List<MfgReportRowDto> rows = new();
+    private DateTime reportDate = DateTime.Now;
+    private string? errorMessage;
+    private bool isBusy;
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.GetFromJsonAsync<ApiResp<List<MfgReportRowDto>>>("MfgReports/data");
+            if (response?.Success == true && response.Data != null)
+                rows = response.Data;
+            else
+                errorMessage = response?.Error ?? "Failed to load Mfg Reports data.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading data: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task OnDateChanged(ChangeEventArgs e)
+    {
+        if (!DateTime.TryParse(e.Value?.ToString(), out var newDate)) return;
+        reportDate = newDate;
+        try
+        {
+            isBusy = true;
+            var response = await Http.PostAsJsonAsync("MfgReports/date", new DateRequest { Date = reportDate });
+            var result = await response.Content.ReadFromJsonAsync<ApiResp<List<MfgReportRowDto>>>();
+            if (result?.Success == true && result.Data != null)
+                rows = result.Data;
+            else
+                errorMessage = result?.Error ?? "Failed to load report for the selected date.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading report: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private static string FlagStyle(string flag) => flag == "F" ? "background-color:#FFFF00" : "";
+
+    public class ApiResp<T>
+    {
+        public bool Success { get; set; }
+        public T? Data { get; set; }
+        public string? Error { get; set; }
+    }
+
+    public class DateRequest { public DateTime Date { get; set; } }
+
+    public class MfgReportRowDto
+    {
+        public string Id { get; set; } = string.Empty;
+        public string MfgTime { get; set; } = string.Empty;
+        public string QcTestDate { get; set; } = string.Empty;
+        public string ProductType { get; set; } = string.Empty;
+        public string Product { get; set; } = string.Empty;
+        public string PassFail { get; set; } = string.Empty;
+        public string Note { get; set; } = string.Empty;
+        public string Thickness { get; set; } = string.Empty;
+        public string ThicknessFlag { get; set; } = string.Empty;
+        public string RValue { get; set; } = string.Empty;
+        public string RValueFlag { get; set; } = string.Empty;
+        public string CompStrength { get; set; } = string.Empty;
+        public string CsFlag { get; set; } = string.Empty;
+        public string CoreDens { get; set; } = string.Empty;
+        public string CoreDensFlag { get; set; } = string.Empty;
+        public string Squareness { get; set; } = string.Empty;
+        public string SquarenessFlag { get; set; } = string.Empty;
+        public string Length { get; set; } = string.Empty;
+        public string LengthFlag { get; set; } = string.Empty;
+        public string Width { get; set; } = string.Empty;
+        public string WidthFlag { get; set; } = string.Empty;
+    }
+}

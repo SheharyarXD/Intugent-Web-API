@@ -21,10 +21,58 @@ namespace IntugentBackend.Services.Mfg
        public int drIndex;
         public Cbfile cbfile {  get; set; }
         public CDefualts CDefault {  get; set; }
-        public MfgProcessCheck(Cbfile cbfile,CDefualts cDefualts) { 
+        public MfgProcessCheck(Cbfile cbfile,CDefualts cDefualts) {
             this.cbfile = cbfile;
             this.CDefault=cDefualts;
 
+        }
+
+        public bool GetDataSet()
+        {
+            try
+            {
+                sSqlQuery = "SELECT top(1000) * FROM [dbo].[Process Check] where IDLocation = " + CDefault.IDLocation + " order by ID Desc";
+                da = new SqlDataAdapter(sSqlQuery, cbfile.conAZ);
+
+                if (dt == null) dt = new DataTable(); else dt.Clear();
+                int itmp = da.Fill(dt);
+                if (itmp < 1) return false;
+
+                drIndex = 0;
+                dr = dt.Rows[0];
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("Error retrieving Process Check data\n\n" + ex.Message);
+                return false;
+            }
+        }
+
+        public string SetDoubleTextField(string sField, string sForm = "")
+        {
+            if (dr == null || dr[sField] == DBNull.Value) return string.Empty;
+            return ((double)dr[sField]).ToString(sForm);
+        }
+
+        public void SetDoubleFieldValue(string? value, string sField)
+        {
+            if (dr == null) return;
+            if (string.IsNullOrEmpty(value)) { dr[sField] = DBNull.Value; return; }
+            if (double.TryParse(value, out double dtmp)) dr[sField] = dtmp;
+        }
+
+        public void SetIntFieldValue(string? value, string sField)
+        {
+            if (dr == null) return;
+            if (string.IsNullOrEmpty(value)) { dr[sField] = DBNull.Value; return; }
+            if (int.TryParse(value, out int itmp)) dr[sField] = itmp;
+        }
+
+        public void SetStringFieldValue(string? value, string sField)
+        {
+            if (dr == null) return;
+            dr[sField] = string.IsNullOrEmpty(value) ? (object)DBNull.Value : value;
         }
 
         public void UpdateDataSet()

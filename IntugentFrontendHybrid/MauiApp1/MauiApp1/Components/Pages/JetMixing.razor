@@ -1,0 +1,285 @@
+@page "/jet-mixing"
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject IJSRuntime JS
+
+<PageTitle>Jet Mixing</PageTitle>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+    </div>
+}
+
+@if (data == null)
+{
+    <p class="text-muted">Loading...</p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card card-default">
+                <div class="card-header"><h2>Fluid Process Parameters</h2></div>
+                <div class="card-body">
+                    <div class="row fw-bold small mb-1">
+                        <div class="col-6">Iso Mix (A)</div>
+                        <div class="col-6">Polyol Mix (B)</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">@NumField("gFRate_A", "Flow Rate [lb/min]", data.GFRate_A)</div>
+                        <div class="col-6">@NumField("gFRate_B", "Flow Rate [lb/min]", data.GFRate_B)</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">@NumField("gTemp_A", "Inlet Temperature [°F]", data.GTemp_A)</div>
+                        <div class="col-6">@NumField("gTemp_B", "Inlet Temperature [°F]", data.GTemp_B)</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">@NumField("gPres_A", "Inlet Pressure [psi]", data.GPres_A)</div>
+                        <div class="col-6">@NumField("gPres_B", "Inlet Pressure [psi]", data.GPres_B)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card card-default">
+                <div class="card-header"><h2>Jet Impingement Plot</h2></div>
+                <div class="card-body">
+                    <canvas id="jetChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-md-4">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>Fluid Properties</h2></div>
+                <div class="card-body">
+                    <div class="row fw-bold small mb-1">
+                        <div class="col-6">Side A</div>
+                        <div class="col-6">Side B</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">@NumField("gDens_A", "Fluid Density [lb/ft3]", data.GDens_A)</div>
+                        <div class="col-6">@NumField("gDens_B", "Fluid Density [lb/ft3]", data.GDens_B)</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">@NumField("gVisO_A", "Viscosity @77°F [cp]", data.GVisO_A)</div>
+                        <div class="col-6">@NumField("gVisO_B", "Viscosity @77°F [cp]", data.GVisO_B)</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">@NumField("gVisE_A", "Act. Energy (E/R) [R]", data.GVisE_A)</div>
+                        <div class="col-6">@NumField("gVisE_B", "Act. Energy (E/R) [R]", data.GVisE_B)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>Jet Mixer Configuration</h2></div>
+                <div class="card-body">
+                    @NumField("gDiaMixChamb", "Mix Chamber Dia. D [mm]", data.GDiaMixChamb)
+                    <div class="row">
+                        <div class="col-6">@NumField("gDiaNoz_A", "Nozzle dA [mm]", data.GDiaNoz_A)</div>
+                        <div class="col-6">@NumField("gDiaNoz_B", "Nozzle dB [mm]", data.GDiaNoz_B)</div>
+                    </div>
+                    @NumField("gPres_Max", "Max. Jet Pressure [psi]", data.GPres_Max)
+                    @NumField("gPres_Min", "Min. Jet Pressure [psi]", data.GPres_Min)
+                    @NumField("gReNo_Min", "Min. Reynold # of a Jet", data.GReNo_Min)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>Key Fluid Dynamics Parameters</h2></div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <thead>
+                            <tr><th>Description</th><th>Jet A</th><th>Jet B</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var row in data.GDetails)
+                            {
+                                <tr><td>@row.Description</td><td>@row.JetA</td><td>@row.JetB</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-md-4">
+            <button type="button" class="btn btn-outline-primary mb-1 w-100" disabled="@isBusy" @onclick='() => OnImport("gImport1")'>Use Pour Head 1 Data</button>
+            <button type="button" class="btn btn-outline-primary mb-1 w-100" disabled="@isBusy" @onclick='() => OnImport("gImport2")'>Use Pour Head 2 Data</button>
+            <button type="button" class="btn btn-outline-primary w-100" disabled="@isBusy" @onclick='() => OnImport("gImport3")'>Use Pour Head 3 Data</button>
+        </div>
+        <div class="col-md-4 d-flex align-items-center justify-content-center">
+            <p class="text-danger text-center mb-0">@data.GMsg</p>
+        </div>
+        <div class="col-md-4">
+            <button type="button" class="btn btn-secondary mb-1 w-100" disabled="@isBusy" @onclick="OnReset">Reset All Fields</button>
+            <button type="button" class="btn btn-primary w-100" disabled="@isBusy" @onclick="OnOptimize">Optimize Pressures</button>
+        </div>
+    </div>
+}
+
+@code {
+    private JetMixingDto? data;
+    private string? errorMessage;
+    private bool isBusy;
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && data != null) await RenderChart();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.GetFromJsonAsync<ApiResp<JetMixingDto>>("JetMixing/data");
+            if (response?.Success == true && response.Data != null)
+                data = response.Data;
+            else
+                errorMessage = response?.Error ?? "Failed to load Jet Mixing data.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading data: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task OnFieldChanged(string name, string? value)
+    {
+        if (isBusy) return;
+        await Post("JetMixing/lost-focus", new FieldUpdateRequest { Name = name, Value = value });
+    }
+
+    private async Task OnImport(string name)
+    {
+        if (isBusy) return;
+        await Post("JetMixing/import", new ImportRequest { Name = name });
+    }
+
+    private async Task OnReset()
+    {
+        if (isBusy) return;
+        await Post<object>("JetMixing/reset", new { });
+    }
+
+    private async Task OnOptimize()
+    {
+        if (isBusy) return;
+        await Post<object>("JetMixing/optimize", new { });
+    }
+
+    private async Task Post<TReq>(string url, TReq body)
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.PostAsJsonAsync(url, body);
+            var result = await response.Content.ReadFromJsonAsync<ApiResp<JetMixingDto>>();
+            if (result?.Success == true && result.Data != null)
+            {
+                data = result.Data;
+                await RenderChart();
+            }
+            else
+            {
+                errorMessage = result?.Error ?? "Update failed.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Update error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task RenderChart()
+    {
+        if (data == null) return;
+        await JS.InvokeVoidAsync("renderJetMixingChart", "jetChart", data.XA, data.YA, data.XB, data.YB);
+    }
+
+    private RenderFragment NumField(string name, string label, string value) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "form-floating mb-2");
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "number");
+        builder.AddAttribute(seq++, "class", "form-control");
+        builder.AddAttribute(seq++, "id", name);
+        builder.AddAttribute(seq++, "value", value);
+        builder.AddAttribute(seq++, "disabled", isBusy);
+        builder.AddAttribute(seq++, "onchange", Microsoft.AspNetCore.Components.EventCallback.Factory.Create<Microsoft.AspNetCore.Components.ChangeEventArgs>(this, e => OnFieldChanged(name, e.Value?.ToString())));
+        builder.CloseElement();
+        builder.OpenElement(seq++, "label"); builder.AddAttribute(seq++, "for", name); builder.AddContent(seq++, label); builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    public class ApiResp<T>
+    {
+        public bool Success { get; set; }
+        public T? Data { get; set; }
+        public string? Error { get; set; }
+    }
+
+    public class FieldUpdateRequest { public string Name { get; set; } = string.Empty; public string? Value { get; set; } }
+    public class ImportRequest { public string Name { get; set; } = string.Empty; }
+
+    public class JetMixingDto
+    {
+        public string GFRate_A { get; set; } = string.Empty;
+        public string GFRate_B { get; set; } = string.Empty;
+        public string GTemp_A { get; set; } = string.Empty;
+        public string GTemp_B { get; set; } = string.Empty;
+        public string GPres_A { get; set; } = string.Empty;
+        public string GPres_B { get; set; } = string.Empty;
+        public string GDens_A { get; set; } = string.Empty;
+        public string GDens_B { get; set; } = string.Empty;
+        public string GVisO_A { get; set; } = string.Empty;
+        public string GVisO_B { get; set; } = string.Empty;
+        public string GVisE_A { get; set; } = string.Empty;
+        public string GVisE_B { get; set; } = string.Empty;
+
+        public string GDiaMixChamb { get; set; } = string.Empty;
+        public string GDiaNoz_A { get; set; } = string.Empty;
+        public string GDiaNoz_B { get; set; } = string.Empty;
+        public string GPres_Max { get; set; } = string.Empty;
+        public string GPres_Min { get; set; } = string.Empty;
+        public string GReNo_Min { get; set; } = string.Empty;
+
+        public string GMsg { get; set; } = string.Empty;
+
+        public List<JetDetailRow> GDetails { get; set; } = new();
+
+        public double[] XA { get; set; } = Array.Empty<double>();
+        public double[] YA { get; set; } = Array.Empty<double>();
+        public double[] XB { get; set; } = Array.Empty<double>();
+        public double[] YB { get; set; } = Array.Empty<double>();
+    }
+
+    public class JetDetailRow
+    {
+        public string Description { get; set; } = string.Empty;
+        public string JetA { get; set; } = string.Empty;
+        public string JetB { get; set; } = string.Empty;
+    }
+}

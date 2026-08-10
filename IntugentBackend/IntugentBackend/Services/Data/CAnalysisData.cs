@@ -20,6 +20,35 @@ namespace IntugentBackend.Services.Data
         public  DateTime refDate;
         public Cbfile cbfile;
         public CDefualts CDefualts;
+
+        // ===== Analysis1 page selection/session state (singleton-scoped, mirrors the old page's per-request-bound fields) =====
+        public string? Prod1SelectedValue { get; set; }
+        public string? MfgSiteSelectedValue { get; set; }
+        public string Prop1SelectedValue { get; set; } = "FG-Compressive Str Avg6";
+        public DateTime? MfgDate1 { get; set; } = DateTime.Now.AddYears(-1);
+        public DateTime? MfgDate2 { get; set; } = DateTime.Now;
+
+        public List<double> XA { get; set; } = new();
+        public List<double> YA { get; set; } = new();
+        public List<double> XAvg1 { get; set; } = new();
+        public List<double> YAvg1 { get; set; } = new();
+        public List<double> YUCL1 { get; set; } = new();
+        public List<double> YLCL1 { get; set; } = new();
+
+        // ===== Analysis2 page selection/session state (4-panel X1/X2 vs Y1/Y2 scatter tool) =====
+        public string X1SelectedValue { get; set; } = "Green-Board Time Stamp";
+        public string X2SelectedValue { get; set; } = "FG-Board Time Stamp";
+        public string Y1SelectedValue { get; set; } = "Green-Compressive Str Avg6";
+        public string Y2SelectedValue { get; set; } = "FG-Compressive Str Avg6";
+
+        public List<double> X1Y1_X { get; set; } = new();
+        public List<double> X1Y1_Y { get; set; } = new();
+        public List<double> X1Y2_X { get; set; } = new();
+        public List<double> X1Y2_Y { get; set; } = new();
+        public List<double> X2Y1_X { get; set; } = new();
+        public List<double> X2Y1_Y { get; set; } = new();
+        public List<double> X2Y2_X { get; set; } = new();
+        public List<double> X2Y2_Y { get; set; } = new();
         public CAnalysisData(Cbfile cbfile,CDefualts cDefualts)
         {
             this.cbfile = cbfile;

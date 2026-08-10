@@ -1,0 +1,798 @@
+@page "/finished-board-properties"
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Web
+@inject HttpClient Http
+
+<PageTitle>Finished Board Properties</PageTitle>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+    </div>
+}
+
+@if (data == null)
+{
+    <p class="text-muted">Loading...</p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card card-default" style="height:280px;">
+                <div class="card-header"><h2>General Info</h2></div>
+                <div class="card-body">
+                    <div class="row mb-2 align-items-center">
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" disabled="@(!data.GDataSetPrev || isBusy)" @onclick='() => OnNavigate("prev")'>&lt;</button>
+                        </div>
+                        <div class="col-4">
+                            <input type="text" class="form-control form-control-sm" value="@data.GID" disabled />
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" disabled="@(!data.GDataSetNext || isBusy)" @onclick='() => OnNavigate("next")'>&gt;</button>
+                        </div>
+                        <div class="col-3">
+                            @DisabledField("IP Length", data.GIPLength, data.GIPLengthBackground)
+                        </div>
+                        <div class="col-3">
+                            @DisabledField("IP Width", data.GIPWidth, data.GIPWidthBackground)
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6">@DisabledField("Mfg. Date", data.GTestDate)</div>
+                        <div class="col-6">@DisabledField("Product Code", data.GProdCode)</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">@DateField("gFBTimeStamp", "Finished Board Time Stamp", data.GFBTimeStamp, data.GFBTimeHostBackground)</div>
+                        <div class="col-4">@NumField("gBundleHeight", "Bundle Height", data.GBundleHeight)</div>
+                        <div class="col-4">
+                            @BoolField("gTestingPassed", "Passed Quality Testing", data.GTestingPassed)
+                            @BoolField("gFinsihedGoodsDone", "FG Testing Complete", data.GFinsihedGoodsDone)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card card-default" style="height:280px;">
+                <div class="card-header"><h2>QC Times</h2></div>
+                <div class="card-body">
+                    @DisabledField("Time Pour Table QC Check", data.GTimePourTableQC)
+                    @DisabledField("In Process Board Time Stamp", data.GIPBoardTimeStamp)
+                    @DateField("gQCTimesDateTime", "Next Day QC Collection Time", data.GQCTimesDateTime, true)
+                    @BoolField("gIPTimeNotLegible", "If Checked - IP Time Stamp was NOT Legible", data.GIPTimeNotLegible)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-default" style="height:280px;">
+                <div class="card-header"><h2>QC Summary</h2></div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            @DisabledField("Core Density", data.GCoreDensity, data.GCoreDensityBackground)
+                            @DisabledField("Comp Str Avg (6)", data.GCompStrFG_Avg6, data.GCompStrFG_Avg6Background)
+                            @DisabledField("Comp Str Avg (5)", data.GCompStrFG_Avg5, data.GCompStrFG_Avg5Background)
+                            @DisabledField("Thickness", data.GThickness, data.GThicknessBackground)
+                        </div>
+                        <div class="col-6">
+                            @DisabledField("Flatness", data.GFlatness)
+                            @DisabledField("R Value", data.GRValue, data.GRValueBackground)
+                            @DisabledField("Facer Peel", data.GFacerPeelAvg_QC, data.GFacerPeelAvg_QCBackground)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-default" style="height:280px;">
+                <div class="card-header"><h2>IP QC Summary</h2></div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            @DisabledField("Warehouse Temp", data.GWarehouseTemp)
+                            @DisabledField("Warehouse Humidity", data.GWarehouseHumidity)
+                            @DisabledField("Bundle Height IP", data.GBundleHeightIP)
+                            @DisabledField("Thickness IP", data.GThicknessIP, data.GThicknessIPBackground)
+                        </div>
+                        <div class="col-6">
+                            @DisabledField("Core Density IP", data.GCoreDensityIP, data.GCoreDensityIPBackground)
+                            @DisabledField("Compressive IP", data.GCompressiveIP, data.GCompressiveIPBackground)
+                            @DisabledField("Compressive IP (5)", data.GCompressiveIP5, data.GCompressiveIP5Background)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-md-2">
+            <div class="card card-default" style="height:100%;">
+                <div class="card-header"><h2>Thickness</h2></div>
+                <div class="card-body">
+                    <p class="text-center fw-bold text-primary">@data.GLoc3F</p>
+                    @for (int i = 1; i <= 17; i++)
+                    {
+                        int idx = i;
+                        @NumField($"gThicknessFG_{idx}", $"#{idx}", GetThickness(idx))
+                    }
+                    <p class="text-center fw-bold text-primary">@data.GLoc1F</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-10">
+            <div class="row" style="min-height:400px;">
+                <div class="col-md-4">
+                    <div class="card card-default" style="height:100%;">
+                        <div class="card-header"><h2>Compressive Strength</h2></div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="d-flex justify-content-between"><small>Comp. Str</small><small>Knit Line</small></div>
+                                    @for (int i = 1; i <= 6; i++)
+                                    {
+                                        int idx = i;
+                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                            <div class="flex-grow-1">@NumField($"gCompStrFG_{idx}", $"#{idx}", GetCompStr(idx))</div>
+                                            @BoolFieldInline($"gCompStrFGKnit_{idx}", GetCompStrKnit(idx))
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-6">
+                                    <label>Comments</label>
+                                    <textarea class="form-control" rows="10" @onchange="e => OnNotesChanged(e.Value?.ToString())">@data.GNotes</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card card-default" style="height:100%;">
+                        <div class="card-header"><h2>R Value / k Factor</h2></div>
+                        <div class="card-body">
+                            <div class="row fw-bold small">
+                                <div class="col-4">k Factor</div>
+                                <div class="col-3">Knit Line</div>
+                                <div class="col-5">Test Time &amp; Date</div>
+                            </div>
+                            <div class="row align-items-center mb-1">
+                                <div class="col-4">@NumField("gkFactor_3", data.GLoc3B, data.GkFactor_3)</div>
+                                <div class="col-3">@BoolFieldInline("gRValueKnitPresent3", data.GRValueKnitPresent3)</div>
+                                <div class="col-5">@DateField("gkFactorTime3", "", data.GkFactorTime3, true)</div>
+                            </div>
+                            <div class="row align-items-center mb-1">
+                                <div class="col-4">@NumField("gkFactor_2", data.GLoc2B, data.GkFactor_2)</div>
+                                <div class="col-3">@BoolFieldInline("gRValueKnitPresent2", data.GRValueKnitPresent2)</div>
+                                <div class="col-5">@DateField("gkFactorTime2", "", data.GkFactorTime2, true)</div>
+                            </div>
+                            <div class="row align-items-center mb-2">
+                                <div class="col-4">@NumField("gkFactor_1", data.GLoc1B, data.GkFactor_1)</div>
+                                <div class="col-3">@BoolFieldInline("gRValueKnitPresent1", data.GRValueKnitPresent1)</div>
+                                <div class="col-5">@DateField("gkFactorTime1", "", data.GkFactorTime1, true)</div>
+                            </div>
+                            @DisabledField("Initial R Value Avg", data.GkFactor_Avg, data.GkFactor_AvgBackground)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card card-default" style="height:100%;">
+                        <div class="card-header"><h2>FG Board Dimensions</h2></div>
+                        <div class="card-body">
+                            @NumField("gFGLength", "Length", data.GFGLength)
+                            @NumField("gFGWidth", "Width", data.GFGWidth)
+                            @NumField("gFGDiagoanl1", "Diagonal 1", data.GFGDiagoanl1)
+                            @NumField("gFGDiagoanl2", "Diagonal 2", data.GFGDiagoanl2)
+                            @DisabledField("Abs. Diagonal Diff", data.GFGDiagonalDiff, data.GFGDiagonalDiffBackground)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-2" style="min-height:400px;">
+                <div class="col-md-4">
+                    <div class="card card-default" style="height:100%;">
+                        <div class="card-header"><h2>Compressive Strength Retest</h2></div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="d-flex justify-content-between"><small>Comp. Str</small><small>Knit Line</small></div>
+                                    @for (int i = 1; i <= 6; i++)
+                                    {
+                                        int idx = i;
+                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                            <div class="flex-grow-1">@NumField($"gCompStrFGRetest_{idx}", $"#{idx}", GetCompStrRetest(idx))</div>
+                                            @BoolFieldInline($"gCompStrFGKnitRetest_{idx}", GetCompStrKnitRetest(idx))
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-6">
+                                    @DateField("gRetestQCTime", "Retest Collection Time", data.GRetestQCTime, true)
+                                    @BoolField("gRestestFromSameBundle", "Retest From Same Bundle", data.GRestestFromSameBundle)
+                                    @DisabledField("Retest Avg (5)", data.GCompStrFGRetest_Avg5, data.GCompStrFGRetest_Avg5Background)
+                                    @DisabledField("Retest Avg (6)", data.GCompStrFGRetest_Avg6, data.GCompStrFGRetest_Avg6Background)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-default" style="height:100%;">
+                        <div class="card-header"><h2>Aged R Value - k Factor</h2></div>
+                        <div class="card-body">
+                            <div class="row fw-bold small">
+                                <div class="col-3">90 Day k Factor</div>
+                                <div class="col-3">Date Measured</div>
+                                <div class="col-3">180 Day k Factor</div>
+                                <div class="col-3">Date Measured</div>
+                            </div>
+                            <div class="row align-items-center mb-1">
+                                <div class="col-3">@NumField("gkFactor90_3", data.GLoc3C, data.GkFactor90_3)</div>
+                                <div class="col-3">@DateField("gkFactor90Date_3", "", data.GKFactor90Date_3, true)</div>
+                                <div class="col-3">@NumField("gkFactor180_3", "", data.GkFactor180_3)</div>
+                                <div class="col-3">@DateField("gkFactor180Date_3", "", data.GKFactor180Date_3, true)</div>
+                            </div>
+                            <div class="row align-items-center mb-1">
+                                <div class="col-3">@NumField("gkFactor90_2", data.GLoc2C, data.GkFactor90_2)</div>
+                                <div class="col-3">@DateField("gkFactor90Date_2", "", data.GKFactor90Date_2, true)</div>
+                                <div class="col-3">@NumField("gkFactor180_2", "", data.GkFactor180_2)</div>
+                                <div class="col-3">@DateField("gkFactor180Date_2", "", data.GKFactor180Date_2, true)</div>
+                            </div>
+                            <div class="row align-items-center mb-2">
+                                <div class="col-3">@NumField("gkFactor90_1", data.GLoc1C, data.GkFactor90_1)</div>
+                                <div class="col-3">@DateField("gkFactor90Date_1", "", data.GKFactor90Date_1, true)</div>
+                                <div class="col-3">@NumField("gkFactor180_1", "", data.GkFactor180_1)</div>
+                                <div class="col-3">@DateField("gkFactor180Date_1", "", data.GKFactor180Date_1, true)</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">@DisabledField("90 Day Avg", data.GkFactor90, data.GkFactor90Background)</div>
+                                <div class="col-6">@DisabledField("180 Day Avg", data.GkFactor180, data.GkFactor180Background)</div>
+                            </div>
+                            @BoolField("gAgedrValueDone", "Aged R Value Testing Complete", data.GAgedRValueDone)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-default" style="height:100%;">
+                        <div class="card-header"><h2>Bundle Temps</h2></div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    @NumField("gLoggerID", "Logger ID", data.GLoggerID)
+                                    @NumField("gInitProbeTemp", "Initial Probe Temp", data.GInitProbeTemp)
+                                    @DateField("gInitProbeTime", "Initial Probe Time", data.GInitProbeTime, true)
+                                </div>
+                                <div class="col-6">
+                                    @NumField("gMaxProbeTemp", "Max Probe Temp", data.GMaxProbeTemp)
+                                    @DateField("gMaxTempTimeInit", "Max Probe Time - Initial", data.GMaxTempTimeInit, true)
+                                    @DateField("gMaxTempTimeFinal", "Max Probe Time - Final", data.GMaxTempTimeFinal, true)
+                                    @NumField("gFinalProbeTemp", "Final Probe Temp", data.GFinalProbeTemp)
+                                    @DateField("gFinalProbeTime", "Final Probe Time", data.GFinalProbeTime, true)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col-md-8">
+                    <div class="card card-default" style="height:280px;">
+                        <div class="card-header"><h2>Core Density</h2></div>
+                        <div class="card-body" style="overflow:auto;">
+                            <table class="table table-sm table-bordered coreDensityTable">
+                                <thead>
+                                    <tr>
+                                        <th></th><th>Mass</th><th>Length</th><th>Width</th>
+                                        <th colspan="5">Thickness</th><th>Knit</th><th>Density</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>@data.GLoc3A</th>
+                                        <td>@NumFieldCell("gMass3", data.GMass3)</td>
+                                        <td>@NumFieldCell("gL1_3", data.GL1_3)</td>
+                                        <td>@NumFieldCell("gW1_3", data.GW1_3)</td>
+                                        <td>@NumFieldCell("gT1_3", data.GT1_3)</td>
+                                        <td>@NumFieldCell("gT2_3", data.GT2_3)</td>
+                                        <td>@NumFieldCell("gT3_3", data.GT3_3)</td>
+                                        <td>@NumFieldCell("gT4_3", data.GT4_3)</td>
+                                        <td>@NumFieldCell("gT5_3", data.GT5_3)</td>
+                                        <td class="text-center">@BoolFieldInline("gCoreDensKnitLine3", data.GCoreDensKnitLine3)</td>
+                                        <td>@DisabledField("", data.GCoreDens3, data.GCoreDens3Background)</td>
+                                    </tr>
+                                    <tr>
+                                        <th>@data.GLoc2A</th>
+                                        <td>@NumFieldCell("gMass2", data.GMass2)</td>
+                                        <td>@NumFieldCell("gL1_2", data.GL1_2)</td>
+                                        <td>@NumFieldCell("gW1_2", data.GW1_2)</td>
+                                        <td>@NumFieldCell("gT1_2", data.GT1_2)</td>
+                                        <td>@NumFieldCell("gT2_2", data.GT2_2)</td>
+                                        <td>@NumFieldCell("gT3_2", data.GT3_2)</td>
+                                        <td>@NumFieldCell("gT4_2", data.GT4_2)</td>
+                                        <td>@NumFieldCell("gT5_2", data.GT5_2)</td>
+                                        <td class="text-center">@BoolFieldInline("gCoreDensKnitLine2", data.GCoreDensKnitLine2)</td>
+                                        <td>@DisabledField("", data.GCoreDens2, data.GCoreDens2Background)</td>
+                                    </tr>
+                                    <tr>
+                                        <th>@data.GLoc1A</th>
+                                        <td>@NumFieldCell("gMass1", data.GMass1)</td>
+                                        <td>@NumFieldCell("gL1_1", data.GL1_1)</td>
+                                        <td>@NumFieldCell("gW1_1", data.GW1_1)</td>
+                                        <td>@NumFieldCell("gT1_1", data.GT1_1)</td>
+                                        <td>@NumFieldCell("gT2_1", data.GT2_1)</td>
+                                        <td>@NumFieldCell("gT3_1", data.GT3_1)</td>
+                                        <td>@NumFieldCell("gT4_1", data.GT4_1)</td>
+                                        <td>@NumFieldCell("gT5_1", data.GT5_1)</td>
+                                        <td class="text-center">@BoolFieldInline("gCoreDensKnitLine1", data.GCoreDensKnitLine1)</td>
+                                        <td>@DisabledField("", data.GCoreDens1, data.GCoreDens1Background)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            @DisabledField("Overall Core Density", data.GCoreDensity, data.GCoreDensityBackground)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card card-default" style="height:280px;">
+                        <div class="card-header"><h2>Facer Peel</h2></div>
+                        <div class="card-body">
+                            @NumField("gFacerPeel3", data.GLoc3E, data.GFacerPeel3)
+                            @NumField("gFacerPeel2", data.GLoc2E, data.GFacerPeel2)
+                            @NumField("gFacerPeel1", data.GLoc1E, data.GFacerPeel1)
+                            @DisabledField("Avg", data.GFacerPeelAvg, data.GFacerPeelAvgBackground)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card card-default" style="height:280px;">
+                        <div class="card-header"><h2>Nail Pull</h2></div>
+                        <div class="card-body">
+                            @NumField("gNailPull_3", data.GLoc3D, data.GNailPull_3)
+                            @NumField("gNailPull_2", data.GLoc2D, data.GNailPull_2)
+                            @NumField("gNailPull_1", data.GLoc1D, data.GNailPull_1)
+                            @DisabledField("Avg", data.GNailPull)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private FinishedBoardDataDto? data;
+    private string? errorMessage;
+    private bool isBusy;
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.GetFromJsonAsync<ApiResp<FinishedBoardDataDto>>("FinishedBoardProperties/data");
+            if (response?.Success == true && response.Data != null)
+                data = response.Data;
+            else
+                errorMessage = response?.Error ?? "Failed to load Finished Board Properties.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error loading data: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private async Task OnNavigate(string direction)
+    {
+        if (isBusy) return;
+        await Post("FinishedBoardProperties/navigate", new NavigateRequest { Direction = direction });
+    }
+
+    private async Task OnFieldChanged(string name, string? value)
+    {
+        if (isBusy) return;
+        await Post("FinishedBoardProperties/update-field", new FieldUpdateRequest { Name = name, Value = value });
+    }
+
+    private async Task OnBoolFieldChanged(string name, bool value)
+    {
+        if (isBusy) return;
+        await Post("FinishedBoardProperties/update-bool", new BoolUpdateRequest { Name = name, Value = value });
+    }
+
+    private async Task OnDateFieldChanged(string name, string? value)
+    {
+        if (isBusy) return;
+        DateTime? dt = DateTime.TryParse(value, out var parsed) ? parsed : null;
+        await Post("FinishedBoardProperties/update-datetime", new DateTimeUpdateRequest { Name = name, Value = dt });
+    }
+
+    private async Task OnNotesChanged(string? value)
+    {
+        if (isBusy) return;
+        await Post("FinishedBoardProperties/update-notes", new FieldUpdateRequest { Name = "gNotes", Value = value });
+    }
+
+    private async Task Post<TReq>(string url, TReq body)
+    {
+        try
+        {
+            isBusy = true;
+            var response = await Http.PostAsJsonAsync(url, body);
+            var result = await response.Content.ReadFromJsonAsync<ApiResp<FinishedBoardDataDto>>();
+            if (result?.Success == true && result.Data != null)
+                data = result.Data;
+            else
+                errorMessage = result?.Error ?? "Update failed.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Update error: {ex.Message}";
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+
+    private string GetThickness(int i) => i switch
+    {
+        1 => data!.GThicknessFG_1, 2 => data!.GThicknessFG_2, 3 => data!.GThicknessFG_3, 4 => data!.GThicknessFG_4,
+        5 => data!.GThicknessFG_5, 6 => data!.GThicknessFG_6, 7 => data!.GThicknessFG_7, 8 => data!.GThicknessFG_8,
+        9 => data!.GThicknessFG_9, 10 => data!.GThicknessFG_10, 11 => data!.GThicknessFG_11, 12 => data!.GThicknessFG_12,
+        13 => data!.GThicknessFG_13, 14 => data!.GThicknessFG_14, 15 => data!.GThicknessFG_15, 16 => data!.GThicknessFG_16,
+        _ => data!.GThicknessFG_17
+    };
+
+    private string GetCompStr(int i) => i switch
+    {
+        1 => data!.GCompStrFG_1, 2 => data!.GCompStrFG_2, 3 => data!.GCompStrFG_3,
+        4 => data!.GCompStrFG_4, 5 => data!.GCompStrFG_5, _ => data!.GCompStrFG_6
+    };
+
+    private bool GetCompStrKnit(int i) => i switch
+    {
+        1 => data!.GCompStrFGKnit_1, 2 => data!.GCompStrFGKnit_2, 3 => data!.GCompStrFGKnit_3,
+        4 => data!.GCompStrFGKnit_4, 5 => data!.GCompStrFGKnit_5, _ => data!.GCompStrFGKnit_6
+    };
+
+    private string GetCompStrRetest(int i) => i switch
+    {
+        1 => data!.GCompStrFGRetest_1, 2 => data!.GCompStrFGRetest_2, 3 => data!.GCompStrFGRetest_3,
+        4 => data!.GCompStrFGRetest_4, 5 => data!.GCompStrFGRetest_5, _ => data!.GCompStrFGRetest_6
+    };
+
+    private bool GetCompStrKnitRetest(int i) => i switch
+    {
+        1 => data!.GCompStrFGKnitRetest_1, 2 => data!.GCompStrFGKnitRetest_2, 3 => data!.GCompStrFGKnitRetest_3,
+        4 => data!.GCompStrFGKnitRetest_4, 5 => data!.GCompStrFGKnitRetest_5, _ => data!.GCompStrFGKnitRetest_6
+    };
+
+    // ========== FIELD RENDER HELPERS ==========
+
+    private RenderFragment NumField(string name, string label, string value, bool background = true) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "form-floating mb-2");
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "number");
+        builder.AddAttribute(seq++, "class", background ? "form-control" : "form-control illegal-value");
+        builder.AddAttribute(seq++, "id", name);
+        builder.AddAttribute(seq++, "value", value);
+        builder.AddAttribute(seq++, "disabled", isBusy);
+        builder.AddAttribute(seq++, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, e => OnFieldChanged(name, e.Value?.ToString())));
+        builder.CloseElement();
+        builder.OpenElement(seq++, "label"); builder.AddAttribute(seq++, "for", name); builder.AddContent(seq++, label); builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private RenderFragment NumFieldCell(string name, string value) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "number");
+        builder.AddAttribute(seq++, "class", "form-control form-control-sm border-0");
+        builder.AddAttribute(seq++, "value", value);
+        builder.AddAttribute(seq++, "disabled", isBusy);
+        builder.AddAttribute(seq++, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, e => OnFieldChanged(name, e.Value?.ToString())));
+        builder.CloseElement();
+    };
+
+    private RenderFragment DateField(string name, string label, DateTime? value, bool background) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "form-floating mb-2");
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "datetime-local");
+        builder.AddAttribute(seq++, "class", background ? "form-control" : "form-control illegal-value");
+        builder.AddAttribute(seq++, "id", name);
+        builder.AddAttribute(seq++, "value", value?.ToString("yyyy-MM-ddTHH:mm:ss"));
+        builder.AddAttribute(seq++, "disabled", isBusy);
+        builder.AddAttribute(seq++, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, e => OnDateFieldChanged(name, e.Value?.ToString())));
+        builder.CloseElement();
+        if (!string.IsNullOrEmpty(label))
+        {
+            builder.OpenElement(seq++, "label"); builder.AddAttribute(seq++, "for", name); builder.AddContent(seq++, label); builder.CloseElement();
+        }
+        builder.CloseElement();
+    };
+
+    private RenderFragment BoolField(string name, string label, bool value) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "form-check");
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "checkbox");
+        builder.AddAttribute(seq++, "class", "form-check-input");
+        builder.AddAttribute(seq++, "id", name);
+        builder.AddAttribute(seq++, "checked", value);
+        builder.AddAttribute(seq++, "disabled", isBusy);
+        builder.AddAttribute(seq++, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, e => OnBoolFieldChanged(name, e.Value is bool b && b)));
+        builder.CloseElement();
+        builder.OpenElement(seq++, "label"); builder.AddAttribute(seq++, "class", "form-check-label"); builder.AddAttribute(seq++, "for", name); builder.AddContent(seq++, label); builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private RenderFragment BoolFieldInline(string name, bool value) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "checkbox");
+        builder.AddAttribute(seq++, "class", "form-check-input");
+        builder.AddAttribute(seq++, "checked", value);
+        builder.AddAttribute(seq++, "disabled", isBusy);
+        builder.AddAttribute(seq++, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, e => OnBoolFieldChanged(name, e.Value is bool b && b)));
+        builder.CloseElement();
+    };
+
+    private RenderFragment DisabledField(string label, string value, bool background = true) => builder =>
+    {
+        int seq = 0;
+        builder.OpenElement(seq++, "div"); builder.AddAttribute(seq++, "class", "form-floating mb-2");
+        builder.OpenElement(seq++, "input");
+        builder.AddAttribute(seq++, "type", "text");
+        builder.AddAttribute(seq++, "class", background ? "form-control" : "form-control illegal-value");
+        builder.AddAttribute(seq++, "value", value);
+        builder.AddAttribute(seq++, "disabled", true);
+        builder.CloseElement();
+        if (!string.IsNullOrEmpty(label))
+        {
+            builder.OpenElement(seq++, "label"); builder.AddContent(seq++, label); builder.CloseElement();
+        }
+        builder.CloseElement();
+    };
+
+    // ========== DTOs ==========
+
+    public class ApiResp<T>
+    {
+        public bool Success { get; set; }
+        public T? Data { get; set; }
+        public string? Error { get; set; }
+    }
+
+    public class NavigateRequest { public string Direction { get; set; } = string.Empty; }
+    public class FieldUpdateRequest { public string Name { get; set; } = string.Empty; public string? Value { get; set; } }
+    public class DateTimeUpdateRequest { public string? Name { get; set; } public DateTime? Value { get; set; } }
+    public class BoolUpdateRequest { public string Name { get; set; } = string.Empty; public bool Value { get; set; } }
+
+    public class FinishedBoardDataDto
+    {
+        public string GID { get; set; } = string.Empty;
+        public string GIPLength { get; set; } = string.Empty;
+        public string GIPWidth { get; set; } = string.Empty;
+        public string GTestDate { get; set; } = string.Empty;
+        public string GProdCode { get; set; } = string.Empty;
+        public string GBundleHeight { get; set; } = string.Empty;
+        public bool GTestingPassed { get; set; }
+        public bool GFinsihedGoodsDone { get; set; }
+        public string GTimePourTableQC { get; set; } = string.Empty;
+        public string GIPBoardTimeStamp { get; set; } = string.Empty;
+        public bool GIPTimeNotLegible { get; set; }
+        public DateTime? GFBTimeStamp { get; set; }
+        public DateTime? GQCTimesDateTime { get; set; }
+
+        public string GCoreDensity { get; set; } = string.Empty;
+        public string GCompStrFG_Avg6 { get; set; } = string.Empty;
+        public string GCompStrFG_Avg5 { get; set; } = string.Empty;
+        public string GThickness { get; set; } = string.Empty;
+        public string GFlatness { get; set; } = string.Empty;
+        public string GRValue { get; set; } = string.Empty;
+        public string GFacerPeelAvg_QC { get; set; } = string.Empty;
+
+        public string GWarehouseTemp { get; set; } = string.Empty;
+        public string GWarehouseHumidity { get; set; } = string.Empty;
+        public string GBundleHeightIP { get; set; } = string.Empty;
+        public string GThicknessIP { get; set; } = string.Empty;
+        public string GCoreDensityIP { get; set; } = string.Empty;
+        public string GCompressiveIP5 { get; set; } = string.Empty;
+        public string GCompressiveIP { get; set; } = string.Empty;
+
+        public string GThicknessFG_1 { get; set; } = string.Empty;
+        public string GThicknessFG_2 { get; set; } = string.Empty;
+        public string GThicknessFG_3 { get; set; } = string.Empty;
+        public string GThicknessFG_4 { get; set; } = string.Empty;
+        public string GThicknessFG_5 { get; set; } = string.Empty;
+        public string GThicknessFG_6 { get; set; } = string.Empty;
+        public string GThicknessFG_7 { get; set; } = string.Empty;
+        public string GThicknessFG_8 { get; set; } = string.Empty;
+        public string GThicknessFG_9 { get; set; } = string.Empty;
+        public string GThicknessFG_10 { get; set; } = string.Empty;
+        public string GThicknessFG_11 { get; set; } = string.Empty;
+        public string GThicknessFG_12 { get; set; } = string.Empty;
+        public string GThicknessFG_13 { get; set; } = string.Empty;
+        public string GThicknessFG_14 { get; set; } = string.Empty;
+        public string GThicknessFG_15 { get; set; } = string.Empty;
+        public string GThicknessFG_16 { get; set; } = string.Empty;
+        public string GThicknessFG_17 { get; set; } = string.Empty;
+
+        public string GLoc1F { get; set; } = string.Empty;
+        public string GLoc3F { get; set; } = string.Empty;
+
+        public string GCompStrFG_1 { get; set; } = string.Empty;
+        public string GCompStrFG_2 { get; set; } = string.Empty;
+        public string GCompStrFG_3 { get; set; } = string.Empty;
+        public string GCompStrFG_4 { get; set; } = string.Empty;
+        public string GCompStrFG_5 { get; set; } = string.Empty;
+        public string GCompStrFG_6 { get; set; } = string.Empty;
+        public bool GCompStrFGKnit_1 { get; set; }
+        public bool GCompStrFGKnit_2 { get; set; }
+        public bool GCompStrFGKnit_3 { get; set; }
+        public bool GCompStrFGKnit_4 { get; set; }
+        public bool GCompStrFGKnit_5 { get; set; }
+        public bool GCompStrFGKnit_6 { get; set; }
+        public string GNotes { get; set; } = string.Empty;
+
+        public bool GRestestFromSameBundle { get; set; }
+        public string GCompStrFGRetest_1 { get; set; } = string.Empty;
+        public string GCompStrFGRetest_2 { get; set; } = string.Empty;
+        public string GCompStrFGRetest_3 { get; set; } = string.Empty;
+        public string GCompStrFGRetest_4 { get; set; } = string.Empty;
+        public string GCompStrFGRetest_5 { get; set; } = string.Empty;
+        public string GCompStrFGRetest_6 { get; set; } = string.Empty;
+        public bool GCompStrFGKnitRetest_1 { get; set; }
+        public bool GCompStrFGKnitRetest_2 { get; set; }
+        public bool GCompStrFGKnitRetest_3 { get; set; }
+        public bool GCompStrFGKnitRetest_4 { get; set; }
+        public bool GCompStrFGKnitRetest_5 { get; set; }
+        public bool GCompStrFGKnitRetest_6 { get; set; }
+        public string GCompStrFGRetest_Avg5 { get; set; } = string.Empty;
+        public string GCompStrFGRetest_Avg6 { get; set; } = string.Empty;
+        public DateTime? GRetestQCTime { get; set; }
+
+        public string GLoc3B { get; set; } = string.Empty;
+        public string GLoc2B { get; set; } = string.Empty;
+        public string GLoc1B { get; set; } = string.Empty;
+        public string GkFactor_3 { get; set; } = string.Empty;
+        public string GkFactor_2 { get; set; } = string.Empty;
+        public string GkFactor_1 { get; set; } = string.Empty;
+        public string GkFactor_Avg { get; set; } = string.Empty;
+        public bool GRValueKnitPresent3 { get; set; }
+        public bool GRValueKnitPresent2 { get; set; }
+        public bool GRValueKnitPresent1 { get; set; }
+        public DateTime? GkFactorTime1 { get; set; }
+        public DateTime? GkFactorTime2 { get; set; }
+        public DateTime? GkFactorTime3 { get; set; }
+
+        public string GLoc3C { get; set; } = string.Empty;
+        public string GLoc2C { get; set; } = string.Empty;
+        public string GLoc1C { get; set; } = string.Empty;
+        public string GkFactor90_3 { get; set; } = string.Empty;
+        public string GkFactor90_2 { get; set; } = string.Empty;
+        public string GkFactor90_1 { get; set; } = string.Empty;
+        public string GkFactor90 { get; set; } = string.Empty;
+        public string GkFactor180_3 { get; set; } = string.Empty;
+        public string GkFactor180_2 { get; set; } = string.Empty;
+        public string GkFactor180_1 { get; set; } = string.Empty;
+        public string GkFactor180 { get; set; } = string.Empty;
+        public bool GAgedRValueDone { get; set; }
+        public DateTime? GKFactor90Date_1 { get; set; }
+        public DateTime? GKFactor90Date_2 { get; set; }
+        public DateTime? GKFactor90Date_3 { get; set; }
+        public DateTime? GKFactor180Date_1 { get; set; }
+        public DateTime? GKFactor180Date_2 { get; set; }
+        public DateTime? GKFactor180Date_3 { get; set; }
+
+        public string GLoggerID { get; set; } = string.Empty;
+        public string GInitProbeTemp { get; set; } = string.Empty;
+        public string GMaxProbeTemp { get; set; } = string.Empty;
+        public string GFinalProbeTemp { get; set; } = string.Empty;
+        public DateTime? GInitProbeTime { get; set; }
+        public DateTime? GMaxTempTimeInit { get; set; }
+        public DateTime? GMaxTempTimeFinal { get; set; }
+        public DateTime? GFinalProbeTime { get; set; }
+
+        public string GLoc3A { get; set; } = string.Empty;
+        public string GLoc2A { get; set; } = string.Empty;
+        public string GLoc1A { get; set; } = string.Empty;
+        public string GMass3 { get; set; } = string.Empty;
+        public string GMass2 { get; set; } = string.Empty;
+        public string GMass1 { get; set; } = string.Empty;
+        public string GL1_3 { get; set; } = string.Empty;
+        public string GL1_2 { get; set; } = string.Empty;
+        public string GL1_1 { get; set; } = string.Empty;
+        public string GW1_3 { get; set; } = string.Empty;
+        public string GW1_2 { get; set; } = string.Empty;
+        public string GW1_1 { get; set; } = string.Empty;
+        public string GT1_3 { get; set; } = string.Empty;
+        public string GT1_2 { get; set; } = string.Empty;
+        public string GT1_1 { get; set; } = string.Empty;
+        public string GT2_3 { get; set; } = string.Empty;
+        public string GT2_2 { get; set; } = string.Empty;
+        public string GT2_1 { get; set; } = string.Empty;
+        public string GT3_3 { get; set; } = string.Empty;
+        public string GT3_2 { get; set; } = string.Empty;
+        public string GT3_1 { get; set; } = string.Empty;
+        public string GT4_3 { get; set; } = string.Empty;
+        public string GT4_2 { get; set; } = string.Empty;
+        public string GT4_1 { get; set; } = string.Empty;
+        public string GT5_3 { get; set; } = string.Empty;
+        public string GT5_2 { get; set; } = string.Empty;
+        public string GT5_1 { get; set; } = string.Empty;
+        public string GCoreDens3 { get; set; } = string.Empty;
+        public string GCoreDens2 { get; set; } = string.Empty;
+        public string GCoreDens1 { get; set; } = string.Empty;
+        public bool GCoreDensKnitLine3 { get; set; }
+        public bool GCoreDensKnitLine2 { get; set; }
+        public bool GCoreDensKnitLine1 { get; set; }
+
+        public string GFGLength { get; set; } = string.Empty;
+        public string GFGWidth { get; set; } = string.Empty;
+        public string GFGDiagoanl1 { get; set; } = string.Empty;
+        public string GFGDiagoanl2 { get; set; } = string.Empty;
+        public string GFGDiagonalDiff { get; set; } = string.Empty;
+
+        public string GLoc3E { get; set; } = string.Empty;
+        public string GLoc2E { get; set; } = string.Empty;
+        public string GLoc1E { get; set; } = string.Empty;
+        public string GFacerPeel3 { get; set; } = string.Empty;
+        public string GFacerPeel2 { get; set; } = string.Empty;
+        public string GFacerPeel1 { get; set; } = string.Empty;
+        public string GFacerPeelAvg { get; set; } = string.Empty;
+
+        public string GLoc3D { get; set; } = string.Empty;
+        public string GLoc2D { get; set; } = string.Empty;
+        public string GLoc1D { get; set; } = string.Empty;
+        public string GNailPull_3 { get; set; } = string.Empty;
+        public string GNailPull_2 { get; set; } = string.Empty;
+        public string GNailPull_1 { get; set; } = string.Empty;
+        public string GNailPull { get; set; } = string.Empty;
+
+        public bool GDataSetPrev { get; set; }
+        public bool GDataSetNext { get; set; }
+
+        public bool GIPLengthBackground { get; set; } = true;
+        public bool GIPWidthBackground { get; set; } = true;
+        public bool GThicknessIPBackground { get; set; } = true;
+        public bool GCoreDensityIPBackground { get; set; } = true;
+        public bool GCompressiveIPBackground { get; set; } = true;
+        public bool GCompressiveIP5Background { get; set; } = true;
+        public bool GCoreDensityBackground { get; set; } = true;
+        public bool GCoreDens1Background { get; set; } = true;
+        public bool GCoreDens2Background { get; set; } = true;
+        public bool GCoreDens3Background { get; set; } = true;
+        public bool GCompStrFG_Avg6Background { get; set; } = true;
+        public bool GCompStrFG_Avg5Background { get; set; } = true;
+        public bool GThicknessBackground { get; set; } = true;
+        public bool GRValueBackground { get; set; } = true;
+        public bool GkFactor_AvgBackground { get; set; } = true;
+        public bool GFacerPeelAvgBackground { get; set; } = true;
+        public bool GFacerPeelAvg_QCBackground { get; set; } = true;
+        public bool GCompStrFGRetest_Avg5Background { get; set; } = true;
+        public bool GCompStrFGRetest_Avg6Background { get; set; } = true;
+        public bool GkFactor90Background { get; set; } = true;
+        public bool GkFactor180Background { get; set; } = true;
+        public bool GFGDiagonalDiffBackground { get; set; } = true;
+        public bool GFBTimeHostBackground { get; set; } = true;
+    }
+}
