@@ -290,9 +290,24 @@ namespace IntugentBackend.Controllers
                 xa[i] = (jm.Zeta + 0.5) * (1 - 4.0 * ya[i] * ya[i]) - 0.5;
                 xb[i] = 0.5 - (0.5 - jm.Zeta) * (1 - 4.0 * ya[i] * ya[i]);
             }
-            dto.XA = xa; dto.YA = ya; dto.XB = xb; dto.YB = yb;
+            // A zero/blank density, viscosity, etc. can drive the physics (sqrt/division) to
+            // NaN/Infinity, which System.Text.Json throws on by default when serializing the
+            // response — sanitize before returning so a bad input shows a flat/odd chart instead
+            // of breaking the page (same class of issue found in the AI Model training endpoint).
+            dto.XA = Sanitize(xa); dto.YA = Sanitize(ya); dto.XB = Sanitize(xb); dto.YB = Sanitize(yb);
 
             return dto;
+        }
+
+        private static double[] Sanitize(double[] values)
+        {
+            var result = new double[values.Length];
+            for (int i = 0; i < values.Length; i++)
+            {
+                double v = values[i];
+                result[i] = double.IsNaN(v) || double.IsInfinity(v) ? 0 : v;
+            }
+            return result;
         }
     }
 }

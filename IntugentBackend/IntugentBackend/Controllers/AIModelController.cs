@@ -148,7 +148,23 @@ namespace IntugentBackend.Controllers
         {
             try
             {
+                // Training with no data loaded (nDataPts == 0, e.g. this page was opened directly
+                // without first selecting a model with a valid data source on AI Home) makes the
+                // algorithm divide by zero and produce NaN/Infinity. Those values then fail to
+                // serialize to JSON (System.Text.Json throws on NaN/Infinity by default), which
+                // breaks the HTTP response after this try/catch has already returned — surfacing to
+                // the client as a hard failure rather than a clean error message. Guard it up front.
+                if (_cnnData.nDataPts <= 0 || _cnnData.data == null || _cnnData.Output == null)
+                {
+                    return Ok(new { success = false, error = "No training data is loaded for this model. Select a model with a valid data source on the AI Home page first." });
+                }
+
                 var nnModel = _cnnData.GetModelData();
+                if (nnModel.Weights == null || nnModel.nHLayers < 1)
+                {
+                    return Ok(new { success = false, error = "This model has no configured layers/weights yet. Set the number of hidden layers first." });
+                }
+
                 nnModel.TrainModel(_cnnData);
                 nnModel.Predict(_cnnData);
                 _svc.SetView(nnModel);
@@ -199,9 +215,9 @@ namespace IntugentBackend.Controllers
                 GOutputNeurons = _svc.gOutputNeurons,
                 LayerOptions = _svc.gLayer,
                 LayerSelectedIndex = _svc.gLayerSelectedIndex,
-                YY = _svc.yy,
-                YYP = _svc.yyp,
-                YTh = _svc.yth,
+                YY = Sanitize(_svc.yy),
+                YYP = Sanitize(_svc.yyp),
+                YTh = Sanitize(_svc.yth),
                 ChartBottomTitle = _svc.gChartBottomTitle,
                 ChartLeftTitle = _svc.gChartLeftTitle
             };
@@ -228,6 +244,19 @@ namespace IntugentBackend.Controllers
             }
 
             return dto;
+        }
+
+        // System.Text.Json throws by default when asked to serialize NaN/Infinity, which would
+        // otherwise crash the response after this controller's own try/catch has already returned.
+        private static double[] Sanitize(double[] values)
+        {
+            var result = new double[values.Length];
+            for (int i = 0; i < values.Length; i++)
+            {
+                double v = values[i];
+                result[i] = double.IsNaN(v) || double.IsInfinity(v) ? 0 : v;
+            }
+            return result;
         }
     }
 }

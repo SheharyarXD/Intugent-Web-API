@@ -114,12 +114,16 @@ namespace IntugentBackend.Controllers
                 GFracStruts = _rndRValues.gFracStruts,
                 XAxisSelectedValue = _rndRValues.gXAxisSelectedValue ?? _rndRValues.RData.sXaxisTag ?? "TE",
                 YAxisSelectedValue = _rndRValues.gYAxisSelectedValue ?? _rndRValues.RData.sYaxisTag ?? "RV",
-                ArX = _rndRValues.dArX,
-                Ar0 = _rndRValues.dAr0,
-                Ar1 = _rndRValues.dAr1,
-                Ar2 = _rndRValues.dAr2,
-                Ar3 = _rndRValues.dAr3,
-                Ar4 = _rndRValues.dAr4
+                // A zero/blank field (cell size, polymer density, etc.) can drive the physics
+                // (sqrt/division) to NaN/Infinity, which System.Text.Json throws on by default when
+                // serializing the response — sanitize before returning (same issue class found and
+                // fixed in the AI Model training endpoint).
+                ArX = Sanitize(_rndRValues.dArX),
+                Ar0 = Sanitize(_rndRValues.dAr0),
+                Ar1 = Sanitize(_rndRValues.dAr1),
+                Ar2 = Sanitize(_rndRValues.dAr2),
+                Ar3 = Sanitize(_rndRValues.dAr3),
+                Ar4 = Sanitize(_rndRValues.dAr4)
             };
 
             if (_rndRValues.gGasComp != null)
@@ -144,6 +148,17 @@ namespace IntugentBackend.Controllers
                 return d.ToString("G");
             }
             return value?.ToString() ?? "N/A";
+        }
+
+        private static double[] Sanitize(double[] values)
+        {
+            var result = new double[values.Length];
+            for (int i = 0; i < values.Length; i++)
+            {
+                double v = values[i];
+                result[i] = double.IsNaN(v) || double.IsInfinity(v) ? 0 : v;
+            }
+            return result;
         }
     }
 

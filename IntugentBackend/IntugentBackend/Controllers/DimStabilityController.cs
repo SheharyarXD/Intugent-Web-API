@@ -52,6 +52,11 @@ namespace IntugentBackend.Controllers
         {
             try
             {
+                // drIP/drFG depend on MfgInProcess/MfgFinishedGoods already having loaded a row for the
+                // current dataset. Since these are singletons, that's only guaranteed if the user
+                // happened to visit another Mfg page first — so load them explicitly here too.
+                _mfgInProcess.GetDataSet();
+                _mfgFinishedGoods.GetDataSet();
                 _mfgDimStability.GetDataSet();
                 LinkCrossReferences();
                 return Ok(new { success = true, data = BuildDto() });

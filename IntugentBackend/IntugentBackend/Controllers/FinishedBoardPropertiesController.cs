@@ -69,8 +69,15 @@ namespace IntugentBackend.Controllers
                     return BadRequest(new { success = false, error = "MfgFinishedGoods not initialized." });
                 }
 
-                // Ensure data is loaded
+                // Ensure data is loaded. drIP/drFG must be wired explicitly here rather than relying on
+                // GetAllMfgData having already run via some other page's navigation (e.g. a user who
+                // deep-links straight into this page without visiting Mfg Home first) — these are
+                // singleton services, so a missing cross-reference here was a guaranteed
+                // NullReferenceException on every load until a dataset had been selected elsewhere.
+                _mfgInProcess.GetDataSet();
                 _mfgFinishedGoods.GetDataSet();
+                _mfgFinishedGoods.drIP = _mfgInProcess.dr;
+
                 var data = BuildDto();
                 return Ok(new { success = true, data });
             }
@@ -803,6 +810,10 @@ namespace IntugentBackend.Controllers
             dto.GLoc1B = dto.GLoc1C = dto.GLoc1D = dto.GLoc1E = dto.GLoc1F = defs.sLocMfg1;
             dto.GLoc2B = dto.GLoc2C = dto.GLoc2D = dto.GLoc2E = defs.sLocMfg2;
             dto.GLoc3B = dto.GLoc3C = dto.GLoc3D = dto.GLoc3E = dto.GLoc3F = defs.sLocMfg3;
+
+            // No Finished Goods / In Process row could be found for the currently selected dataset —
+            // return the location labels/nav state only rather than throwing on the indexers below.
+            if (mfg.dr == null || mfg.drIP == null) return dto;
 
             // General Info
             dto.GID = mfg.dr["ID4ALL FG"]?.ToString() ?? string.Empty;

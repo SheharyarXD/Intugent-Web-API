@@ -386,6 +386,7 @@ namespace IntugentBackend.Services.Mfg
             //mfgFinishedGoods.drIP = mfgDimensionStability.drIP = CPages.PagePlantData_1.drIP = mfgInProcess.dr;
             //  mfgInProcess.drFG = mfgDimensionStability.drFG = CPages.PagePlantData_1.drFG = mfgFinishedGoods.dr;
 
+            mfgFinishedGoods.drIP = mfgInProcess.dr;
             mfgDimensionStability.drIP = mfgInProcess.dr;
             mfgDimensionStability.drFG = mfgFinishedGoods.dr;
             mfgPlantData.drIP =  mfgInProcess.dr;

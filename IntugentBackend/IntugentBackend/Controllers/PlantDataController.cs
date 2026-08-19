@@ -50,6 +50,11 @@ namespace IntugentBackend.Controllers
         {
             try
             {
+                // drIP/drFG depend on MfgInProcess/MfgFinishedGoods already having loaded a row for the
+                // current dataset. Since these are singletons, that's only guaranteed if the user
+                // happened to visit another Mfg page first — so load them explicitly here too.
+                _mfgInProcess.GetDataSet();
+                _mfgFinishedGoods.GetDataSet();
                 _mfgPlantData.GetDataSet();
                 LinkCrossReferences();
                 return Ok(new { success = true, data = BuildDto() });
@@ -151,6 +156,17 @@ namespace IntugentBackend.Controllers
             dto.GDelTimeButton = "* The two Board Time Stamps must be within " + _cDefualts.dDelTimeButton +
                 " minute(s) (site specific) of each other to extract process data.";
 
+            // The process-parameter grids (Chemical Delivery, Pour Table, Double Belt, etc.) are
+            // populated independently of the [Process Data] row lookup below — they come from
+            // tblProcessParams and always have their label rows, even if this specific dataset has
+            // no logged process data yet. Build them unconditionally so the page never appears blank.
+            dto.GChemDel = ToRows(mfg.dtPPChemDel);
+            dto.GChemDel1 = ToRows(mfg.dtPPChemDel1);
+            dto.GPTable = ToRows(mfg.dtPPPTable);
+            dto.GDBelt = ToRows(mfg.dtPPDBelt);
+            dto.GOthers = ToRows(mfg.dtPPOthers);
+            dto.GNewInsData = ToRows(mfg.dtNewInsData);
+
             if (mfg.dr == null) return dto;
 
             dto.GID = mfg.dr["ID4ALL"]?.ToString() ?? string.Empty;
@@ -206,13 +222,6 @@ namespace IntugentBackend.Controllers
                 timeStampsWithin5Min = false;
 
             dto.GGetPlantDataIsEnabled = timeStampsWithin5Min;
-
-            dto.GChemDel = ToRows(mfg.dtPPChemDel);
-            dto.GChemDel1 = ToRows(mfg.dtPPChemDel1);
-            dto.GPTable = ToRows(mfg.dtPPPTable);
-            dto.GDBelt = ToRows(mfg.dtPPDBelt);
-            dto.GOthers = ToRows(mfg.dtPPOthers);
-            dto.GNewInsData = ToRows(mfg.dtNewInsData);
 
             return dto;
         }

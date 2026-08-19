@@ -131,6 +131,24 @@ namespace IntugentBackend.Controllers
 
             // dvComProdAll includes the "All" row
             lists.dvComProdAll = lists.dtComProd.DefaultView;
+
+            // Employee (Chemist/Operator) dropdowns — Roster rows filtered by location.
+            // This mirrors legacy MainWindow.SetOptionBoxes(), which was never actually wired up
+            // (it only existed inside a commented-out WPF block), leaving these lists empty.
+            if (lists.dtLoc != null && lists.dtLoc.Columns.Contains("IDLocation") && lists.dtLoc.Columns.Contains("Employees"))
+            {
+                lists.dvEmployees = lists.dtLoc.DefaultView;
+
+                lists.dvEmployees.RowFilter = "IDLocation = 3";
+                lists.dvEmployees.Sort = "Employees Asc";
+                lists.dvEmployeesRND = lists.dvEmployees.ToTable().DefaultView;
+
+                lists.dvEmployees.RowFilter = "IDLocation = " + defualts.IDLocation;
+                lists.dvEmployees.Sort = "Employees Asc";
+                lists.dvEmployeesMfg = lists.dvEmployees.ToTable().DefaultView;
+
+                lists.dvEmployees.RowFilter = string.Empty;
+            }
         }
     }
 
