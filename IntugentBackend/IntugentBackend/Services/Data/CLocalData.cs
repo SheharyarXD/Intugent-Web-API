@@ -10,7 +10,6 @@ namespace IntugentBackend.Services.Data
     {
         public static string Machine;
         public static string User;
-        public static string Db_ConStr;
         public static string Host_Url;  //Used by Azure vault and Okta
         public static string feedBack;
     }

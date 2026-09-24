@@ -81,20 +81,7 @@ namespace IntugentBackend.Services.Core
             {
                 if (!cbfile.bConAz) //MANUALLY ALTERING CONDITION............!!!!!!!!!!!!!!!
                 {
-                    //                    CTelClient.TelTrace("Azure secrets obtained");  //Azue Insight Trace Message
-
-                    //                   CAzure.Msi = " ";
-                    /*                   CAzure.Msi = "e05378c1-8df3-4b0c-aef8-9bb8a5033484";
-
-                                                        CAzure.DB_Url = "https://database.windows.net/.default";
-                                                        CAzure.Db_ConStr = "Server=tcp:dmt-uat-use-dbm-shared.database.windows.net;Database=Intugent-uat-use-db;TrustServerCertificate=True;";
-                                     */
-                    //                   MessageBox.Show("Welcome " + CDefualts.sEmployee + "\n\n Intugent PI will be connecting to Azure Database", cbfile.sAppName);
-                    //   var credential = new Azure.Identity.DefaultAzureCredential(new DefaultAzureCredentialOptions { ManagedIdentityClientId = CAzure.Msi });
-                    //   var token = credential.GetToken(new Azure.Core.TokenRequestContext(new[] { CAzure.DB_Url }));
-                    //   cbfile.conAZ = new Microsoft.Data.SqlClient.SqlConnection(CAzure.Db_ConStr);
-                    //    cbfile.conAZ.AccessToken = token.Token;
-                    //    CTelClient.TelTrace("Azure sql conn. made");  //Azue Insight Trace Message
+                    // The SQL connection is created in Cbfile from ConnectionStrings:Default in appsettings.json.
                 }
                 else
                 {
@@ -688,7 +675,6 @@ namespace IntugentBackend.Services.Core
                     CAzure.Vault_Url = ConfigurationManager.AppSettings.Get("Azure-Vault-Url");
                  //   okta1.Port1 = int.Parse(ConfigurationManager.AppSettings.Get("Okta-Port1"));
                  //   okta1.Port2 = int.Parse(ConfigurationManager.AppSettings.Get("Okta-Port2"));
-                    CLocalData.Db_ConStr = ConfigurationManager.AppSettings.Get("Local-Db-ConStr");
                     CLocalData.Machine = ConfigurationManager.AppSettings.Get("Local-Machine");
                     CLocalData.User = ConfigurationManager.AppSettings.Get("Local-User");
                     CDefualts.sGroup = ConfigurationManager.AppSettings.Get("Local-Group");

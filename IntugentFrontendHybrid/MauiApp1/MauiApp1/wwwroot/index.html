@@ -15,7 +15,11 @@
 
     <div class="status-bar-safe-area"></div>
 
-    <div id="app">Loading...</div>
+    <div id="app">
+        <div class="d-flex align-items-center justify-content-center gap-2" style="height:100vh">
+            <span class="spinner-border text-primary" aria-hidden="true"></span> Loading...
+        </div>
+    </div>
 
     <div id="blazor-error-ui" data-nosnippet>
         An unhandled error has occurred.
@@ -25,6 +29,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@latest"></script>
+    <script>
+        // Match chart text to the app's compact font size.
+        if (window.Chart) Chart.defaults.font.size = 11;
+    </script>
     <script src="js/rvalues-chart.js"></script>
     <script src="js/jetmixing-chart.js"></script>
     <script src="js/aimodel-chart.js"></script>

@@ -3,6 +3,8 @@
 @inject AppSessionState AppSession
 @inject IJSRuntime JS
 @inject NavigationManager Navigation
+@inject LoadingState Loading
+@implements IDisposable
 
 <div class="page">
     <div class="sidebar">
@@ -20,12 +22,24 @@
         <article class="content px-4">
             @Body
         </article>
+
+        @if (Loading.IsLoading)
+        {
+            <div class="loading-overlay" role="status" aria-live="polite">
+                <div class="loading-box">
+                    <span class="spinner-border text-primary" aria-hidden="true"></span>
+                    <span>Loading data...</span>
+                </div>
+            </div>
+        }
     </main>
 </div>
 
 @code {
     protected override async Task OnInitializedAsync()
     {
+        Loading.Changed += OnLoadingChanged;
+
         // Restore the session role from localStorage so the sidebar stays correct across app restarts.
         if (AppSession.UserId <= 0)
         {
@@ -43,6 +57,11 @@
             }
         }
     }
+
+    // Loading.Changed fires from HttpClient threads, so marshal the re-render onto the renderer.
+    private void OnLoadingChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => Loading.Changed -= OnLoadingChanged;
 
     private async Task ChangeGroup()
     {

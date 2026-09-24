@@ -1,0 +1,17 @@
+[
+  {
+    "Name": "Backend + Frontend",
+    "Projects": [
+      {
+        "Path": "IntugentBackend\IntugentBackend\IntugentBackend.csproj",
+        "Action": "Start",
+        "DebugTarget": "https"
+      },
+      {
+        "Path": "IntugentFrontendHybrid\MauiApp1\MauiApp1\MauiApp1.csproj",
+        "Action": "Start",
+        "DebugTarget": "Windows Machine"
+      }
+    ]
+  }
+]

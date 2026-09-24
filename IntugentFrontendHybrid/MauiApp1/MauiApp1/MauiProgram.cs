@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using MauiApp1.Services;
 
 namespace MauiApp1
@@ -15,8 +16,18 @@ namespace MauiApp1
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
 
+            // appsettings.json is embedded in the app assembly; it holds the backend API address.
+            using (var settings = typeof(MauiProgram).Assembly.GetManifestResourceStream("MauiApp1.appsettings.json")
+                ?? throw new InvalidOperationException("Embedded appsettings.json not found."))
+            {
+                builder.Configuration.AddJsonStream(settings);
+            }
+            var apiBaseUrl = builder.Configuration["Api:BaseUrl"]
+                ?? throw new InvalidOperationException("Api:BaseUrl not found in appsettings.json.");
+
             builder.Services.AddMauiBlazorWebView();
             builder.Services.AddSingleton<AppSessionState>();
+            builder.Services.AddSingleton<LoadingState>();
 
             builder.Services.AddSingleton(sp =>
             {
@@ -28,9 +39,9 @@ namespace MauiApp1
                 // separately run `dotnet dev-certs https --trust`.
                 handler.ServerCertificateCustomValidationCallback =
                     HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-                return new HttpClient(handler)
+                return new HttpClient(new LoadingHandler(sp.GetRequiredService<LoadingState>(), handler))
                 {
-                    BaseAddress = new Uri("https://localhost:44323/api/")
+                    BaseAddress = new Uri(apiBaseUrl)
                 };
             });
 

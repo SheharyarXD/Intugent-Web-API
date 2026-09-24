@@ -35,11 +35,6 @@ namespace IntugentBackend.Services.Core
             conAZ = new SqlConnection(connectionString);
         }
 
-        public string sDBConn()
-        {
-            string sCon = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=";
-            return sCon + sIntDir + sDBFile;
-        }
         public int iIDMfg = 1943;
         public int iIndexRND = 0;
         public int iIDMfgIndex = 0;

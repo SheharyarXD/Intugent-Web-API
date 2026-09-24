@@ -62,6 +62,9 @@
         <!-- Custom Fonts -->
         <MauiFont Include="Resources\Fonts\*" />
 
+        <!-- App settings (backend API address), read at startup in MauiProgram -->
+        <EmbeddedResource Include="appsettings.json" />
+
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
     </ItemGroup>
@@ -70,6 +73,7 @@
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0" />
     </ItemGroup>
 
 </Project>
