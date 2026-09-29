@@ -141,15 +141,20 @@ else if (data != null)
     private bool isBusy;
     private bool noDatasetSelected;
 
+    // The chart canvas only exists once data has loaded, so draw on the first render after that.
+    private bool chartPending;
+
     protected override async Task OnInitializedAsync()
     {
         await LoadData();
+        chartPending = data != null;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && data != null)
+        if (chartPending)
         {
+            chartPending = false;
             await RenderChart();
         }
     }

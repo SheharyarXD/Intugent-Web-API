@@ -300,7 +300,23 @@
         catch (Exception ex) { errorMessage = $"Copy failed: {ex.Message}"; }
     }
 
-    private void CreateNewDataset() => Navigation.NavigateTo("/mfg-home/new");
+    private async Task CreateNewDataset()
+    {
+        try
+        {
+            isLoading = true; errorMessage = null;
+            var response = await Http.PostAsJsonAsync<object>($"MfgHome/new-dataset", new { });
+            var result = await response.Content.ReadFromJsonAsync<ApiResponse<MfgSearchResultDto>>();
+            if (result?.Success == true && result.Data != null)
+            {
+                searchResults = result.Data;
+                selectedIndex = searchResults.SelectedIndex;
+            }
+            else errorMessage = result?.Error ?? "Could not create a new dataset.";
+        }
+        catch (Exception ex) { errorMessage = $"Create error: {ex.Message}"; }
+        finally { isLoading = false; }
+    }
 
     public class MfgFiltersDto
     {

@@ -27,8 +27,10 @@
         <span class="dismiss">🗙</span>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@latest"></script>
+    <!-- Chart.js 4.5.1, hammer.js 2.0.8 (pan gestures) and chartjs-plugin-zoom 2.2.0, bundled with the app -->
+    <script src="lib/chartjs/chart.umd.min.js"></script>
+    <script src="lib/chartjs/hammer.min.js"></script>
+    <script src="lib/chartjs/chartjs-plugin-zoom.min.js"></script>
     <script>
         // Match chart text to the app's compact font size.
         if (window.Chart) Chart.defaults.font.size = 11;

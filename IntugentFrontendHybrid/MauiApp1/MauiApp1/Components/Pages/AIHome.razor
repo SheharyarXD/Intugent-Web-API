@@ -158,6 +158,7 @@
         try
         {
             isBusy = true;
+            errorMessage = null;
             var response = await Http.PostAsJsonAsync<object>("AIHome/new-model", new { });
             var result = await response.Content.ReadFromJsonAsync<ApiResp<AiModelListDto>>();
             if (result?.Success == true && result.Data != null)

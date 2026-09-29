@@ -160,11 +160,22 @@ else
     private string? errorMessage;
     private bool isBusy;
 
-    protected override async Task OnInitializedAsync() => await LoadData();
+    // The chart canvas only exists once data has loaded, so draw on the first render after that.
+    private bool chartPending;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+        chartPending = data != null;
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && data != null) await RenderChart();
+        if (chartPending)
+        {
+            chartPending = false;
+            await RenderChart();
+        }
     }
 
     private async Task LoadData()
@@ -191,7 +202,11 @@ else
     private async Task OnFieldChanged(string name, string? value, string endpoint)
     {
         if (isBusy) return;
-        await Post($"AIAnalysis/{endpoint}", new FieldRequest { Name = name, Value = value });
+        // browse-file takes the path as FilePath; the other endpoints take a Name/Value pair.
+        if (endpoint == "browse-file")
+            await Post("AIAnalysis/browse-file", new FileRequest { FilePath = value ?? string.Empty });
+        else
+            await Post($"AIAnalysis/{endpoint}", new FieldRequest { Name = name, Value = value });
     }
 
     private async Task OnUploadData()
@@ -277,6 +292,7 @@ else
     }
 
     public class FieldRequest { public string Name { get; set; } = string.Empty; public string? Value { get; set; } }
+    public class FileRequest { public string FilePath { get; set; } = string.Empty; }
     public class InputVarRequest { public int Index { get; set; } }
 
     public class AiAnalysisDto

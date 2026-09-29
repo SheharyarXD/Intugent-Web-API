@@ -87,12 +87,22 @@ else
     private Analysis2Dto? data;
     private string? errorMessage;
     private bool isBusy;
+    // The canvases only exist once data has loaded, so draw on the first render after that.
+    private bool chartsPending;
 
-    protected override async Task OnInitializedAsync() => await LoadData();
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+        chartsPending = data != null;
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && data != null) await RenderCharts();
+        if (chartsPending)
+        {
+            chartsPending = false;
+            await RenderCharts();
+        }
     }
 
     private async Task LoadData()

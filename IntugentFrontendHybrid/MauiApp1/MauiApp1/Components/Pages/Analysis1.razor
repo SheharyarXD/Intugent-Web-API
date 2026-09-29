@@ -120,11 +120,22 @@ else
     private DateTime? mfgDate1;
     private DateTime? mfgDate2;
 
-    protected override async Task OnInitializedAsync() => await LoadData();
+    // The chart canvas only exists once data has loaded, so draw on the first render after that.
+    private bool chartPending;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+        chartPending = data != null;
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && data != null) await RenderChart();
+        if (chartPending)
+        {
+            chartPending = false;
+            await RenderChart();
+        }
     }
 
     private async Task LoadData()

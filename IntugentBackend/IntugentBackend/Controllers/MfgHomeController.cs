@@ -242,6 +242,45 @@ namespace IntugentBackend.Controllers
             }
         }
 
+        [HttpPost("new-dataset")]
+        public IActionResult CreateNewDataset()
+        {
+            try
+            {
+                if (!_cbfile.bCanSwitchRecord)
+                {
+                    return Ok(new ApiResponse<MfgSearchResultDto>
+                    { Success = false, Error = "Cannot switch record: " + _cbfile.sNoRecSwitchMsg });
+                }
+
+                // CreateNewDataSet adds the new dataset to the search result list, so make sure one exists.
+                if (_mfgHome.dt == null) _mfgHome.SearchMfgDB();
+
+                if (!_mfgHome.CreateNewDataSet())
+                {
+                    return Ok(new ApiResponse<MfgSearchResultDto>
+                    { Success = false, Error = "Could not create a new Mfg dataset." });
+                }
+
+                // The new dataset is inserted at the top of the list; make it the selected dataset.
+                _cbfile.iIDMfgIndex = 0;
+                _cbfile.iIDMfg = Convert.ToInt32(_mfgHome.dt.Rows[0]["ID4ALL"]);
+
+                _mfgHome.GetAllMfgData(
+                    _mfgInProcess, _mfgFinishedGoods,
+                    _mfgDimStability, _mfgPlantData,
+                    _mfgJetMixing);
+
+                return Ok(new ApiResponse<MfgSearchResultDto> { Success = true, Data = BuildSearchResult() });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating new Mfg dataset");
+                return StatusCode(500, new ApiResponse<MfgSearchResultDto>
+                { Success = false, Error = ex.Message });
+            }
+        }
+
         private MfgSearchResultDto BuildSearchResult()
         {
             var result = new MfgSearchResultDto
